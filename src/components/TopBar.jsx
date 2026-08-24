@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import Logo from './Logo';
 
 const TABS = [
   ['overview', 'Projects'],
@@ -17,7 +18,7 @@ export default function TopBar({ view, onNav, saving }) {
   return (
     <div className="topbar">
       <div className="brandmark">
-        <div className="sq">JM</div>
+        <Logo />
         <div>
           <h1>Development Pipeline</h1>
           <span className="sub">Site to Store-Opening Tracker</span>
