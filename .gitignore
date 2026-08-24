@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Local environment config (holds your Firebase web config)
+.env.local
+.env.*.local
+
+# Firebase project binding + CLI noise
+.firebaserc
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Service account private key -- full admin access to your database.
+# NEVER commit this.
+scripts/serviceAccountKey.json
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
