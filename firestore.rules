@@ -1,0 +1,60 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function myRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isEditor() {
+      return isSignedIn() && (myRole() == 'editor' || myRole() == 'admin');
+    }
+
+    function isAdmin() {
+      return isSignedIn() && myRole() == 'admin';
+    }
+
+    // Users: anyone signed in can read the team list (needed for the admin
+    // panel and "last edited by" attribution). A user can create their own
+    // profile document on first login. Only admins can change roles.
+    match /users/{uid} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.auth.uid == uid
+                    && request.resource.data.role == 'viewer';
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Projects: everyone signed in can read. Editors/admins can create and
+    // update. Only admins can delete.
+    match /projects/{projectId} {
+      allow read: if isSignedIn();
+      allow create, update: if isEditor();
+      allow delete: if isAdmin();
+    }
+
+    // Contacts: same pattern as projects, but any editor can delete a
+    // contact row (lower stakes than deleting a whole project).
+    match /contacts/{contactId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isEditor();
+    }
+
+    // Construction playbook template tasks.
+    match /timeline/{taskId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isEditor();
+    }
+
+    // Per-project construction checklist progress.
+    match /constructionProgress/{projectId} {
+      allow read: if isSignedIn();
+      allow write: if isEditor();
+    }
+  }
+}
