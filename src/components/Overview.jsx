@@ -34,7 +34,13 @@ export default function Overview({ projects, onSelect }) {
   async function handleAdd() {
     setAdding(true);
     try {
-      const ref = await createProject({ brand: 'Jersey Mikes', name: 'New Location', fields: {} }, user);
+      // Place new projects after every existing one.
+      const nextOrder =
+        projects.reduce((max, p) => (typeof p.order === 'number' && p.order > max ? p.order : max), -1) + 1;
+      const ref = await createProject(
+        { brand: 'Jersey Mikes', name: 'New Location', fields: {}, order: nextOrder },
+        user
+      );
       onSelect(ref.id);
     } finally {
       setAdding(false);

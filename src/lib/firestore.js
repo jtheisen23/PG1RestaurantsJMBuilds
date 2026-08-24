@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   collection,
   doc,
@@ -38,8 +38,18 @@ function useCollection(name, orderField) {
   return { data, loading };
 }
 
+// Projects are sorted client-side rather than with a Firestore orderBy so a
+// document missing `order` still appears (orderBy silently drops those).
+// Anything without an order sorts to the end, then alphabetically by name.
 export function useProjects() {
-  return useCollection('projects');
+  const { data, loading } = useCollection('projects');
+  const sorted = useMemo(() => {
+    const rank = (p) => (typeof p.order === 'number' ? p.order : Number.MAX_SAFE_INTEGER);
+    return [...data].sort(
+      (a, b) => rank(a) - rank(b) || (a.name || '').localeCompare(b.name || '')
+    );
+  }, [data]);
+  return { data: sorted, loading };
 }
 
 export function useContacts() {
@@ -87,6 +97,7 @@ export function useConstructionProgress(projectId) {
 
 export async function createProject(project, user) {
   return addDoc(collection(db, 'projects'), {
+    order: Number.MAX_SAFE_INTEGER,
     ...project,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
