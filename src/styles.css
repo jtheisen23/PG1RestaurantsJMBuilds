@@ -109,7 +109,8 @@
   .rail .seg.co{background:var(--brick);}
   .rail-track{flex:1;background:var(--line);border-radius:5px;overflow:hidden;height:8px;position:relative;}
   .rail-track .fill{height:100%;border-radius:5px;}
-  .rail-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--slate);margin-top:4px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;}
+  .rail-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--slate);margin-top:5px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;}
+  .rail-labels b{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink);font-weight:500;margin-left:3px;}
 
   /* ---------- PROJECT LIST ---------- */
   .plist{display:flex;flex-direction:column;gap:10px;}
