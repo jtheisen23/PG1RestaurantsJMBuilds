@@ -14,17 +14,23 @@ export default function Overview({ projects, onSelect }) {
   const active = useMemo(() => projects.filter((p) => !p.completed), [projects]);
 
   const stats = useMemo(() => {
-    const s = { re: 0, pc: 0, co: 0, done: 0 };
-    let sum = 0;
+    // Average completion per phase across active projects. Head-counts by
+    // "current stage" were misleading: a project sits in one bucket only, so
+    // work already done in later phases stayed invisible.
+    const totals = { 're': 0, 'pc': 0, 'co': 0 };
     active.forEach((p) => {
-      s[currentStage(p).key]++;
-      sum += overallProgress(p);
+      totals.re += phaseProgress(p, 'Real Estate');
+      totals.pc += phaseProgress(p, 'Pre-Construction');
+      totals.co += phaseProgress(p, 'Construction/Ops');
     });
+    const mean = (n) => (active.length ? Math.round((n / active.length) * 100) : 0);
     return {
-      ...s,
+      re: mean(totals.re),
+      pc: mean(totals.pc),
+      co: mean(totals.co),
+      started: active.filter((p) => overallProgress(p) > 0).length,
       total: active.length,
       completed: projects.length - active.length,
-      avg: active.length ? Math.round((sum / active.length) * 100) : 0,
     };
   }, [projects, active]);
 
@@ -63,12 +69,11 @@ export default function Overview({ projects, onSelect }) {
     <>
       <div className="stat-row">
         <div className="stat-card"><div className="num">{stats.total}</div><div className="lbl">Active Projects</div></div>
-        <div className="stat-card"><div className="num">{stats.re}</div><div className="lbl">In Real Estate</div></div>
-        <div className="stat-card"><div className="num">{stats.pc}</div><div className="lbl">In Pre-Construction</div></div>
-        <div className="stat-card"><div className="num">{stats.co}</div><div className="lbl">In Construction/Ops</div></div>
-        <div className="stat-card"><div className="num">{stats.done}</div><div className="lbl">Open / Complete</div></div>
+        <div className="stat-card"><div className="num">{stats.re}%</div><div className="lbl">Real Estate</div></div>
+        <div className="stat-card"><div className="num">{stats.pc}%</div><div className="lbl">Pre-Construction</div></div>
+        <div className="stat-card"><div className="num">{stats.co}%</div><div className="lbl">Construction/Ops</div></div>
+        <div className="stat-card"><div className="num">{stats.started}</div><div className="lbl">With Progress Logged</div></div>
         <div className="stat-card"><div className="num">{stats.completed}</div><div className="lbl">Completed Stores</div></div>
-        <div className="stat-card"><div className="num">{stats.avg}%</div><div className="lbl">Avg. Completion</div></div>
       </div>
 
       <div className="controls">
@@ -154,9 +159,9 @@ function ProjectRow({ project, onClick }) {
           <div className="seg co" style={{ width: '33.33%', opacity: 0.28 + 0.72 * co }} />
         </div>
         <div className="rail-labels">
-          <span>Real Estate</span>
-          <span>Pre-Con</span>
-          <span>Construction</span>
+          <span>Real Estate <b>{pct(re)}%</b></span>
+          <span>Pre-Con <b>{pct(pc)}%</b></span>
+          <span>Construction <b>{pct(co)}%</b></span>
         </div>
       </div>
       <div className="pct-block">
