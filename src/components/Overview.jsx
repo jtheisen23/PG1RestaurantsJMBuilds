@@ -9,15 +9,24 @@ export default function Overview({ projects, onSelect }) {
   const [filter, setFilter] = useState('all');
   const [adding, setAdding] = useState(false);
 
+  // Completed stores are open and operating, so they're excluded from the
+  // pipeline stats -- leaving them in would drag the averages around.
+  const active = useMemo(() => projects.filter((p) => !p.completed), [projects]);
+
   const stats = useMemo(() => {
     const s = { re: 0, pc: 0, co: 0, done: 0 };
     let sum = 0;
-    projects.forEach((p) => {
+    active.forEach((p) => {
       s[currentStage(p).key]++;
       sum += overallProgress(p);
     });
-    return { ...s, total: projects.length, avg: projects.length ? Math.round((sum / projects.length) * 100) : 0 };
-  }, [projects]);
+    return {
+      ...s,
+      total: active.length,
+      completed: projects.length - active.length,
+      avg: active.length ? Math.round((sum / active.length) * 100) : 0,
+    };
+  }, [projects, active]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -30,6 +39,9 @@ export default function Overview({ projects, onSelect }) {
       return hay.includes(q);
     });
   }, [projects, search, filter]);
+
+  const activeRows = useMemo(() => filtered.filter((p) => !p.completed), [filtered]);
+  const completedRows = useMemo(() => filtered.filter((p) => p.completed), [filtered]);
 
   async function handleAdd() {
     setAdding(true);
@@ -50,11 +62,12 @@ export default function Overview({ projects, onSelect }) {
   return (
     <>
       <div className="stat-row">
-        <div className="stat-card"><div className="num">{stats.total}</div><div className="lbl">Total Projects</div></div>
+        <div className="stat-card"><div className="num">{stats.total}</div><div className="lbl">Active Projects</div></div>
         <div className="stat-card"><div className="num">{stats.re}</div><div className="lbl">In Real Estate</div></div>
         <div className="stat-card"><div className="num">{stats.pc}</div><div className="lbl">In Pre-Construction</div></div>
         <div className="stat-card"><div className="num">{stats.co}</div><div className="lbl">In Construction/Ops</div></div>
         <div className="stat-card"><div className="num">{stats.done}</div><div className="lbl">Open / Complete</div></div>
+        <div className="stat-card"><div className="num">{stats.completed}</div><div className="lbl">Completed Stores</div></div>
         <div className="stat-card"><div className="num">{stats.avg}%</div><div className="lbl">Avg. Completion</div></div>
       </div>
 
@@ -86,15 +99,31 @@ export default function Overview({ projects, onSelect }) {
       </div>
 
       <div className="plist">
-        {filtered.length ? (
-          filtered.map((p) => <ProjectRow key={p.id} project={p} onClick={() => onSelect(p.id)} />)
+        {activeRows.length ? (
+          activeRows.map((p) => <ProjectRow key={p.id} project={p} onClick={() => onSelect(p.id)} />)
         ) : (
-          <div className="empty-state">
-            <div className="big">No projects match</div>
-            Try a different search or filter.
-          </div>
+          !completedRows.length && (
+            <div className="empty-state">
+              <div className="big">No projects match</div>
+              Try a different search or filter.
+            </div>
+          )
         )}
       </div>
+
+      {completedRows.length > 0 && (
+        <>
+          <div className="section-head">
+            <h3>Completed Stores</h3>
+            <span className="count">{completedRows.length}</span>
+          </div>
+          <div className="plist completed">
+            {completedRows.map((p) => (
+              <ProjectRow key={p.id} project={p} onClick={() => onSelect(p.id)} />
+            ))}
+          </div>
+        </>
+      )}
 
       <div className="footer-note">
         Progress bars reflect checklist items only (text/date fields are not counted). Data is shared

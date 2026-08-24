@@ -3,7 +3,7 @@ import headers from '../data/headers.json';
 export const PHASES = ['Real Estate', 'Pre-Construction', 'Construction/Ops'];
 export const PHASE_KEY = { 'Real Estate': 're', 'Pre-Construction': 'pc', 'Construction/Ops': 'co' };
 export const PHASE_COLOR = {
-  'Real Estate': 'var(--forest)',
+  'Real Estate': 'var(--accent)',
   'Pre-Construction': 'var(--amber)',
   'Construction/Ops': 'var(--brick)',
 };

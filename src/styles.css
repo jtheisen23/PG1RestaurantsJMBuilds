@@ -264,3 +264,11 @@
 .you-tag{font-size:10px;background:var(--accent-light);color:var(--accent-dark);padding:2px 7px;border-radius:10px;margin-left:6px;font-weight:700;text-transform:uppercase;}
 
 .loading-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;color:var(--slate);font-family:'Barlow Condensed',sans-serif;font-size:20px;background:var(--paper);}
+
+/* ---------- COMPLETED STORES SECTION ---------- */
+.section-head{display:flex;align-items:center;gap:10px;margin:32px 0 12px;padding-top:22px;border-top:1px solid var(--line);}
+.section-head h3{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;margin:0;color:var(--ink);letter-spacing:0.02em;}
+.section-head .count{font-size:11px;font-weight:700;background:var(--accent-light);color:var(--accent-dark);border-radius:10px;padding:2px 9px;font-family:'Inter',sans-serif;}
+.plist.completed .prow{background:var(--paper);}
+.plist.completed .prow .pname{color:var(--slate);}
+.detail-actions{display:flex;gap:8px;align-items:center;flex-shrink:0;}

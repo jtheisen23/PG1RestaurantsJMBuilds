@@ -1,6 +1,10 @@
 /**
- * Backfills an `order` field on every projects/{id} document so the dashboard
- * lists projects in the intended order instead of by document ID.
+ * Syncs two pieces of list metadata onto every projects/{id} document:
+ *   - `order`     position from scripts/project-order.json
+ *   - `completed` true for names in scripts/completed-stores.json
+ *
+ * The dashboard lists projects by `order` and files completed ones into their
+ * own section, so both need to be set on the documents themselves.
  *
  * The seed script dropped the spreadsheet's row number, so Firestore had no
  * ordering to work from. This assigns each project its position from
@@ -42,10 +46,12 @@ initializeApp({ credential: cert(serviceAccount) });
 const db = getFirestore();
 
 const desired = JSON.parse(readFileSync(path.join(__dirname, 'project-order.json'), 'utf8'));
+const completedNames = JSON.parse(readFileSync(path.join(__dirname, 'completed-stores.json'), 'utf8'));
 const norm = (s) => (s || '').trim().toLowerCase().replace(/\s+/g, ' ');
 
 const position = new Map();
 desired.forEach((name, i) => position.set(norm(name), i));
+const completedSet = new Set(completedNames.map(norm));
 
 async function main() {
   const snap = await db.collection('projects').get();
@@ -58,7 +64,15 @@ async function main() {
   snap.forEach((doc) => {
     const d = doc.data();
     const pos = position.get(norm(d.name));
-    const entry = { id: doc.id, brand: d.brand, name: d.name, current: d.order, createdAt: d.createdAt };
+    const entry = {
+      id: doc.id,
+      brand: d.brand,
+      name: d.name,
+      current: d.order,
+      currentCompleted: d.completed === true,
+      completed: completedSet.has(norm(d.name)),
+      createdAt: d.createdAt,
+    };
     if (pos === undefined) extra.push(entry);
     else listed.push({ ...entry, order: pos });
   });
@@ -84,11 +98,16 @@ async function main() {
   }
 
   const all = [...listed, ...extra].sort((a, b) => a.order - b.order);
-  const changing = all.filter((e) => e.current !== e.order);
-  console.log(`Documents whose order changes: ${changing.length} of ${all.length}\n`);
+  const changing = all.filter((e) => e.current !== e.order || e.currentCompleted !== e.completed);
+  console.log(`Documents changing: ${changing.length} of ${all.length}`);
+  console.log(`Marked completed: ${all.filter((e) => e.completed).length}\n`);
 
   console.log('Resulting order:');
-  all.forEach((e) => console.log(`  ${String(e.order).padStart(2)}  ${e.name || '(no name)'} ${e.name ? '' : `[${e.brand}]`}`.trimEnd()));
+  all.forEach((e) =>
+    console.log(
+      `  ${String(e.order).padStart(2)}  ${e.name || '(no name)'}${e.name ? '' : ` [${e.brand}]`}${e.completed ? '   <- completed' : ''}`
+    )
+  );
 
   if (!APPLY) {
     console.log('\nDRY RUN - nothing written. Re-run with --apply to save.');
@@ -99,11 +118,11 @@ async function main() {
   for (let i = 0; i < all.length; i += batchSize) {
     const batch = db.batch();
     all.slice(i, i + batchSize).forEach((e) => {
-      batch.update(db.collection('projects').doc(e.id), { order: e.order });
+      batch.update(db.collection('projects').doc(e.id), { order: e.order, completed: e.completed });
     });
     await batch.commit();
   }
-  console.log(`\nWrote order to ${all.length} documents.`);
+  console.log(`\nWrote order and completed status to ${all.length} documents.`);
   process.exit(0);
 }
 

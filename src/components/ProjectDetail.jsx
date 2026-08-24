@@ -90,11 +90,21 @@ export default function ProjectDetail({ project, onBack }) {
               onBlur={() => commitMeta({ name })}
             />
           </div>
-          {isAdmin && (
-            <button className="btn danger small" onClick={handleDelete}>
-              Delete Project
-            </button>
-          )}
+          <div className="detail-actions">
+            {canEdit && (
+              <button
+                className="btn ghost small"
+                onClick={() => commitMeta({ completed: !project.completed })}
+              >
+                {project.completed ? 'Return to Pipeline' : 'Mark as Completed'}
+              </button>
+            )}
+            {isAdmin && (
+              <button className="btn danger small" onClick={handleDelete}>
+                Delete Project
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="rails3">
