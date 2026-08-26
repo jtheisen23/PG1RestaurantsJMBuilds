@@ -12,33 +12,79 @@ Days with no activity send no email, so quiet weekends stay silent.
 
 Two things, both set up in a browser:
 
-1. A **Gmail app password** (or any SMTP mailbox) to send from.
+1. A **mailbox to send from**, with an app password — ideally a Google
+   Workspace address on `pg1restaurants.com`.
 2. Your **Firebase service account key** — the same `serviceAccountKey.json`
    you downloaded for the seed script.
 
----
-
-## 1. Create a Gmail app password
-
-An app password is a 16-character code that lets a script send mail from your
-account without using your real password. Gmail requires 2-Step Verification
-before it will issue one.
-
-1. Go to <https://myaccount.google.com/security>
-2. Turn on **2-Step Verification** if it isn't already.
-3. Go to <https://myaccount.google.com/apppasswords>
-4. Name it something like `PG1 Digest` and click **Create**.
-5. Copy the 16-character code. Google shows it once.
-
-Treat this like a password — it can send mail as you. If it ever leaks, delete
-it from that same page and make a new one.
-
-> Sending from a shared mailbox instead of a personal one is worth considering,
-> so the digest doesn't appear to come from you personally.
+The recipient, `development@pg1restaurants.com`, needs nothing set up beyond
+being willing to accept the mail (step 3).
 
 ---
 
-## 2. Add the repository secrets
+## 1. Pick the sending mailbox
+
+The digest goes **to** `development@pg1restaurants.com`, the Google Group.
+The group itself needs no password — it only receives.
+
+What needs credentials is the mailbox the digest is sent **from**, because the
+script has to authenticate somewhere in order to send.
+
+Use a Google Workspace address on `pg1restaurants.com`, not a personal Gmail:
+
+- the digest arrives from the company domain rather than someone's personal
+  account
+- a Google Group that only accepts internal mail will accept it without extra
+  configuration
+- it survives any one person leaving
+
+A dedicated mailbox such as `noreply@pg1restaurants.com` is ideal. Your own
+Workspace address works too.
+
+## 2. Create an app password for it
+
+An app password is a 16-character code that lets a script send mail without
+using the real account password. 2-Step Verification must be on first.
+
+1. Sign in as the sending account.
+2. <https://myaccount.google.com/security> — turn on **2-Step Verification**.
+3. <https://myaccount.google.com/apppasswords>
+4. Name it `PG1 Digest`, click **Create**, copy the 16-character code.
+
+Google shows it once. Treat it like a password — it can send mail as that
+account. If it leaks, delete it from that page and generate another.
+
+> **If that page won't load or says app passwords aren't available**, your
+> Workspace administrator has disabled them. That's a common policy. Options,
+> in order of ease:
+>
+> 1. Ask the admin to allow app passwords for that one account.
+> 2. Use the **Workspace SMTP relay** (`smtp-relay.gmail.com`), which an admin
+>    configures to accept mail from your project without per-user credentials.
+>    Admin console → Apps → Google Workspace → Gmail → Routing → SMTP relay
+>    service. Then set `SMTP_HOST` to `smtp-relay.gmail.com` and `SMTP_PORT`
+>    to `587`.
+> 3. Use a transactional email provider (Resend, SendGrid, Postmark) with
+>    `pg1restaurants.com` verified. Free tiers cover this volume easily.
+>
+> All three end up as the same four SMTP settings below.
+
+## 3. Let the group accept the mail
+
+A Google Group can be configured to reject mail from outside its membership.
+If the digest bounces, this is why.
+
+Google Groups → `development@pg1restaurants.com` → **Settings** → **Posting
+policies** → **Who can post**. Either:
+
+- add the sending address as a member of the group, or
+- set posting to allow anyone in the organization
+
+Sending from a `pg1restaurants.com` address usually satisfies this already.
+
+---
+
+## 4. Add the repository secrets
 
 Go to the repository on github.com → **Settings** → **Secrets and variables**
 → **Actions** → **New repository secret**. Add these five:
@@ -46,10 +92,10 @@ Go to the repository on github.com → **Settings** → **Secrets and variables*
 | Secret | Value |
 |---|---|
 | `FIREBASE_SERVICE_ACCOUNT` | The entire contents of `scripts/serviceAccountKey.json`, pasted in — braces and all |
-| `SMTP_HOST` | `smtp.gmail.com` |
-| `SMTP_USER` | The Gmail address sending the digest |
-| `SMTP_PASS` | The 16-character app password from step 1 |
-| `DIGEST_TO` | Who receives it. Comma-separated for several: `a@x.com, b@x.com` |
+| `SMTP_HOST` | `smtp.gmail.com` (or `smtp-relay.gmail.com` for the Workspace relay) |
+| `SMTP_USER` | The Workspace address sending the digest |
+| `SMTP_PASS` | The 16-character app password from step 2 |
+| `DIGEST_TO` | `development@pg1restaurants.com`. Comma-separated if you ever want more |
 
 Secrets are write-only — GitHub will never display them again, and they don't
 appear in workflow logs.
@@ -61,14 +107,14 @@ you want to change something.
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `SMTP_PORT` | `465` | Mail server port |
+| `SMTP_PORT` | `465` | Mail server port. Use `587` for the Workspace SMTP relay |
 | `DIGEST_FROM` | same as `SMTP_USER` | From address |
 | `DIGEST_TZ` | `America/New_York` | Which timezone decides where a day starts and ends |
 | `DIGEST_APP_URL` | the hosted dashboard | Link in the email footer |
 
 ---
 
-## 3. Test it before trusting it
+## 5. Test it before trusting it
 
 On github.com: **Actions** tab → **Daily activity digest** → **Run workflow**.
 
@@ -90,7 +136,7 @@ should arrive within a minute.
 
 ---
 
-## 4. Leave it running
+## 6. Leave it running
 
 Once the manual test works, the schedule takes over. No further action.
 
@@ -138,9 +184,11 @@ you used your normal Google password. Regenerate it and re-paste, no spaces.
 **"FIREBASE_SERVICE_ACCOUNT is set but is not valid JSON"** — the paste was
 truncated. It must be the whole file, starting `{` and ending `}`.
 
-**The email never arrives but the log says "Sent"** — check spam. Mail from a
-personal Gmail to a distribution list often lands there the first time; mark it
-"not spam" once and it'll behave.
+**The email never arrives but the log says "Sent"** — two likely causes.
+Check spam first; mail to a group often lands there once, and marking it "not
+spam" fixes it for good. If it isn't there, the group rejected it — see step 3
+about posting policies. A rejection usually bounces back to the sending
+mailbox, so check that inbox for a delivery failure notice naming the reason.
 
 **Nothing runs on schedule** — GitHub disables scheduled workflows in
 repositories with no activity for 60 days. Push a commit, or run it manually,
