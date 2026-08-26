@@ -10,6 +10,7 @@ import {
   serverTimestamp,
   query,
   orderBy,
+  limit,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -91,6 +92,46 @@ export function useConstructionProgress(projectId) {
   return { data, loading };
 }
 
+// ---------- activity log ----------
+// Every checklist toggle appends a row to `activity`, giving a day-by-day
+// history of who completed what. This is written from the client rather than
+// a Cloud Function so it works on Firebase's free plan; all edits go through
+// this app, so nothing is missed in practice.
+//
+// A failed log write must never break the edit that triggered it, so errors
+// are swallowed deliberately.
+async function logActivity(entry) {
+  try {
+    await addDoc(collection(db, 'activity'), { ...entry, at: serverTimestamp() });
+  } catch (err) {
+    console.error('Activity log write failed (the edit itself was saved):', err);
+  }
+}
+
+// Most recent activity first. Capped because this collection only grows.
+export function useActivity(max = 500) {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const q = query(collection(db, 'activity'), orderBy('at', 'desc'), limit(max));
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        setData(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+        setLoading(false);
+      },
+      (err) => {
+        console.error('Failed to load activity:', err);
+        setLoading(false);
+      }
+    );
+    return unsub;
+  }, [max]);
+
+  return { data, loading };
+}
+
 // ---------- write helpers ----------
 // Every write stamps updatedAt/updatedBy so you can see who touched a
 // record last (shown in the UI as a small "last edited by" note).
@@ -105,13 +146,27 @@ export async function createProject(project, user) {
   });
 }
 
-export async function updateProjectField(projectId, field, value, user) {
+// `meta` ({ projectName, label, phase }) is supplied by the caller, which has
+// the header definitions. Only checkbox toggles are logged -- logging every
+// text edit would bury the checklist history in noise.
+export async function updateProjectField(projectId, field, value, user, meta) {
   const ref = doc(db, 'projects', projectId);
-  return updateDoc(ref, {
+  const result = await updateDoc(ref, {
     [`fields.${field}`]: value,
     updatedAt: serverTimestamp(),
     updatedBy: user?.email || 'unknown',
   });
+  if (typeof value === 'boolean' && meta) {
+    await logActivity({
+      by: user?.email || 'unknown',
+      projectId,
+      projectName: meta.projectName || '',
+      phase: meta.phase || '',
+      item: meta.label || field,
+      done: value,
+    });
+  }
+  return result;
 }
 
 export async function updateProjectMeta(projectId, patch, user) {
@@ -152,13 +207,24 @@ export async function deleteTimelineTask(taskId) {
   return deleteDoc(doc(db, 'timeline', taskId));
 }
 
-export async function setConstructionCheck(projectId, taskId, checked, user) {
+export async function setConstructionCheck(projectId, taskId, checked, user, meta) {
   const ref = doc(db, 'constructionProgress', projectId);
-  return setDoc(
+  const result = await setDoc(
     ref,
     { [taskId]: checked, updatedAt: serverTimestamp(), updatedBy: user?.email || 'unknown' },
     { merge: true }
   );
+  if (meta) {
+    await logActivity({
+      by: user?.email || 'unknown',
+      projectId,
+      projectName: meta.projectName || '',
+      phase: meta.week || 'Construction Playbook',
+      item: meta.item || taskId,
+      done: checked,
+    });
+  }
+  return result;
 }
 
 export async function setUserRole(uid, role) {

@@ -273,3 +273,22 @@
 .plist.completed .prow{background:var(--paper);}
 .plist.completed .prow .pname{color:var(--slate);}
 .detail-actions{display:flex;gap:8px;align-items:center;flex-shrink:0;}
+
+/* ---------- ACTIVITY LOG ---------- */
+.log-select{padding:8px 11px;border-radius:8px;border:1px solid var(--line-strong);font-family:'Inter',sans-serif;font-size:13.5px;background:#fff;color:var(--ink);}
+.log-count{margin-left:auto;font-size:11.5px;color:var(--slate);font-family:'JetBrains Mono',monospace;}
+.log-day{margin-bottom:8px;}
+.log-day .section-head{margin:24px 0 10px;}
+.log-row{display:grid;grid-template-columns:62px 22px 1fr auto;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px 14px;margin-bottom:6px;}
+.log-time{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--slate);white-space:nowrap;}
+.log-mark{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.log-mark.done{background:var(--accent-light);color:var(--accent-dark);}
+.log-mark.undone{background:#eef1f5;color:var(--slate);}
+.log-item{font-size:13.5px;color:var(--ink);line-height:1.35;}
+.log-row.undone .log-item{color:var(--slate);}
+.log-meta{font-size:11.5px;color:var(--slate);margin-top:2px;}
+.log-who{font-size:11.5px;color:var(--slate);white-space:nowrap;text-align:right;}
+@media (max-width:760px){
+  .log-row{grid-template-columns:52px 22px 1fr;gap:9px;}
+  .log-who{grid-column:3;text-align:left;margin-top:2px;}
+}

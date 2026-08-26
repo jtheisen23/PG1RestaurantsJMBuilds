@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  HEADERS,
   PHASES,
   PHASE_COLOR,
   headersByPhase,
@@ -30,7 +31,12 @@ export default function ProjectDetail({ project, onBack }) {
 
   async function toggleField(letter, checked) {
     if (!canEdit) return;
-    await updateProjectField(project.id, letter, checked, user);
+    const header = HEADERS.find((h) => h.letter === letter);
+    await updateProjectField(project.id, letter, checked, user, {
+      projectName: project.name || '',
+      label: header?.label || letter,
+      phase: header?.phase || '',
+    });
   }
 
   async function commitText(letter, value) {

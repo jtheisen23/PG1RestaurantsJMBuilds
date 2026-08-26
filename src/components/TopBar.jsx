@@ -6,6 +6,7 @@ const TABS = [
   ['overview', 'Projects'],
   ['contacts', 'Contacts'],
   ['construction', 'Construction Playbook'],
+  ['activity', 'Activity'],
 ];
 
 export default function TopBar({ view, onNav, saving }) {
