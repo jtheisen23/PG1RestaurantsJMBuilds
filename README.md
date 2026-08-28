@@ -155,6 +155,8 @@ firestore.rules            Server-enforced role permissions
 scripts/seed.js            One-time data import script
 scripts/backfill-order.js  Syncs project order + completed flags from JSON
 scripts/daily-digest.js    Emails the daily activity summary
+scripts/remove-placeholder-projects.js
+                           Deletes the imported spreadsheet divider rows
 .github/workflows/         Scheduled digest job
 ```
 

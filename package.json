@@ -11,7 +11,8 @@
     "digest": "node scripts/daily-digest.js",
     "digest:dry": "node scripts/daily-digest.js --dry-run",
     "seed": "node scripts/seed.js",
-    "sync:order": "node scripts/backfill-order.js"
+    "sync:order": "node scripts/backfill-order.js",
+    "cleanup:placeholders": "node scripts/remove-placeholder-projects.js"
   },
   "dependencies": {
     "firebase": "^12.18.0",
