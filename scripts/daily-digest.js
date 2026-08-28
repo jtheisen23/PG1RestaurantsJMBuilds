@@ -142,11 +142,11 @@ const escapeHtml = (s) =>
 const timeIn = (date) =>
   date.toLocaleTimeString('en-US', { timeZone: TZ, hour: 'numeric', minute: '2-digit' });
 
-function summarise(entries) {
+function summarise(entries, nameById) {
   const byProject = new Map();
   const byPerson = new Map();
   entries.forEach((e) => {
-    const key = e.projectName || 'Unknown project';
+    const key = e.projectName || nameById.get(e.projectId) || 'Unknown project';
     if (!byProject.has(key)) byProject.set(key, []);
     byProject.get(key).push(e);
     if (e.done) byPerson.set(e.by, (byPerson.get(e.by) || 0) + 1);
@@ -265,7 +265,13 @@ async function main() {
     process.exit(0);
   }
 
-  const grouped = summarise(entries);
+  // Recover names for entries written before empty names fell back to brand.
+  const projectSnap = await db.collection('projects').get();
+  const nameById = new Map(
+    projectSnap.docs.map((d) => [d.id, d.data().name || d.data().brand || ''])
+  );
+
+  const grouped = summarise(entries, nameById);
   const subject = entries.length
     ? `PG1 Pipeline - ${completed} item${completed === 1 ? '' : 's'} completed, ${dayHeading}`
     : `PG1 Pipeline - no activity, ${dayHeading}`;
