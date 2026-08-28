@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import Logo from '../components/Logo';
 
 export default function Login() {
   const { login } = useAuth();
@@ -24,7 +25,7 @@ export default function Login() {
   return (
     <div className="center-screen">
       <form className="login-card" onSubmit={handleSubmit}>
-        <div className="sq">JM</div>
+        <Logo />
         <h2>Development Pipeline</h2>
         <p className="sub">Sign in to view and track your team's projects.</p>
 

@@ -1,0 +1,71 @@
+name: Daily activity digest
+
+# Emails a summary of yesterday's completed checklist items to the
+# distribution list. Runs on GitHub's servers, so no Cloud Function and no
+# Firebase Blaze plan is needed.
+#
+# Required repository secrets (Settings -> Secrets and variables -> Actions):
+#   FIREBASE_SERVICE_ACCOUNT  the whole service account JSON file, pasted in
+#   SMTP_HOST                 e.g. smtp.gmail.com
+#   SMTP_USER                 the sending mailbox
+#   SMTP_PASS                 that mailbox's app password
+#   DIGEST_TO                 recipients, comma-separated
+#
+# Optional repository variables (same page, "Variables" tab):
+#   SMTP_PORT                 defaults to 465
+#   DIGEST_FROM               defaults to SMTP_USER
+#   DIGEST_TZ                 defaults to America/New_York
+#   DIGEST_APP_URL            defaults to the hosted dashboard
+
+on:
+  schedule:
+    # 11:00 UTC daily = 7am Eastern in summer, 6am in winter. GitHub cron
+    # has no timezone support, so the send time shifts by an hour across
+    # daylight saving; the digest window itself stays correct because the
+    # script works in DIGEST_TZ.
+    #
+    # Runs every day rather than weekdays only: days with no activity send
+    # no email, so quiet weekends stay silent on their own, and work done
+    # on a Saturday still gets reported on Sunday.
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+    inputs:
+      days_ago:
+        description: 'Which day to report (0 = today so far, 1 = yesterday)'
+        required: false
+        default: '1'
+      dry_run:
+        description: 'Preview only - print the email without sending it'
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Send digest
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          DIGEST_TO: ${{ secrets.DIGEST_TO }}
+          SMTP_PORT: ${{ vars.SMTP_PORT }}
+          DIGEST_FROM: ${{ vars.DIGEST_FROM }}
+          DIGEST_TZ: ${{ vars.DIGEST_TZ }}
+          DIGEST_APP_URL: ${{ vars.DIGEST_APP_URL }}
+        run: |
+          node scripts/daily-digest.js \
+            --days-ago=${{ github.event.inputs.days_ago || 1 }} \
+            ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}

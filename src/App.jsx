@@ -7,6 +7,7 @@ import ProjectDetail from './components/ProjectDetail';
 import Contacts from './components/Contacts';
 import ConstructionPlaybook from './components/ConstructionPlaybook';
 import AdminPanel from './components/AdminPanel';
+import Activity from './components/Activity';
 import { useProjects, useContacts, useTimeline } from './lib/firestore';
 
 export default function App() {
@@ -57,6 +58,7 @@ export default function App() {
         )}
         {view === 'contacts' && <Contacts contacts={contacts} />}
         {view === 'construction' && <ConstructionPlaybook projects={projects} timeline={timeline} />}
+        {view === 'activity' && <Activity projects={projects} />}
         {view === 'admin' && isAdmin && <AdminPanel />}
       </main>
     </div>

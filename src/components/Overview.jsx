@@ -9,15 +9,30 @@ export default function Overview({ projects, onSelect }) {
   const [filter, setFilter] = useState('all');
   const [adding, setAdding] = useState(false);
 
+  // Completed stores are open and operating, so they're excluded from the
+  // pipeline stats -- leaving them in would drag the averages around.
+  const active = useMemo(() => projects.filter((p) => !p.completed), [projects]);
+
   const stats = useMemo(() => {
-    const s = { re: 0, pc: 0, co: 0, done: 0 };
-    let sum = 0;
-    projects.forEach((p) => {
-      s[currentStage(p).key]++;
-      sum += overallProgress(p);
+    // Average completion per phase across active projects. Head-counts by
+    // "current stage" were misleading: a project sits in one bucket only, so
+    // work already done in later phases stayed invisible.
+    const totals = { 're': 0, 'pc': 0, 'co': 0 };
+    active.forEach((p) => {
+      totals.re += phaseProgress(p, 'Real Estate');
+      totals.pc += phaseProgress(p, 'Pre-Construction');
+      totals.co += phaseProgress(p, 'Construction/Ops');
     });
-    return { ...s, total: projects.length, avg: projects.length ? Math.round((sum / projects.length) * 100) : 0 };
-  }, [projects]);
+    const mean = (n) => (active.length ? Math.round((n / active.length) * 100) : 0);
+    return {
+      re: mean(totals.re),
+      pc: mean(totals.pc),
+      co: mean(totals.co),
+      started: active.filter((p) => overallProgress(p) > 0).length,
+      total: active.length,
+      completed: projects.length - active.length,
+    };
+  }, [projects, active]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -31,10 +46,19 @@ export default function Overview({ projects, onSelect }) {
     });
   }, [projects, search, filter]);
 
+  const activeRows = useMemo(() => filtered.filter((p) => !p.completed), [filtered]);
+  const completedRows = useMemo(() => filtered.filter((p) => p.completed), [filtered]);
+
   async function handleAdd() {
     setAdding(true);
     try {
-      const ref = await createProject({ brand: 'Jersey Mikes', name: 'New Location', fields: {} }, user);
+      // Place new projects after every existing one.
+      const nextOrder =
+        projects.reduce((max, p) => (typeof p.order === 'number' && p.order > max ? p.order : max), -1) + 1;
+      const ref = await createProject(
+        { brand: 'Jersey Mikes', name: 'New Location', fields: {}, order: nextOrder },
+        user
+      );
       onSelect(ref.id);
     } finally {
       setAdding(false);
@@ -44,12 +68,12 @@ export default function Overview({ projects, onSelect }) {
   return (
     <>
       <div className="stat-row">
-        <div className="stat-card"><div className="num">{stats.total}</div><div className="lbl">Total Projects</div></div>
-        <div className="stat-card"><div className="num">{stats.re}</div><div className="lbl">In Real Estate</div></div>
-        <div className="stat-card"><div className="num">{stats.pc}</div><div className="lbl">In Pre-Construction</div></div>
-        <div className="stat-card"><div className="num">{stats.co}</div><div className="lbl">In Construction/Ops</div></div>
-        <div className="stat-card"><div className="num">{stats.done}</div><div className="lbl">Open / Complete</div></div>
-        <div className="stat-card"><div className="num">{stats.avg}%</div><div className="lbl">Avg. Completion</div></div>
+        <div className="stat-card"><div className="num">{stats.total}</div><div className="lbl">Active Projects</div></div>
+        <div className="stat-card"><div className="num">{stats.re}%</div><div className="lbl">Real Estate</div></div>
+        <div className="stat-card"><div className="num">{stats.pc}%</div><div className="lbl">Pre-Construction</div></div>
+        <div className="stat-card"><div className="num">{stats.co}%</div><div className="lbl">Construction/Ops</div></div>
+        <div className="stat-card"><div className="num">{stats.started}</div><div className="lbl">With Progress Logged</div></div>
+        <div className="stat-card"><div className="num">{stats.completed}</div><div className="lbl">Completed Stores</div></div>
       </div>
 
       <div className="controls">
@@ -80,15 +104,31 @@ export default function Overview({ projects, onSelect }) {
       </div>
 
       <div className="plist">
-        {filtered.length ? (
-          filtered.map((p) => <ProjectRow key={p.id} project={p} onClick={() => onSelect(p.id)} />)
+        {activeRows.length ? (
+          activeRows.map((p) => <ProjectRow key={p.id} project={p} onClick={() => onSelect(p.id)} />)
         ) : (
-          <div className="empty-state">
-            <div className="big">No projects match</div>
-            Try a different search or filter.
-          </div>
+          !completedRows.length && (
+            <div className="empty-state">
+              <div className="big">No projects match</div>
+              Try a different search or filter.
+            </div>
+          )
         )}
       </div>
+
+      {completedRows.length > 0 && (
+        <>
+          <div className="section-head">
+            <h3>Completed Stores</h3>
+            <span className="count">{completedRows.length}</span>
+          </div>
+          <div className="plist completed">
+            {completedRows.map((p) => (
+              <ProjectRow key={p.id} project={p} onClick={() => onSelect(p.id)} />
+            ))}
+          </div>
+        </>
+      )}
 
       <div className="footer-note">
         Progress bars reflect checklist items only (text/date fields are not counted). Data is shared
@@ -119,9 +159,9 @@ function ProjectRow({ project, onClick }) {
           <div className="seg co" style={{ width: '33.33%', opacity: 0.28 + 0.72 * co }} />
         </div>
         <div className="rail-labels">
-          <span>Real Estate</span>
-          <span>Pre-Con</span>
-          <span>Construction</span>
+          <span>Real Estate <b>{pct(re)}%</b></span>
+          <span>Pre-Con <b>{pct(pc)}%</b></span>
+          <span>Construction <b>{pct(co)}%</b></span>
         </div>
       </div>
       <div className="pct-block">

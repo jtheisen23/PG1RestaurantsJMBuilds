@@ -28,7 +28,13 @@ export default function ConstructionPlaybook({ projects, timeline }) {
 
   async function handleCheck(taskId, checked) {
     if (!canEdit || !effectiveProjectId) return;
-    await setConstructionCheck(effectiveProjectId, taskId, checked, user);
+    const task = timeline.find((t) => t.id === taskId);
+    const proj = projects.find((p) => p.id === effectiveProjectId);
+    await setConstructionCheck(effectiveProjectId, taskId, checked, user, {
+      projectName: proj?.name || '',
+      item: task?.detail || taskId,
+      week: task?.week || 'Construction Playbook',
+    });
   }
 
   async function handleAddTask() {

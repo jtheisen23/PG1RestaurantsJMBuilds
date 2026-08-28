@@ -131,6 +131,14 @@ added in the Firebase console can log in.
 
 ---
 
+## Optional: daily email digest
+
+A GitHub Actions workflow can email a summary of each day's completed
+checklist items to a distribution list. It needs no Cloud Function and no
+Blaze plan. Setup is in [docs/DAILY-DIGEST.md](docs/DAILY-DIGEST.md).
+
+---
+
 ## Project structure
 
 ```
@@ -145,6 +153,9 @@ src/
   pages/Login.jsx          Sign-in screen
 firestore.rules            Server-enforced role permissions
 scripts/seed.js            One-time data import script
+scripts/backfill-order.js  Syncs project order + completed flags from JSON
+scripts/daily-digest.js    Emails the daily activity summary
+.github/workflows/         Scheduled digest job
 ```
 
 ## How data is structured in Firestore

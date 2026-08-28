@@ -56,5 +56,17 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if isEditor();
     }
+
+    // Activity log: an append-only record of checklist items completed.
+    // Anyone signed in can read it. Editors can add entries, but nobody can
+    // change or remove one -- an audit trail that can be rewritten is not an
+    // audit trail. Entries must be stamped with the author's own email so a
+    // user cannot attribute their edit to someone else.
+    match /activity/{entryId} {
+      allow read: if isSignedIn();
+      allow create: if isEditor()
+                    && request.resource.data.by == request.auth.token.email;
+      allow update, delete: if false;
+    }
   }
 }
