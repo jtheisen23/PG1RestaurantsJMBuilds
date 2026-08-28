@@ -9,7 +9,7 @@
  * Usage:
  *   node scripts/daily-digest.js --dry-run     print the email, send nothing
  *   node scripts/daily-digest.js               send it
- *   node scripts/daily-digest.js --days-ago=0  today so far (default 1)
+ *   node scripts/daily-digest.js --days-ago=1  yesterday (default is 0, today)
  *
  * Configuration, all via environment variables:
  *   DIGEST_TO                 recipients, comma-separated (required to send)
@@ -35,7 +35,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const DRY_RUN = process.argv.includes('--dry-run');
 const daysAgoArg = process.argv.find((a) => a.startsWith('--days-ago='));
-const DAYS_AGO = daysAgoArg ? Number(daysAgoArg.split('=')[1]) : 1;
+const DAYS_AGO = daysAgoArg ? Number(daysAgoArg.split('=')[1]) : 0;
 const TZ = process.env.DIGEST_TZ || 'America/New_York';
 const APP_URL = process.env.DIGEST_APP_URL || 'https://pg1-jm-builds.web.app';
 

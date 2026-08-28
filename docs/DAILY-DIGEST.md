@@ -1,8 +1,8 @@
 # Daily activity digest
 
 Emails a summary of each day's completed checklist items to a distribution
-list. Runs on GitHub Actions, so it needs no Cloud Function and no Firebase
-Blaze plan — the free tier covers it.
+list, at 10pm Eastern that same evening. Runs on GitHub Actions, so it needs no
+Cloud Function and no Firebase Blaze plan — the free tier covers it.
 
 Days with no activity send no email, so quiet weekends stay silent.
 
@@ -120,7 +120,7 @@ On github.com: **Actions** tab → **Daily activity digest** → **Run workflow*
 
 Start with a preview that sends nothing:
 
-- **Which day to report:** `1`
+- **Which day to report:** `0` (today — the default, and what the schedule reports)
 - **Preview only:** ✅ checked
 
 Click **Run workflow**, then open the run and read the log. You'll see the
@@ -131,8 +131,8 @@ If that looks right, run it again with **Preview only** unchecked. The email
 should arrive within a minute.
 
 > If the day you picked had no activity, the log says so and stops without
-> sending. Try `--days-ago=0` for today, or tick a checkbox in the dashboard
-> first so there's something to report.
+> sending. Tick a checkbox in the dashboard first so there's something to
+> report, or try `1` for yesterday.
 
 ---
 
@@ -140,14 +140,23 @@ should arrive within a minute.
 
 Once the manual test works, the schedule takes over. No further action.
 
-It runs at **11:00 UTC every day** — 7am Eastern in summer, 6am in winter.
-GitHub's scheduler has no timezone support, so the send time shifts by an hour
-across daylight saving. The *contents* stay correct either way: the script
-works out day boundaries in `DIGEST_TZ`, independently of when it runs.
+It runs at **02:00 UTC every day** — 10pm Eastern in summer, 9pm in winter —
+and reports that same day. GitHub's scheduler has no timezone support, so the
+send time shifts by an hour across daylight saving. The *contents* stay correct
+either way: the script works out day boundaries in `DIGEST_TZ`, independently
+of when it runs.
+
+**Why 10pm and not 11pm.** Reporting the current day means the run has to land
+before midnight Eastern. Past midnight, "today" is the next, empty day, and
+that day's work never gets emailed at all. GitHub delays scheduled runs under
+load — usually minutes, occasionally much longer — so 10pm leaves two hours of
+slack. Moving it later eats into that margin.
 
 To change the time, edit the `cron` line in
 `.github/workflows/daily-digest.yml`. The five fields are
-`minute hour day-of-month month day-of-week`, always in UTC.
+`minute hour day-of-month month day-of-week`, always in UTC. Eastern is UTC-4
+in summer and UTC-5 in winter, so an evening time crosses into the next UTC
+day: 10pm ET is `0 2 * * *`.
 
 ---
 
@@ -156,11 +165,11 @@ To change the time, edit the `cron` line in
 Useful for testing changes to the email itself.
 
 ```bash
-# preview yesterday, send nothing (needs scripts/serviceAccountKey.json)
+# preview today, send nothing (needs scripts/serviceAccountKey.json)
 npm run digest:dry
 
-# today so far
-node scripts/daily-digest.js --dry-run --days-ago=0
+# yesterday instead
+node scripts/daily-digest.js --dry-run --days-ago=1
 
 # actually send
 DIGEST_TO=you@example.com SMTP_HOST=smtp.gmail.com \

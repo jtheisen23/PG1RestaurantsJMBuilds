@@ -1,7 +1,7 @@
 name: Daily activity digest
 
-# Emails a summary of yesterday's completed checklist items to the
-# distribution list. Runs on GitHub's servers, so no Cloud Function and no
+# Emails a summary of the day's completed checklist items to the
+# distribution list, at the end of that day. Runs on GitHub's servers, so no Cloud Function and no
 # Firebase Blaze plan is needed.
 #
 # Required repository secrets (Settings -> Secrets and variables -> Actions):
@@ -19,21 +19,26 @@ name: Daily activity digest
 
 on:
   schedule:
-    # 11:00 UTC daily = 7am Eastern in summer, 6am in winter. GitHub cron
-    # has no timezone support, so the send time shifts by an hour across
-    # daylight saving; the digest window itself stays correct because the
-    # script works in DIGEST_TZ.
+    # 02:00 UTC = 10pm Eastern in summer, 9pm in winter. GitHub cron has no
+    # timezone support, so the send time shifts by an hour across daylight
+    # saving; the digest window itself stays correct because the script
+    # works in DIGEST_TZ.
+    #
+    # Reporting the current day means the run has to land before midnight
+    # Eastern: past midnight, "today" becomes the next, empty day and the
+    # day's work is never emailed. GitHub can delay a scheduled run under
+    # load, so 10pm leaves two hours of slack rather than cutting it fine.
     #
     # Runs every day rather than weekdays only: days with no activity send
     # no email, so quiet weekends stay silent on their own, and work done
-    # on a Saturday still gets reported on Sunday.
-    - cron: '0 11 * * *'
+    # on a Saturday still gets reported that evening.
+    - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
       days_ago:
-        description: 'Which day to report (0 = today so far, 1 = yesterday)'
+        description: 'Which day to report (0 = today, 1 = yesterday)'
         required: false
-        default: '1'
+        default: '0'
       dry_run:
         description: 'Preview only - print the email without sending it'
         type: boolean
@@ -67,5 +72,5 @@ jobs:
           DIGEST_APP_URL: ${{ vars.DIGEST_APP_URL }}
         run: |
           node scripts/daily-digest.js \
-            --days-ago=${{ github.event.inputs.days_ago || 1 }} \
+            --days-ago=${{ github.event.inputs.days_ago || 0 }} \
             ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
