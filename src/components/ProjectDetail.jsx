@@ -33,7 +33,7 @@ export default function ProjectDetail({ project, onBack }) {
     if (!canEdit) return;
     const header = HEADERS.find((h) => h.letter === letter);
     await updateProjectField(project.id, letter, checked, user, {
-      projectName: project.name || '',
+      projectName: project.name || project.brand || '',
       label: header?.label || letter,
       phase: header?.phase || '',
     });

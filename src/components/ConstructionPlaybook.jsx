@@ -31,7 +31,7 @@ export default function ConstructionPlaybook({ projects, timeline }) {
     const task = timeline.find((t) => t.id === taskId);
     const proj = projects.find((p) => p.id === effectiveProjectId);
     await setConstructionCheck(effectiveProjectId, taskId, checked, user, {
-      projectName: proj?.name || '',
+      projectName: proj?.name || proj?.brand || '',
       item: task?.detail || taskId,
       week: task?.week || 'Construction Playbook',
     });

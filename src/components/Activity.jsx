@@ -37,6 +37,15 @@ export default function Activity({ projects }) {
     [entries]
   );
 
+  // Entries store the project name at write time so history survives a rename
+  // or deletion. Older entries were written before empty names fell back to
+  // the brand, so look the project up as a last resort rather than showing
+  // "Unknown project" for a row that plainly has one.
+  const nameFor = useMemo(() => {
+    const byId = new Map(projects.map((p) => [p.id, p.name || p.brand || '']));
+    return (e) => e.projectName || byId.get(e.projectId) || 'Unknown project';
+  }, [projects]);
+
   const filtered = useMemo(
     () =>
       entries.filter(
@@ -110,7 +119,7 @@ export default function Activity({ projects }) {
                 <div className="log-body">
                   <div className="log-item">{e.item}</div>
                   <div className="log-meta">
-                    {e.projectName || 'Unknown project'}
+                    {nameFor(e)}
                     {e.phase ? ` · ${e.phase}` : ''}
                   </div>
                 </div>
