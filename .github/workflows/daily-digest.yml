@@ -15,24 +15,29 @@ name: Daily activity digest
 #   SMTP_PORT                 defaults to 465
 #   DIGEST_FROM               defaults to SMTP_USER
 #   DIGEST_TZ                 defaults to America/New_York
+#   DIGEST_ROLLOVER_HOUR      defaults to 8 (see the schedule note below)
 #   DIGEST_APP_URL            defaults to the hosted dashboard
 
 on:
   schedule:
-    # 02:00 UTC = 10pm Eastern in summer, 9pm in winter. GitHub cron has no
-    # timezone support, so the send time shifts by an hour across daylight
-    # saving; the digest window itself stays correct because the script
-    # works in DIGEST_TZ.
+    # Nominally 02:00 UTC = 10pm Eastern in summer, 9pm in winter. GitHub
+    # cron has no timezone support, so the intended send time shifts by an
+    # hour across daylight saving.
     #
-    # Reporting the current day means the run has to land before midnight
-    # Eastern: past midnight, "today" becomes the next, empty day and the
-    # day's work is never emailed. GitHub can delay a scheduled run under
-    # load, so 10pm leaves two hours of slack rather than cutting it fine.
+    # In practice GitHub runs this hours late: observed starts were 07:46,
+    # 08:00 and 08:33 UTC against a 02:00 schedule, around 4am Eastern. The
+    # script compensates -- until DIGEST_ROLLOVER_HOUR (8am local) it treats
+    # "today" as the day that just ended -- so a run delayed anywhere from
+    # 10pm to 8am still reports the right day. Do not remove that logic
+    # without moving the schedule well clear of midnight.
+    #
+    # Scheduled at :17 rather than :00 because the top of the hour is the
+    # most contended slot on GitHub's scheduler.
     #
     # Runs every day rather than weekdays only: days with no activity send
     # no email, so quiet weekends stay silent on their own, and work done
-    # on a Saturday still gets reported that evening.
-    - cron: '0 2 * * *'
+    # on a Saturday still gets reported.
+    - cron: '17 2 * * *'
   workflow_dispatch:
     inputs:
       days_ago:
@@ -69,6 +74,7 @@ jobs:
           SMTP_PORT: ${{ vars.SMTP_PORT }}
           DIGEST_FROM: ${{ vars.DIGEST_FROM }}
           DIGEST_TZ: ${{ vars.DIGEST_TZ }}
+          DIGEST_ROLLOVER_HOUR: ${{ vars.DIGEST_ROLLOVER_HOUR }}
           DIGEST_APP_URL: ${{ vars.DIGEST_APP_URL }}
         run: |
           node scripts/daily-digest.js \
