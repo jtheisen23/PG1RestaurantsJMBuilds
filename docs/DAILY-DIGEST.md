@@ -110,6 +110,7 @@ you want to change something.
 | `SMTP_PORT` | `465` | Mail server port. Use `587` for the Workspace SMTP relay |
 | `DIGEST_FROM` | same as `SMTP_USER` | From address |
 | `DIGEST_TZ` | `America/New_York` | Which timezone decides where a day starts and ends |
+| `DIGEST_ROLLOVER_HOUR` | `8` | Before this local hour, "today" means the day that just ended — absorbs GitHub's scheduling delay |
 | `DIGEST_APP_URL` | the hosted dashboard | Link in the email footer |
 
 ---
@@ -140,17 +141,27 @@ should arrive within a minute.
 
 Once the manual test works, the schedule takes over. No further action.
 
-It runs at **02:00 UTC every day** — 10pm Eastern in summer, 9pm in winter —
-and reports that same day. GitHub's scheduler has no timezone support, so the
-send time shifts by an hour across daylight saving. The *contents* stay correct
-either way: the script works out day boundaries in `DIGEST_TZ`, independently
-of when it runs.
+It is scheduled for **02:17 UTC every day** — nominally 10pm Eastern in summer,
+9pm in winter — and reports that same day.
 
-**Why 10pm and not 11pm.** Reporting the current day means the run has to land
-before midnight Eastern. Past midnight, "today" is the next, empty day, and
-that day's work never gets emailed at all. GitHub delays scheduled runs under
-load — usually minutes, occasionally much longer — so 10pm leaves two hours of
-slack. Moving it later eats into that margin.
+**GitHub does not run it on time.** Against a 02:00 schedule, observed starts
+were 07:46, 08:00 and 08:33 UTC — around 4am Eastern, roughly six hours late.
+This is normal for GitHub's shared scheduler and there is no way to make it
+punctual.
+
+That would break a same-day digest: asking for "today" at 4am returns a
+four-hour-old, empty day, so nothing sends and the previous day's work is never
+reported at all. It did exactly that for three days before being caught.
+
+The script compensates with `DIGEST_ROLLOVER_HOUR`, default **8**. Before 8am
+local, "today" means the day that just ended. A run delayed anywhere between
+10pm and 8am therefore still reports the day it was meant to — about ten hours
+of tolerance. The log prints the run time, the day being reported, and whether
+the rollover applied.
+
+If you ever move the schedule, keep it clear of that window or raise the
+rollover hour to match. A manual run before 8am local also reports the previous
+day; pass `days_ago` explicitly if that isn't what you want.
 
 To change the time, edit the `cron` line in
 `.github/workflows/daily-digest.yml`. The five fields are

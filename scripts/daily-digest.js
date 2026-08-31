@@ -16,6 +16,8 @@
  *   DIGEST_FROM               From address (defaults to SMTP_USER)
  *   DIGEST_TZ                 timezone deciding where a day starts and ends
  *                             (default America/New_York)
+ *   DIGEST_ROLLOVER_HOUR      before this local hour, "today" still means the
+ *                             previous day (default 8). See below.
  *   DIGEST_SEND_EMPTY         "true" to email even on days with no activity;
  *                             otherwise those days are skipped silently
  *   DIGEST_APP_URL            dashboard link in the footer
@@ -38,6 +40,7 @@ const daysAgoArg = process.argv.find((a) => a.startsWith('--days-ago='));
 const DAYS_AGO = daysAgoArg ? Number(daysAgoArg.split('=')[1]) : 0;
 const TZ = process.env.DIGEST_TZ || 'America/New_York';
 const APP_URL = process.env.DIGEST_APP_URL || 'https://pg1-jm-builds.web.app';
+const ROLLOVER_HOUR = Number(process.env.DIGEST_ROLLOVER_HOUR ?? 8);
 
 if (!Number.isInteger(DAYS_AGO) || DAYS_AGO < 0) {
   console.error('--days-ago must be a non-negative whole number.');
@@ -97,8 +100,19 @@ function addDays(year, month, day, delta) {
   return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() };
 }
 
-const todayLocal = partsInTz(new Date(), TZ);
-const target = addDays(todayLocal.year, todayLocal.month, todayLocal.day, -DAYS_AGO);
+// GitHub's scheduler is not punctual: a job set for 02:00 UTC has been
+// observed starting between 07:45 and 08:35 UTC, six hours late. A digest
+// meant to go out at 10pm Eastern therefore lands around 4am, and asking for
+// "today" at 4am returns a four-hour-old, empty day -- so the day's work is
+// silently never reported.
+//
+// Treat the small hours as still belonging to the previous day. Up until
+// ROLLOVER_HOUR local time, "today" means the day that just ended, so a run
+// delayed anywhere from 10pm to 8am still reports the day it was meant to.
+const now = new Date();
+const nowLocal = partsInTz(now, TZ);
+const rolledBack = nowLocal.hour < ROLLOVER_HOUR ? 1 : 0;
+const target = addDays(nowLocal.year, nowLocal.month, nowLocal.day, -(DAYS_AGO + rolledBack));
 const next = addDays(target.year, target.month, target.day, 1);
 const windowStart = startOfLocalDay(target.year, target.month, target.day, TZ);
 const windowEnd = startOfLocalDay(next.year, next.month, next.day, TZ);
@@ -240,6 +254,13 @@ function buildHtml({ projects, people }, completed, reopened) {
 
 // ---------- main ----------
 async function main() {
+  console.log(`Run time: ${now.toLocaleString('en-US', { timeZone: TZ })} (${TZ})`);
+  console.log(`Reporting: ${dayHeading}`);
+  if (rolledBack) {
+    console.log(
+      `Run landed before ${ROLLOVER_HOUR}:00 local, so it is treated as belonging to the previous day.`
+    );
+  }
   console.log(`Window: ${windowStart.toISOString()} -> ${windowEnd.toISOString()} (${TZ})`);
 
   const snap = await db
