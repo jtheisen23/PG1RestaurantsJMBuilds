@@ -9,14 +9,15 @@
  * Usage:
  *   node scripts/daily-digest.js --dry-run     print the email, send nothing
  *   node scripts/daily-digest.js               send it
- *   node scripts/daily-digest.js --days-ago=1  yesterday (default is 0, today)
+ *   node scripts/daily-digest.js --days-ago=0  today (default is 1, yesterday)
  *
  * Configuration, all via environment variables:
  *   DIGEST_TO                 recipients, comma-separated (required to send)
  *   DIGEST_FROM               From address (defaults to SMTP_USER)
  *   DIGEST_TZ                 timezone deciding where a day starts and ends
  *                             (default America/New_York)
- *   DIGEST_ROLLOVER_HOUR      before this local hour, "today" still means the
+ *   DIGEST_ROLLOVER_HOUR      only used when reporting today (--days-ago=0):
+ *                             before this local hour, "today" still means the
  *                             previous day (default 8). See below.
  *   DIGEST_SEND_EMPTY         "true" to email even on days with no activity;
  *                             otherwise those days are skipped silently
@@ -37,7 +38,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const DRY_RUN = process.argv.includes('--dry-run');
 const daysAgoArg = process.argv.find((a) => a.startsWith('--days-ago='));
-const DAYS_AGO = daysAgoArg ? Number(daysAgoArg.split('=')[1]) : 0;
+const DAYS_AGO = daysAgoArg ? Number(daysAgoArg.split('=')[1]) : 1;
 const TZ = process.env.DIGEST_TZ || 'America/New_York';
 const APP_URL = process.env.DIGEST_APP_URL || 'https://pg1-jm-builds.web.app';
 const ROLLOVER_HOUR = Number(process.env.DIGEST_ROLLOVER_HOUR ?? 8);
@@ -101,17 +102,21 @@ function addDays(year, month, day, delta) {
 }
 
 // GitHub's scheduler is not punctual: a job set for 02:00 UTC has been
-// observed starting between 07:45 and 08:35 UTC, six hours late. A digest
-// meant to go out at 10pm Eastern therefore lands around 4am, and asking for
-// "today" at 4am returns a four-hour-old, empty day -- so the day's work is
-// silently never reported.
+// observed starting six hours late. That only endangers a digest reporting
+// the CURRENT day -- asking for "today" at 4am returns a few-hours-old, empty
+// day, and the real day's work is silently never reported.
 //
-// Treat the small hours as still belonging to the previous day. Up until
-// ROLLOVER_HOUR local time, "today" means the day that just ended, so a run
-// delayed anywhere from 10pm to 8am still reports the day it was meant to.
+// So when reporting today, treat the small hours as still belonging to the
+// previous day: until ROLLOVER_HOUR local time, "today" means the day that
+// just ended.
+//
+// When reporting yesterday the rollover must NOT apply. Every hour of the day
+// unambiguously has the same "yesterday", and applying it anyway would report
+// two days back -- which is exactly what an 8am Eastern schedule would do in
+// winter, when it lands at 7am local, below the default rollover hour.
 const now = new Date();
 const nowLocal = partsInTz(now, TZ);
-const rolledBack = nowLocal.hour < ROLLOVER_HOUR ? 1 : 0;
+const rolledBack = DAYS_AGO === 0 && nowLocal.hour < ROLLOVER_HOUR ? 1 : 0;
 const target = addDays(nowLocal.year, nowLocal.month, nowLocal.day, -(DAYS_AGO + rolledBack));
 const next = addDays(target.year, target.month, target.day, 1);
 const windowStart = startOfLocalDay(target.year, target.month, target.day, TZ);

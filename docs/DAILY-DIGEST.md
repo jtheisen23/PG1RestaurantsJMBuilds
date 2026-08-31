@@ -1,7 +1,7 @@
 # Daily activity digest
 
-Emails a summary of each day's completed checklist items to a distribution
-list, at 10pm Eastern that same evening. Runs on GitHub Actions, so it needs no
+Emails a summary of the previous day's completed checklist items to a
+distribution list, at 8am Eastern the next morning. Runs on GitHub Actions, so it needs no
 Cloud Function and no Firebase Blaze plan — the free tier covers it.
 
 Days with no activity send no email, so quiet weekends stay silent.
@@ -110,7 +110,7 @@ you want to change something.
 | `SMTP_PORT` | `465` | Mail server port. Use `587` for the Workspace SMTP relay |
 | `DIGEST_FROM` | same as `SMTP_USER` | From address |
 | `DIGEST_TZ` | `America/New_York` | Which timezone decides where a day starts and ends |
-| `DIGEST_ROLLOVER_HOUR` | `8` | Before this local hour, "today" means the day that just ended — absorbs GitHub's scheduling delay |
+| `DIGEST_ROLLOVER_HOUR` | `8` | Only when reporting today: before this local hour, "today" means the day that just ended |
 | `DIGEST_APP_URL` | the hosted dashboard | Link in the email footer |
 
 ---
@@ -121,7 +121,7 @@ On github.com: **Actions** tab → **Daily activity digest** → **Run workflow*
 
 Start with a preview that sends nothing:
 
-- **Which day to report:** `0` (today — the default, and what the schedule reports)
+- **Which day to report:** `1` (yesterday — the default, and what the schedule reports)
 - **Preview only:** ✅ checked
 
 Click **Run workflow**, then open the run and read the log. You'll see the
@@ -132,8 +132,9 @@ If that looks right, run it again with **Preview only** unchecked. The email
 should arrive within a minute.
 
 > If the day you picked had no activity, the log says so and stops without
-> sending. Tick a checkbox in the dashboard first so there's something to
-> report, or try `1` for yesterday.
+> sending. Use `0` for today so far, or tick a checkbox in the dashboard first
+> so there's something to report. Higher numbers reach further back: `2` is the
+> day before yesterday, and so on.
 
 ---
 
@@ -141,33 +142,35 @@ should arrive within a minute.
 
 Once the manual test works, the schedule takes over. No further action.
 
-It is scheduled for **02:17 UTC every day** — nominally 10pm Eastern in summer,
-9pm in winter — and reports that same day.
+It is scheduled for **12:17 UTC every day** — 8:17am Eastern in summer, 7:17am
+in winter — and reports the **previous** day.
 
-**GitHub does not run it on time.** Against a 02:00 schedule, observed starts
-were 07:46, 08:00 and 08:33 UTC — around 4am Eastern, roughly six hours late.
-This is normal for GitHub's shared scheduler and there is no way to make it
-punctual.
+**GitHub does not run it on time.** Against an earlier 02:00 schedule, observed
+starts were 07:46, 08:00 and 08:33 UTC — roughly six hours late. This is normal
+for GitHub's shared scheduler and cannot be made punctual.
 
-That would break a same-day digest: asking for "today" at 4am returns a
-four-hour-old, empty day, so nothing sends and the previous day's work is never
-reported at all. It did exactly that for three days before being caught.
+A morning digest reporting yesterday is deliberately immune to that. Every hour
+of the day has the same unambiguous "yesterday", so even a six-hour delay into
+mid-afternoon still sends the correct day. This is why the schedule was moved
+here from a same-evening 10pm digest, which silently dropped three days'
+activity: delayed past midnight, it asked for a brand-new empty "today", found
+nothing, and skipped.
 
-The script compensates with `DIGEST_ROLLOVER_HOUR`, default **8**. Before 8am
-local, "today" means the day that just ended. A run delayed anywhere between
-10pm and 8am therefore still reports the day it was meant to — about ten hours
-of tolerance. The log prints the run time, the day being reported, and whether
-the rollover applied.
+`DIGEST_ROLLOVER_HOUR` (default 8) still exists but **only applies when
+reporting today** (`days_ago = 0`), where the same-day hazard is real. It is
+deliberately not applied when reporting yesterday — doing so would report two
+days back whenever the run lands before 8am local, which is exactly what
+happens in winter.
 
-If you ever move the schedule, keep it clear of that window or raise the
-rollover hour to match. A manual run before 8am local also reports the previous
-day; pass `days_ago` explicitly if that isn't what you want.
+The log prints the run time, the day being reported, and whether the rollover
+applied.
 
 To change the time, edit the `cron` line in
 `.github/workflows/daily-digest.yml`. The five fields are
 `minute hour day-of-month month day-of-week`, always in UTC. Eastern is UTC-4
-in summer and UTC-5 in winter, so an evening time crosses into the next UTC
-day: 10pm ET is `0 2 * * *`.
+in summer and UTC-5 in winter, so 8am ET is `17 12 * * *`. Keep a same-day
+digest well clear of midnight, or leave it reporting yesterday, which has no
+such constraint.
 
 ---
 
@@ -176,11 +179,11 @@ day: 10pm ET is `0 2 * * *`.
 Useful for testing changes to the email itself.
 
 ```bash
-# preview today, send nothing (needs scripts/serviceAccountKey.json)
+# preview yesterday, send nothing (needs scripts/serviceAccountKey.json)
 npm run digest:dry
 
-# yesterday instead
-node scripts/daily-digest.js --dry-run --days-ago=1
+# today so far instead
+node scripts/daily-digest.js --dry-run --days-ago=0
 
 # actually send
 DIGEST_TO=you@example.com SMTP_HOST=smtp.gmail.com \

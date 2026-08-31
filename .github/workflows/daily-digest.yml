@@ -15,35 +15,33 @@ name: Daily activity digest
 #   SMTP_PORT                 defaults to 465
 #   DIGEST_FROM               defaults to SMTP_USER
 #   DIGEST_TZ                 defaults to America/New_York
-#   DIGEST_ROLLOVER_HOUR      defaults to 8 (see the schedule note below)
+#   DIGEST_ROLLOVER_HOUR      defaults to 8; only applies when reporting today
 #   DIGEST_APP_URL            defaults to the hosted dashboard
 
 on:
   schedule:
-    # Nominally 02:00 UTC = 10pm Eastern in summer, 9pm in winter. GitHub
-    # cron has no timezone support, so the intended send time shifts by an
-    # hour across daylight saving.
+    # 12:17 UTC = 8:17am Eastern in summer, 7:17am in winter, reporting the
+    # previous day. GitHub cron has no timezone support, so the time shifts by
+    # an hour across daylight saving.
     #
-    # In practice GitHub runs this hours late: observed starts were 07:46,
-    # 08:00 and 08:33 UTC against a 02:00 schedule, around 4am Eastern. The
-    # script compensates -- until DIGEST_ROLLOVER_HOUR (8am local) it treats
-    # "today" as the day that just ended -- so a run delayed anywhere from
-    # 10pm to 8am still reports the right day. Do not remove that logic
-    # without moving the schedule well clear of midnight.
+    # A morning run reporting yesterday is deliberately robust: GitHub starts
+    # these jobs hours late (observed six hours against an earlier schedule),
+    # and every hour of the day has the same unambiguous "yesterday". Even a
+    # six-hour delay to mid-afternoon still sends the correct day.
     #
-    # Scheduled at :17 rather than :00 because the top of the hour is the
-    # most contended slot on GitHub's scheduler.
+    # Scheduled at :17 rather than :00 because the top of the hour is the most
+    # contended slot on GitHub's scheduler.
     #
-    # Runs every day rather than weekdays only: days with no activity send
-    # no email, so quiet weekends stay silent on their own, and work done
-    # on a Saturday still gets reported.
-    - cron: '17 2 * * *'
+    # Runs every day rather than weekdays only: days with no activity send no
+    # email, so quiet weekends stay silent on their own, and work done on a
+    # Saturday still gets reported on Sunday.
+    - cron: '17 12 * * *'
   workflow_dispatch:
     inputs:
       days_ago:
-        description: 'Which day to report (0 = today, 1 = yesterday)'
+        description: 'Which day to report (1 = yesterday, 0 = today so far)'
         required: false
-        default: '0'
+        default: '1'
       dry_run:
         description: 'Preview only - print the email without sending it'
         type: boolean
@@ -78,5 +76,5 @@ jobs:
           DIGEST_APP_URL: ${{ vars.DIGEST_APP_URL }}
         run: |
           node scripts/daily-digest.js \
-            --days-ago=${{ github.event.inputs.days_ago || 0 }} \
+            ${{ github.event.inputs.days_ago != '' && format('--days-ago={0}', github.event.inputs.days_ago) || '' }} \
             ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
