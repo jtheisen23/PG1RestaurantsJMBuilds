@@ -20,14 +20,19 @@ name: Daily activity digest
 
 on:
   schedule:
-    # 12:17 UTC = 8:17am Eastern in summer, 7:17am in winter, reporting the
+    # 05:17 UTC = 1:17am Eastern in summer, 12:17am in winter, reporting the
     # previous day. GitHub cron has no timezone support, so the time shifts by
     # an hour across daylight saving.
     #
-    # A morning run reporting yesterday is deliberately robust: GitHub starts
-    # these jobs hours late (observed six hours against an earlier schedule),
-    # and every hour of the day has the same unambiguous "yesterday". Even a
-    # six-hour delay to mid-afternoon still sends the correct day.
+    # Deliberately early. GitHub starts these jobs hours late -- six hours,
+    # measured -- so a 1am schedule lands somewhere between 1am and 7am, which
+    # is when the digest is wanted. Scheduling it for 8am would have pushed a
+    # delayed run into the afternoon.
+    #
+    # Reporting the previous day makes the delay harmless: every hour after
+    # midnight has the same unambiguous "yesterday", so any start time from
+    # 12:17am through the following evening sends the correct day. The winter
+    # drift to just after midnight is fine for the same reason.
     #
     # Scheduled at :17 rather than :00 because the top of the hour is the most
     # contended slot on GitHub's scheduler.
@@ -35,7 +40,7 @@ on:
     # Runs every day rather than weekdays only: days with no activity send no
     # email, so quiet weekends stay silent on their own, and work done on a
     # Saturday still gets reported on Sunday.
-    - cron: '17 12 * * *'
+    - cron: '17 5 * * *'
   workflow_dispatch:
     inputs:
       days_ago:
