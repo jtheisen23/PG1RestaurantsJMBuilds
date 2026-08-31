@@ -1,7 +1,7 @@
 # Daily activity digest
 
 Emails a summary of the previous day's completed checklist items to a
-distribution list, at 8am Eastern the next morning. Runs on GitHub Actions, so it needs no
+distribution list, overnight, so it is waiting first thing in the morning. Runs on GitHub Actions, so it needs no
 Cloud Function and no Firebase Blaze plan — the free tier covers it.
 
 Days with no activity send no email, so quiet weekends stay silent.
@@ -142,19 +142,28 @@ should arrive within a minute.
 
 Once the manual test works, the schedule takes over. No further action.
 
-It is scheduled for **12:17 UTC every day** — 8:17am Eastern in summer, 7:17am
-in winter — and reports the **previous** day.
+It is scheduled for **05:17 UTC every day** — 1:17am Eastern in summer,
+12:17am in winter — and reports the **previous** day.
 
-**GitHub does not run it on time.** Against an earlier 02:00 schedule, observed
-starts were 07:46, 08:00 and 08:33 UTC — roughly six hours late. This is normal
-for GitHub's shared scheduler and cannot be made punctual.
+**GitHub does not run it on time.** Against an earlier schedule, observed
+starts were roughly six hours late, every day. This is normal for GitHub's
+shared scheduler and cannot be made punctual.
 
-A morning digest reporting yesterday is deliberately immune to that. Every hour
-of the day has the same unambiguous "yesterday", so even a six-hour delay into
-mid-afternoon still sends the correct day. This is why the schedule was moved
-here from a same-evening 10pm digest, which silently dropped three days'
-activity: delayed past midnight, it asked for a brand-new empty "today", found
-nothing, and skipped.
+The schedule is set early on purpose. A 1am start delayed by six hours arrives
+around 7am; scheduled for 8am instead, the same delay would have pushed it into
+the afternoon.
+
+| | Fires (ET) | With a 6-hour delay |
+|---|---|---|
+| Summer (EDT) | 1:17am | ~7:17am |
+| Winter (EST) | 12:17am | ~6:17am |
+
+Reporting the previous day is what makes the delay harmless: every hour after
+midnight has the same unambiguous "yesterday", so any start time from just past
+midnight through the following evening sends the correct day. This is why the
+schedule is no longer a same-evening digest — that one, delayed past midnight,
+asked for a brand-new empty "today", found nothing, and silently dropped three
+days of activity.
 
 `DIGEST_ROLLOVER_HOUR` (default 8) still exists but **only applies when
 reporting today** (`days_ago = 0`), where the same-day hazard is real. It is
@@ -168,9 +177,10 @@ applied.
 To change the time, edit the `cron` line in
 `.github/workflows/daily-digest.yml`. The five fields are
 `minute hour day-of-month month day-of-week`, always in UTC. Eastern is UTC-4
-in summer and UTC-5 in winter, so 8am ET is `17 12 * * *`. Keep a same-day
-digest well clear of midnight, or leave it reporting yesterday, which has no
-such constraint.
+in summer and UTC-5 in winter, so 1am ET is `17 5 * * *` and 8am ET would be
+`17 12 * * *`. Bear GitHub's multi-hour delay in mind: the cron sets the
+earliest possible time, not the arrival time. Keep a same-day digest well clear
+of midnight, or leave it reporting yesterday, which has no such constraint.
 
 ---
 
