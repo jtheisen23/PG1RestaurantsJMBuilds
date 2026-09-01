@@ -65,6 +65,21 @@ export function useUsers() {
   return useCollection('users');
 }
 
+// Ad-hoc tasks raised against a project, each with someone responsible.
+// Separate from the fixed checklist in `fields` and the shared construction
+// playbook: those are the same for every project, these are one-offs.
+export function useTasks() {
+  const { data, loading } = useCollection('tasks');
+  const sorted = useMemo(() => {
+    const millis = (t) => t.createdAt?.toMillis?.() ?? 0;
+    return [...data].sort(
+      // Open first, then newest.
+      (a, b) => Number(Boolean(a.done)) - Number(Boolean(b.done)) || millis(b) - millis(a)
+    );
+  }, [data]);
+  return { data: sorted, loading };
+}
+
 // construction progress: one doc per project, fields keyed by task id
 export function useConstructionProgress(projectId) {
   const [data, setData] = useState({});
@@ -225,6 +240,53 @@ export async function setConstructionCheck(projectId, taskId, checked, user, met
     });
   }
   return result;
+}
+
+export async function createTask(task, user) {
+  return addDoc(collection(db, 'tasks'), {
+    title: '',
+    projectId: '',
+    projectName: '',
+    assigneeEmail: '',
+    assigneeName: '',
+    due: '',
+    notes: '',
+    ...task,
+    done: false,
+    createdAt: serverTimestamp(),
+    createdBy: user?.email || 'unknown',
+  });
+}
+
+export async function updateTask(taskId, patch, user) {
+  return updateDoc(doc(db, 'tasks', taskId), {
+    ...patch,
+    updatedAt: serverTimestamp(),
+    updatedBy: user?.email || 'unknown',
+  });
+}
+
+// Completing a task is real progress, so it belongs in the activity log and
+// the daily digest alongside checklist items.
+export async function setTaskDone(task, done, user) {
+  const result = await updateTask(
+    task.id,
+    { done, completedAt: done ? serverTimestamp() : null, completedBy: done ? user?.email || 'unknown' : '' },
+    user
+  );
+  await logActivity({
+    by: user?.email || 'unknown',
+    projectId: task.projectId || '',
+    projectName: task.projectName || '',
+    phase: 'Task',
+    item: task.title || 'Task',
+    done,
+  });
+  return result;
+}
+
+export async function deleteTask(taskId) {
+  return deleteDoc(doc(db, 'tasks', taskId));
 }
 
 export async function setUserRole(uid, role) {
