@@ -9,13 +9,15 @@ import {
   phaseProgress,
   pct,
 } from '../lib/helpers';
-import { updateProjectField, updateProjectMeta, deleteProject } from '../lib/firestore';
+import { updateProjectField, updateProjectMeta, deleteProject, useTasks } from '../lib/firestore';
+import TaskList from './TaskList';
 import { useAuth } from '../context/AuthContext';
 
 const QUICK_LETTERS = ['C', 'F', 'T', 'U', 'X', 'AA', 'DF', 'GM'];
 
-export default function ProjectDetail({ project, onBack }) {
+export default function ProjectDetail({ project, onBack, onAddTask }) {
   const { user, canEdit, isAdmin } = useAuth();
+  const { data: allTasks } = useTasks();
   const [openPhase, setOpenPhase] = useState('Real Estate');
   const [name, setName] = useState(project.name || '');
   const [brand, setBrand] = useState(project.brand || '');
@@ -98,6 +100,11 @@ export default function ProjectDetail({ project, onBack }) {
           </div>
           <div className="detail-actions">
             {canEdit && (
+              <button className="btn small" onClick={() => onAddTask(project.id)}>
+                + Add Task
+              </button>
+            )}
+            {canEdit && (
               <button
                 className="btn ghost small"
                 onClick={() => commitMeta({ completed: !project.completed })}
@@ -124,6 +131,8 @@ export default function ProjectDetail({ project, onBack }) {
           <div className="last-edited">Last edited by {project.updatedBy}</div>
         )}
       </div>
+
+      <ProjectTasks projectId={project.id} tasks={allTasks} canEdit={canEdit} onAddTask={onAddTask} />
 
       {PHASES.map((phase) => (
         <Accordion
@@ -277,6 +286,34 @@ function TextField({ h, value, disabled, onCommit }) {
         onChange={(e) => setVal(e.target.value)}
         onBlur={() => onCommit(val)}
       />
+    </div>
+  );
+}
+
+function ProjectTasks({ projectId, tasks, canEdit, onAddTask }) {
+  const mine = tasks.filter((t) => t.projectId === projectId);
+  const open = mine.filter((t) => !t.done);
+
+  return (
+    <div className="accordion open project-tasks">
+      <div className="acc-head" style={{ cursor: 'default' }}>
+        <span className="dot notes" />
+        <h3>Tasks</h3>
+        <span className="task-count">{open.length} open</span>
+        <div style={{ flex: 1 }} />
+        {canEdit && (
+          <button className="btn ghost small" onClick={() => onAddTask(projectId)}>
+            + Add Task
+          </button>
+        )}
+      </div>
+      <div className="acc-body">
+        <TaskList
+          tasks={mine}
+          showProject={false}
+          emptyText="No tasks yet for this project."
+        />
+      </div>
     </div>
   );
 }

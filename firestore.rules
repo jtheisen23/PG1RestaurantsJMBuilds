@@ -57,6 +57,16 @@ service cloud.firestore {
       allow write: if isEditor();
     }
 
+    // Ad-hoc tasks raised against a project, each with someone responsible.
+    // Editors can create and update them -- updating matters because anyone
+    // may tick off a task, not only whoever raised it. Deleting is limited to
+    // admins, since a task is a commitment someone else may be relying on.
+    match /tasks/{taskId} {
+      allow read: if isSignedIn();
+      allow create, update: if isEditor();
+      allow delete: if isAdmin();
+    }
+
     // Activity log: an append-only record of checklist items completed.
     // Anyone signed in can read it. Editors can add entries, but nobody can
     // change or remove one -- an audit trail that can be rewritten is not an

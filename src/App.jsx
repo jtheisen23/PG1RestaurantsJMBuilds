@@ -8,12 +8,16 @@ import Contacts from './components/Contacts';
 import ConstructionPlaybook from './components/ConstructionPlaybook';
 import AdminPanel from './components/AdminPanel';
 import Activity from './components/Activity';
+import Tasks from './components/Tasks';
+import TaskDialog from './components/TaskDialog';
 import { useProjects, useContacts, useTimeline } from './lib/firestore';
 
 export default function App() {
   const { user, loading, isAdmin } = useAuth();
   const [view, setView] = useState('overview');
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  // null = closed. { projectId } = open, with the project pre-filled or not.
+  const [taskDialog, setTaskDialog] = useState(null);
 
   const { data: projects, loading: loadingProjects } = useProjects();
   const { data: contacts } = useContacts();
@@ -38,15 +42,24 @@ export default function App() {
     setView('detail');
   }
 
+  function handleAddTask(projectId) {
+    setTaskDialog({ projectId: projectId || '' });
+  }
+
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
 
   return (
     <div id="app">
-      <TopBar view={view} onNav={handleNav} saving={loadingProjects} />
+      <TopBar view={view} onNav={handleNav} saving={loadingProjects} onAddTask={handleAddTask} />
       <main>
         {view === 'overview' && <Overview projects={projects} onSelect={handleSelectProject} />}
         {view === 'detail' && selectedProject && (
-          <ProjectDetail key={selectedProject.id} project={selectedProject} onBack={() => handleNav('overview')} />
+          <ProjectDetail
+            key={selectedProject.id}
+            project={selectedProject}
+            onBack={() => handleNav('overview')}
+            onAddTask={handleAddTask}
+          />
         )}
         {view === 'detail' && !selectedProject && !loadingProjects && (
           <div className="empty-state">
@@ -58,9 +71,17 @@ export default function App() {
         )}
         {view === 'contacts' && <Contacts contacts={contacts} />}
         {view === 'construction' && <ConstructionPlaybook projects={projects} timeline={timeline} />}
+        {view === 'tasks' && <Tasks projects={projects} onAddTask={handleAddTask} />}
         {view === 'activity' && <Activity projects={projects} />}
         {view === 'admin' && isAdmin && <AdminPanel />}
       </main>
+      {taskDialog && (
+        <TaskDialog
+          projects={projects}
+          fixedProjectId={taskDialog.projectId}
+          onClose={() => setTaskDialog(null)}
+        />
+      )}
     </div>
   );
 }

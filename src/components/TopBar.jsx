@@ -6,11 +6,12 @@ const TABS = [
   ['overview', 'Projects'],
   ['contacts', 'Contacts'],
   ['construction', 'Construction Playbook'],
+  ['tasks', 'Tasks'],
   ['activity', 'Activity'],
 ];
 
-export default function TopBar({ view, onNav, saving }) {
-  const { profile, logout, isAdmin } = useAuth();
+export default function TopBar({ view, onNav, saving, onAddTask }) {
+  const { profile, logout, isAdmin, canEdit } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const tabs = isAdmin ? [...TABS, ['admin', 'Team']] : TABS;
@@ -36,6 +37,11 @@ export default function TopBar({ view, onNav, saving }) {
           </button>
         ))}
       </nav>
+      {canEdit && (
+        <button className="btn small add-task-btn" onClick={() => onAddTask(null)} title="Add a task to any project">
+          + Task
+        </button>
+      )}
       <div className="save-indicator" style={{ color: saving ? 'var(--amber)' : undefined }}>
         {saving ? 'Saving…' : 'Synced'}
       </div>
