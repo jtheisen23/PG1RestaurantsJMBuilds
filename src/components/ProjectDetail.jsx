@@ -180,6 +180,23 @@ function Accordion({ phase, project, open, onToggle, canEdit, toggleField, commi
   const doneCount = hs.filter((h) => h.type === 'checkbox' && fields[h.letter] === true).length;
   const key = { 'Real Estate': 're', 'Pre-Construction': 'pc', 'Construction/Ops': 'co' }[phase];
 
+  const [hideDone, setHideDone] = useState(() => readHideDone(phase));
+
+  // Only ticked checkboxes are hidden. Text and date fields are data entry
+  // rather than progress -- there is no "completed" state to hide them by, and
+  // dropping them would take the address and lease terms off the page.
+  const visible = hideDone
+    ? hs.filter((h) => !(h.type === 'checkbox' && fields[h.letter] === true))
+    : hs;
+
+  function toggleHideDone(e) {
+    // The header row toggles the accordion; the checkbox must not.
+    e.stopPropagation();
+    const next = !hideDone;
+    setHideDone(next);
+    writeHideDone(phase, next);
+  }
+
   return (
     <div className={`accordion ${open ? 'open' : ''}`}>
       <div className="acc-head" onClick={onToggle}>
@@ -189,11 +206,24 @@ function Accordion({ phase, project, open, onToggle, canEdit, toggleField, commi
           <div className="fill" style={{ width: `${pct(prog)}%`, background: PHASE_COLOR[phase] }} />
         </div>
         <div className="pct">{doneCount}/{checkboxCountByPhase[phase]} done</div>
+        {open && doneCount > 0 && (
+          <label className="check-inline acc-filter" onClick={toggleHideDone}>
+            <input type="checkbox" checked={hideDone} readOnly tabIndex={-1} />
+            Hide completed
+          </label>
+        )}
         <span className="chev">&#9656;</span>
       </div>
       <div className="acc-body">
+        {hideDone && (
+          <div className="acc-hint">
+            Showing the {visible.filter((h) => h.type === 'checkbox').length} outstanding item
+            {visible.filter((h) => h.type === 'checkbox').length === 1 ? '' : 's'} in this phase.{' '}
+            {doneCount} completed {doneCount === 1 ? 'item is' : 'items are'} hidden.
+          </div>
+        )}
         <div className="field-grid">
-          {hs.map((h) =>
+          {visible.map((h) =>
             h.type === 'checkbox' ? (
               <CheckField
                 key={h.letter}
@@ -291,6 +321,26 @@ function TextField({ h, value, disabled, onCommit }) {
 }
 
 const SHOW_DONE_KEY = 'pg1.projectTasks.showCompleted';
+const HIDE_DONE_PREFIX = 'pg1.phase.hideCompleted.';
+
+// Whether a phase is hiding its ticked items, remembered per phase. Someone
+// working through Construction/Ops wants that section decluttered every time
+// they come back, without affecting the phases they are still filling in.
+function readHideDone(phase) {
+  try {
+    return localStorage.getItem(HIDE_DONE_PREFIX + phase) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function writeHideDone(phase, value) {
+  try {
+    localStorage.setItem(HIDE_DONE_PREFIX + phase, String(value));
+  } catch {
+    // Preference just won't persist; the toggle still works this session.
+  }
+}
 
 // Remembered across projects and visits: someone who wants to see completed
 // tasks generally wants that everywhere, and having it reset on every project
