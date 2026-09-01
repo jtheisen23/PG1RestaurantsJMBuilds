@@ -189,10 +189,14 @@ function Accordion({ phase, project, open, onToggle, canEdit, toggleField, commi
     ? hs.filter((h) => !(h.type === 'checkbox' && fields[h.letter] === true))
     : hs;
 
-  function toggleHideDone(e) {
-    // The header row toggles the accordion; the checkbox must not.
-    e.stopPropagation();
-    const next = !hideDone;
+  // The handler belongs on the input, not on the surrounding label. A label
+  // forwards its click to the input, which bubbles back up, so a handler on the
+  // label fires twice for one click -- and because React flushes the first
+  // click before the second arrives, the second reads the already-updated state
+  // and toggles it straight back, leaving the checkbox stuck. The label's own
+  // onClick is only there to stop the click collapsing the accordion.
+  function onHideDoneChange(e) {
+    const next = e.target.checked;
     setHideDone(next);
     writeHideDone(phase, next);
   }
@@ -207,8 +211,8 @@ function Accordion({ phase, project, open, onToggle, canEdit, toggleField, commi
         </div>
         <div className="pct">{doneCount}/{checkboxCountByPhase[phase]} done</div>
         {open && doneCount > 0 && (
-          <label className="check-inline acc-filter" onClick={toggleHideDone}>
-            <input type="checkbox" checked={hideDone} readOnly tabIndex={-1} />
+          <label className="check-inline acc-filter" onClick={(e) => e.stopPropagation()}>
+            <input type="checkbox" checked={hideDone} onChange={onHideDoneChange} />
             Hide completed
           </label>
         )}
