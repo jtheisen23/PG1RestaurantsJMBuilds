@@ -319,8 +319,10 @@
 .task-due.over{color:var(--brick);background:var(--brick-light);border-radius:10px;padding:1px 8px;font-weight:600;}
 .task-notes{font-size:12.5px;color:var(--slate);margin-top:5px;line-height:1.5;white-space:pre-wrap;}
 .task-empty{padding:22px 4px;color:var(--slate);font-size:13px;}
-.task-count{font-size:11px;font-weight:700;background:var(--accent-light);color:var(--accent-dark);border-radius:10px;padding:2px 9px;}
+.task-count{font-size:11px;font-weight:700;background:var(--accent-light);color:var(--accent-dark);border-radius:10px;padding:2px 9px;white-space:nowrap;}
+.task-count.muted{background:#eef1f5;color:var(--slate);}
 .project-tasks{margin-bottom:14px;}
+.project-tasks .acc-head{gap:10px;flex-wrap:wrap;}
 
 /* ---------- MODAL ---------- */
 .modal-backdrop{

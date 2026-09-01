@@ -290,9 +290,36 @@ function TextField({ h, value, disabled, onCommit }) {
   );
 }
 
+const SHOW_DONE_KEY = 'pg1.projectTasks.showCompleted';
+
+// Remembered across projects and visits: someone who wants to see completed
+// tasks generally wants that everywhere, and having it reset on every project
+// page would be the opposite of easier visibility. localStorage can throw in
+// a private window, so every access is guarded.
+function readShowDone() {
+  try {
+    return localStorage.getItem(SHOW_DONE_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
 function ProjectTasks({ projectId, tasks, canEdit, onAddTask }) {
+  const [showDone, setShowDone] = useState(readShowDone);
+
   const mine = tasks.filter((t) => t.projectId === projectId);
   const open = mine.filter((t) => !t.done);
+  const done = mine.length - open.length;
+  const visible = showDone ? mine : open;
+
+  function toggle(next) {
+    setShowDone(next);
+    try {
+      localStorage.setItem(SHOW_DONE_KEY, String(next));
+    } catch {
+      // Preference just won't persist; the toggle still works this session.
+    }
+  }
 
   return (
     <div className="accordion open project-tasks">
@@ -300,7 +327,18 @@ function ProjectTasks({ projectId, tasks, canEdit, onAddTask }) {
         <span className="dot notes" />
         <h3>Tasks</h3>
         <span className="task-count">{open.length} open</span>
+        {done > 0 && <span className="task-count muted">{done} done</span>}
         <div style={{ flex: 1 }} />
+        {done > 0 && (
+          <label className="check-inline">
+            <input
+              type="checkbox"
+              checked={showDone}
+              onChange={(e) => toggle(e.target.checked)}
+            />
+            Show completed
+          </label>
+        )}
         {canEdit && (
           <button className="btn ghost small" onClick={() => onAddTask(projectId)}>
             + Add Task
@@ -309,9 +347,13 @@ function ProjectTasks({ projectId, tasks, canEdit, onAddTask }) {
       </div>
       <div className="acc-body">
         <TaskList
-          tasks={mine}
+          tasks={visible}
           showProject={false}
-          emptyText="No tasks yet for this project."
+          emptyText={
+            mine.length
+              ? 'Nothing open — every task here is complete.'
+              : 'No tasks yet for this project.'
+          }
         />
       </div>
     </div>
