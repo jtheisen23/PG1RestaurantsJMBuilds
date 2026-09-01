@@ -324,7 +324,6 @@
 .project-tasks{margin-bottom:14px;}
 .project-tasks .acc-head{gap:10px;flex-wrap:wrap;}
 .acc-filter{flex-shrink:0;font-size:12px;}
-.acc-filter input{pointer-events:none;}
 .acc-hint{font-size:12px;color:var(--slate);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-top:14px;}
 
 /* ---------- MODAL ---------- */
