@@ -7,6 +7,28 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // Signed in is NOT the same as belonging here. Anyone can create an account
+    // with the public web API key, so authentication alone must not grant
+    // access to any data -- membership is having a users/{uid} document, which
+    // can only be created against an invite.
+    function isMember() {
+      return isSignedIn()
+             && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    // Invites are keyed by the invited email address, lowercased. The client
+    // lowercases both the invite id and the address it signs up with, so the
+    // token email matches the document id exactly. Rules have no lowercase
+    // function, so that normalisation has to happen before it gets here.
+    function myInvite() {
+      return get(/databases/$(database)/documents/invites/$(request.auth.token.email)).data;
+    }
+
+    function hasInvite() {
+      return isSignedIn()
+             && exists(/databases/$(database)/documents/invites/$(request.auth.token.email));
+    }
+
     function myRole() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
     }
@@ -19,13 +41,30 @@ service cloud.firestore {
       return isSignedIn() && myRole() == 'admin';
     }
 
-    // Users: anyone signed in can read the team list (needed for the admin
-    // panel and "last edited by" attribution). A user can create their own
-    // profile document on first login. Only admins can change roles.
+    // Invites: the list of people allowed in, added by an admin from the Team
+    // tab. A signed-in user may read only their own invite, which is what lets
+    // them provision their profile on first sign-in; nobody else's is readable,
+    // so this is not a way to enumerate the team. Only admins write them.
+    match /invites/{email} {
+      allow read: if isAdmin()
+                  || (isSignedIn() && email == request.auth.token.email);
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Users: members can read the team list (needed for the admin panel, task
+    // assignment, and "last edited by" attribution).
+    //
+    // Creating a profile is the moment someone becomes a member, so it is the
+    // gate: it requires an invite for their own email address, and the role
+    // must be the one the invite specifies. Without this, anyone who signed up
+    // with the public API key could mint themselves a viewer profile and read
+    // every project, contact and task.
     match /users/{uid} {
-      allow read: if isSignedIn();
+      allow read: if isMember();
       allow create: if isSignedIn() && request.auth.uid == uid
-                    && request.resource.data.role == 'viewer';
+                    && hasInvite()
+                    && request.resource.data.email == request.auth.token.email
+                    && request.resource.data.role == myInvite().role;
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
@@ -33,7 +72,7 @@ service cloud.firestore {
     // Projects: everyone signed in can read. Editors/admins can create and
     // update. Only admins can delete.
     match /projects/{projectId} {
-      allow read: if isSignedIn();
+      allow read: if isMember();
       allow create, update: if isEditor();
       allow delete: if isAdmin();
     }
@@ -41,19 +80,19 @@ service cloud.firestore {
     // Contacts: same pattern as projects, but any editor can delete a
     // contact row (lower stakes than deleting a whole project).
     match /contacts/{contactId} {
-      allow read: if isSignedIn();
+      allow read: if isMember();
       allow create, update, delete: if isEditor();
     }
 
     // Construction playbook template tasks.
     match /timeline/{taskId} {
-      allow read: if isSignedIn();
+      allow read: if isMember();
       allow create, update, delete: if isEditor();
     }
 
     // Per-project construction checklist progress.
     match /constructionProgress/{projectId} {
-      allow read: if isSignedIn();
+      allow read: if isMember();
       allow write: if isEditor();
     }
 
@@ -62,7 +101,7 @@ service cloud.firestore {
     // may tick off a task, not only whoever raised it. Deleting is limited to
     // admins, since a task is a commitment someone else may be relying on.
     match /tasks/{taskId} {
-      allow read: if isSignedIn();
+      allow read: if isMember();
       allow create, update: if isEditor();
       allow delete: if isAdmin();
     }
@@ -73,7 +112,7 @@ service cloud.firestore {
     // audit trail. Entries must be stamped with the author's own email so a
     // user cannot attribute their edit to someone else.
     match /activity/{entryId} {
-      allow read: if isSignedIn();
+      allow read: if isMember();
       allow create: if isEditor()
                     && request.resource.data.by == request.auth.token.email;
       allow update, delete: if false;

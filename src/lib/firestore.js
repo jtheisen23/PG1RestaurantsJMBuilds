@@ -65,6 +65,30 @@ export function useUsers() {
   return useCollection('users');
 }
 
+// The list of people allowed in. Keyed by lowercased email, because the
+// security rules match the document id against the auth token's email and
+// have no lowercase function of their own.
+export const inviteId = (email) => (email || '').trim().toLowerCase();
+
+export function useInvites() {
+  return useCollection('invites');
+}
+
+export async function createInvite({ email, role, name }, user) {
+  const id = inviteId(email);
+  return setDoc(doc(db, 'invites', id), {
+    email: id,
+    role,
+    name: name || '',
+    invitedBy: user?.email || 'unknown',
+    invitedAt: serverTimestamp(),
+  });
+}
+
+export async function deleteInvite(email) {
+  return deleteDoc(doc(db, 'invites', inviteId(email)));
+}
+
 // Ad-hoc tasks raised against a project, each with someone responsible.
 // Separate from the fixed checklist in `fields` and the shared construction
 // playbook: those are the same for every project, these are one-offs.

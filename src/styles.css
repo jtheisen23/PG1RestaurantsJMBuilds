@@ -355,3 +355,17 @@
   .modal-row{grid-template-columns:1fr;}
   .modal-backdrop{padding:24px 10px;}
 }
+
+/* ---------- INVITES ---------- */
+.link-btn{background:none;border:none;padding:0;color:var(--accent-dark);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline;}
+.link-btn:hover{color:var(--accent);}
+.invite-form{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:22px;}
+.invite-fields{display:grid;grid-template-columns:1.4fr 1fr 0.7fr auto;gap:12px;align-items:end;}
+.invite-fields label{display:block;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--slate);margin-bottom:5px;}
+.invite-fields input,.invite-fields select{
+  width:100%;padding:9px 11px;border:1px solid var(--line-strong);border-radius:8px;
+  font-family:'Inter',sans-serif;font-size:14px;background:#fff;color:var(--ink);
+}
+.invite-ok{background:var(--accent-light);color:var(--accent-dark);border-radius:8px;padding:10px 13px;font-size:13px;margin-top:14px;line-height:1.5;}
+.admin-table + .section-head{margin-top:30px;}
+@media (max-width:760px){ .invite-fields{grid-template-columns:1fr;} }
