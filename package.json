@@ -12,7 +12,8 @@
     "digest:dry": "node scripts/daily-digest.js --dry-run",
     "seed": "node scripts/seed.js",
     "sync:order": "node scripts/backfill-order.js",
-    "cleanup:placeholders": "node scripts/remove-placeholder-projects.js"
+    "cleanup:placeholders": "node scripts/remove-placeholder-projects.js",
+    "test:rules": "firebase emulators:exec --only firestore --project rules-test \"node scripts/rules-test.cjs\""
   },
   "dependencies": {
     "firebase": "^12.18.0",

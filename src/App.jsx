@@ -13,7 +13,7 @@ import TaskDialog from './components/TaskDialog';
 import { useProjects, useContacts, useTimeline } from './lib/firestore';
 
 export default function App() {
-  const { user, loading, isAdmin } = useAuth();
+  const { user, loading, isAdmin, notInvited, logout } = useAuth();
   const [view, setView] = useState('overview');
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   // null = closed. { projectId } = open, with the project pre-filled or not.
@@ -29,6 +29,26 @@ export default function App() {
 
   if (!user) {
     return <Login />;
+  }
+
+  // Authenticated, but nobody invited this address. Anyone can create an
+  // account with the public API key, so this is the expected landing place for
+  // someone who does -- and the rules give them no data either way.
+  if (notInvited) {
+    return (
+      <div className="center-screen">
+        <div className="login-card">
+          <h2>You're not on this team yet</h2>
+          <p className="sub">
+            <strong>{user.email}</strong> doesn't have an invitation to this dashboard. Ask an
+            admin to invite that address from the Team tab, then sign in again.
+          </p>
+          <button className="btn" onClick={logout} style={{ width: '100%', marginTop: 8 }}>
+            Sign out
+          </button>
+        </div>
+      </div>
+    );
   }
 
   function handleNav(key) {

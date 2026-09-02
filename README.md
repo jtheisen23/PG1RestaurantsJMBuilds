@@ -155,6 +155,7 @@ firestore.rules            Server-enforced role permissions
 scripts/seed.js            One-time data import script
 scripts/backfill-order.js  Syncs project order + completed flags from JSON
 scripts/daily-digest.js    Emails the daily activity summary
+scripts/rules-test.cjs     Security-rules tests (Firestore emulator)
 scripts/remove-placeholder-projects.js
                            Deletes the imported spreadsheet divider rows
 .github/workflows/         Scheduled digest job
@@ -170,6 +171,22 @@ scripts/remove-placeholder-projects.js
   `{ week, detail, who, order }`
 - `constructionProgress/{projectId}` — one doc per project, `{ <taskId>: true/false }`
 - `users/{uid}` — `{ email, name, role }`
+
+## Adding people
+
+Admins invite from the **Team** tab: enter an email and a role. The person then
+opens the dashboard, chooses "Set up your account", and picks their own
+password using that address. No Firebase console step, and no temporary
+password to pass around.
+
+Access comes from the invitation, not from having an account. Anyone can create
+an account against the public web API key, so the security rules grant data only
+to people who have a `users/{uid}` profile, and that profile can only be created
+against an invite — with the role the invite specifies. Someone who signs up
+uninvited gets a "you're not on this team yet" screen and no data at all.
+
+Run `npm run test:rules` to check that boundary still holds; see
+`scripts/rules-test.cjs` for the one-time setup.
 
 ## Notes on the permission model
 
