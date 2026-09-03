@@ -57,6 +57,10 @@ const check = async (label, promise) => {
   await check('stranger cannot read tasks',         assertFails(getDoc(doc(stranger, 'tasks/t1'))));
   await check('stranger cannot read activity',      assertFails(getDoc(doc(stranger, 'activity/a1'))));
   await check('stranger cannot read the team list', assertFails(getDoc(doc(stranger, 'users/admin1'))));
+  // A stranger may read their own empty profile slot -- it exposes nothing --
+  // but must still not be able to create one.
+  await check('stranger reading their own empty slot reveals nothing useful',
+    assertSucceeds(getDoc(doc(stranger, 'users/attacker'))));
   await check('stranger cannot self-provision',
     assertFails(setDoc(doc(stranger, 'users/attacker'), { email: 'attacker@evil.com', role: 'viewer' })));
   await check('stranger cannot self-provision as admin',
@@ -70,6 +74,13 @@ const check = async (label, promise) => {
   await check('anonymous cannot read projects', assertFails(getDoc(doc(anon, 'projects/p1'))));
 
   console.log('\n--- AN INVITED PERSON PROVISIONING THEMSELVES ---');
+  // The read below is the one that broke onboarding in production: first
+  // sign-in checks whether a profile exists, and that check is a read of a
+  // document that does not exist yet.
+  await check('can read their own (not yet created) profile',
+    assertSucceeds(getDoc(doc(invited, 'users/newuid'))));
+  await check('still cannot read anyone else\'s profile',
+    assertFails(getDoc(doc(invited, 'users/admin1'))));
   await check('can read their own invite',  assertSucceeds(getDoc(doc(invited, 'invites/invited@x.com'))));
   await check('cannot claim a higher role than invited',
     assertFails(setDoc(doc(invited, 'users/newuid'), { email: 'invited@x.com', role: 'admin' })));

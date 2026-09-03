@@ -13,7 +13,7 @@ import TaskDialog from './components/TaskDialog';
 import { useProjects, useContacts, useTimeline } from './lib/firestore';
 
 export default function App() {
-  const { user, loading, isAdmin, notInvited, logout } = useAuth();
+  const { user, loading, isAdmin, notInvited, authError, logout } = useAuth();
   const [view, setView] = useState('overview');
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   // null = closed. { projectId } = open, with the project pre-filled or not.
@@ -29,6 +29,30 @@ export default function App() {
 
   if (!user) {
     return <Login />;
+  }
+
+  // Signed in, but something went wrong reading or creating the profile. Show
+  // it plainly: silently rendering an empty dashboard makes a permissions
+  // problem look like missing data.
+  if (authError) {
+    return (
+      <div className="center-screen">
+        <div className="login-card">
+          <h2>Couldn't load your access</h2>
+          <p className="sub">{authError}</p>
+          <button className="btn" onClick={() => window.location.reload()} style={{ width: '100%' }}>
+            Reload
+          </button>
+          <button
+            className="btn ghost"
+            onClick={logout}
+            style={{ width: '100%', marginTop: 8, justifyContent: 'center' }}
+          >
+            Sign out
+          </button>
+        </div>
+      </div>
+    );
   }
 
   // Authenticated, but nobody invited this address. Anyone can create an

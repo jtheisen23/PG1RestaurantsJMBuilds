@@ -22,6 +22,10 @@ export function AuthProvider({ children }) {
   const [profileLoading, setProfileLoading] = useState(true);
   // Signed in but with no invite: authenticated, yet not a member of this team.
   const [notInvited, setNotInvited] = useState(false);
+  // Set when the profile could not be read or created. Without this the app
+  // rendered a signed-in shell with a null profile -- a "?" avatar and an
+  // empty dashboard -- which looks like a data problem rather than a denial.
+  const [authError, setAuthError] = useState('');
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -34,6 +38,7 @@ export function AuthProvider({ children }) {
     if (!user) {
       setProfile(null);
       setNotInvited(false);
+      setAuthError('');
       setProfileLoading(false);
       return;
     }
@@ -65,13 +70,35 @@ export function AuthProvider({ children }) {
             role: invite.data().role,
             createdAt: serverTimestamp(),
           };
-          await setDoc(ref, newProfile);
+          try {
+            await setDoc(ref, newProfile);
+          } catch (err) {
+            console.error('Could not create the user profile:', err);
+            setAuthError(
+              'Your account is invited, but setting up your profile was refused. ' +
+                'This usually means the app is running an outdated copy — try a hard refresh. ' +
+                `(${err.code || 'unknown error'})`
+            );
+            setProfile(null);
+            setProfileLoading(false);
+            return;
+          }
           setProfile(newProfile);
           setNotInvited(false);
+          setAuthError('');
         }
         setProfileLoading(false);
       },
-      () => setProfileLoading(false)
+      (err) => {
+        // Reaching here means reading the profile was denied outright.
+        console.error('Could not read the user profile:', err);
+        setAuthError(
+          `Signed in, but reading your profile was refused (${err.code || 'unknown error'}). ` +
+            'An admin may need to re-deploy the security rules.'
+        );
+        setProfile(null);
+        setProfileLoading(false);
+      }
     );
     return unsub;
   }, [user]);
@@ -95,6 +122,7 @@ export function AuthProvider({ children }) {
     user,
     profile,
     notInvited,
+    authError,
     loading: user === undefined || (user && profileLoading),
     login,
     signUp,
