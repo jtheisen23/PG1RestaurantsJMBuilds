@@ -60,7 +60,12 @@ service cloud.firestore {
     // with the public API key could mint themselves a viewer profile and read
     // every project, contact and task.
     match /users/{uid} {
-      allow read: if isMember();
+      // Reading your OWN profile must not require already being a member.
+      // First sign-in checks whether a profile exists, and on a not-yet-created
+      // document that check is still a read: gating it on membership makes
+      // provisioning impossible -- you would need a profile to discover you
+      // have no profile. Your own document leaks nothing about anyone else.
+      allow read: if isMember() || (isSignedIn() && uid == request.auth.uid);
       allow create: if isSignedIn() && request.auth.uid == uid
                     && hasInvite()
                     && request.resource.data.email == request.auth.token.email
