@@ -18,9 +18,16 @@ function dueLabel(due) {
   return { text, tone: '' };
 }
 
-// Shared by the Tasks tab and the tasks section on a project page.
-// `showProject` is off on a project page, where every row is that project.
-export default function TaskList({ tasks, showProject = true, emptyText = 'No tasks.' }) {
+// Shared by the Tasks tab, the tasks section on a project page, and each phase
+// accordion. `showProject` is off on a project page, where every row is that
+// project; `showPhase` is off inside a phase, where every row is that stage.
+export default function TaskList({
+  tasks,
+  showProject = true,
+  showPhase = true,
+  onEdit,
+  emptyText = 'No tasks.',
+}) {
   const { user, canEdit, isAdmin } = useAuth();
 
   if (!tasks.length) {
@@ -32,6 +39,10 @@ export default function TaskList({ tasks, showProject = true, emptyText = 'No ta
       {tasks.map((t) => {
         const due = t.done ? null : dueLabel(t.due);
         const mine = t.assigneeEmail && t.assigneeEmail === user?.email;
+        // Mirrors the security rule: admins can delete anything, an editor can
+        // delete a task they raised. Showing a button the rules would refuse
+        // is worse than not showing one.
+        const canDelete = isAdmin || (canEdit && t.createdBy === user?.email);
         return (
           <div className={`task-row ${t.done ? 'done' : ''}`} key={t.id}>
             <input
@@ -45,6 +56,7 @@ export default function TaskList({ tasks, showProject = true, emptyText = 'No ta
               <div className="task-title">{t.title}</div>
               <div className="task-meta">
                 {showProject && <span className="task-project">{t.projectName || 'Unknown project'}</span>}
+                {showPhase && t.phase && <span className="task-phase">{t.phase}</span>}
                 {t.assigneeEmail ? (
                   <span className={`task-who ${mine ? 'mine' : ''}`}>
                     {t.assigneeName || t.assigneeEmail}
@@ -57,17 +69,30 @@ export default function TaskList({ tasks, showProject = true, emptyText = 'No ta
               </div>
               {t.notes && <div className="task-notes">{t.notes}</div>}
             </div>
-            {isAdmin && (
-              <button
-                className="row-del"
-                title="Delete task"
-                onClick={() => {
-                  if (confirm(`Delete this task?\n\n${t.title}`)) deleteTask(t.id);
-                }}
-              >
-                ×
-              </button>
-            )}
+            <div className="task-row-actions">
+              {canEdit && onEdit && (
+                <button
+                  className="row-edit"
+                  title="Edit task"
+                  onClick={() => onEdit(t)}
+                  aria-label={`Edit task: ${t.title}`}
+                >
+                  Edit
+                </button>
+              )}
+              {canDelete && (
+                <button
+                  className="row-del"
+                  title={isAdmin ? 'Delete task' : 'Delete this task (you raised it)'}
+                  aria-label={`Delete task: ${t.title}`}
+                  onClick={() => {
+                    if (confirm(`Delete this task?\n\n${t.title}`)) deleteTask(t.id);
+                  }}
+                >
+                  ×
+                </button>
+              )}
+            </div>
           </div>
         );
       })}

@@ -369,3 +369,20 @@
 .invite-ok{background:var(--accent-light);color:var(--accent-dark);border-radius:8px;padding:10px 13px;font-size:13px;margin-top:14px;line-height:1.5;}
 .admin-table + .section-head{margin-top:30px;}
 @media (max-width:760px){ .invite-fields{grid-template-columns:1fr;} }
+
+/* Task rows carry an edit button alongside the delete one. */
+.task-row-actions{display:flex;align-items:center;gap:4px;}
+.row-edit{
+  background:none;border:none;color:var(--slate);cursor:pointer;
+  font:inherit;font-size:12px;font-weight:600;padding:4px 6px;border-radius:6px;
+}
+.row-edit:hover{background:var(--paper);color:var(--accent-dark);}
+.task-phase{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:1px 8px;font-weight:600;}
+
+/* Tasks filed under one stage, shown inside that stage's accordion. */
+.phase-tasks{margin-top:14px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--line);}
+.phase-tasks-head{
+  font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;
+  color:var(--slate);margin-bottom:9px;
+}
+.phase-tasks .task-empty{padding:6px 4px;font-size:12.5px;}

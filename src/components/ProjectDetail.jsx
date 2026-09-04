@@ -15,7 +15,7 @@ import { useAuth } from '../context/AuthContext';
 
 const QUICK_LETTERS = ['C', 'F', 'T', 'U', 'X', 'AA', 'DF', 'GM'];
 
-export default function ProjectDetail({ project, onBack, onAddTask }) {
+export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }) {
   const { user, canEdit, isAdmin } = useAuth();
   const { data: allTasks } = useTasks();
   const [openPhase, setOpenPhase] = useState('Real Estate');
@@ -132,7 +132,13 @@ export default function ProjectDetail({ project, onBack, onAddTask }) {
         )}
       </div>
 
-      <ProjectTasks projectId={project.id} tasks={allTasks} canEdit={canEdit} onAddTask={onAddTask} />
+      <ProjectTasks
+        projectId={project.id}
+        tasks={allTasks}
+        canEdit={canEdit}
+        onAddTask={onAddTask}
+        onEditTask={onEditTask}
+      />
 
       {PHASES.map((phase) => (
         <Accordion
@@ -144,6 +150,9 @@ export default function ProjectDetail({ project, onBack, onAddTask }) {
           canEdit={canEdit}
           toggleField={toggleField}
           commitText={commitText}
+          tasks={allTasks.filter((t) => t.projectId === project.id && t.phase === phase)}
+          onAddTask={onAddTask}
+          onEditTask={onEditTask}
         />
       ))}
 
@@ -173,7 +182,18 @@ function Rail3Row({ phase, value }) {
   );
 }
 
-function Accordion({ phase, project, open, onToggle, canEdit, toggleField, commitText }) {
+function Accordion({
+  phase,
+  project,
+  open,
+  onToggle,
+  canEdit,
+  toggleField,
+  commitText,
+  tasks,
+  onAddTask,
+  onEditTask,
+}) {
   const hs = headersByPhase[phase];
   const prog = phaseProgress(project, phase);
   const fields = project.fields || {};
@@ -181,6 +201,8 @@ function Accordion({ phase, project, open, onToggle, canEdit, toggleField, commi
   const key = { 'Real Estate': 're', 'Pre-Construction': 'pc', 'Construction/Ops': 'co' }[phase];
 
   const [hideDone, setHideDone] = useState(() => readHideDone(phase));
+
+  const openTasks = tasks.filter((t) => !t.done);
 
   // Only ticked checkboxes are hidden. Text and date fields are data entry
   // rather than progress -- there is no "completed" state to hide them by, and
@@ -216,6 +238,22 @@ function Accordion({ phase, project, open, onToggle, canEdit, toggleField, commi
             Hide completed
           </label>
         )}
+        {openTasks.length > 0 && (
+          <span className="task-count" title="Open tasks in this stage">
+            {openTasks.length} task{openTasks.length === 1 ? '' : 's'}
+          </span>
+        )}
+        {open && canEdit && (
+          <button
+            className="btn ghost small"
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddTask(project.id, phase);
+            }}
+          >
+            + Add Task
+          </button>
+        )}
         <span className="chev">&#9656;</span>
       </div>
       <div className="acc-body">
@@ -226,6 +264,20 @@ function Accordion({ phase, project, open, onToggle, canEdit, toggleField, commi
             {doneCount} completed {doneCount === 1 ? 'item is' : 'items are'} hidden.
           </div>
         )}
+        {/* The checklist below is the same fixed template on every project, so
+            it cannot be added to. Anything specific to this location and this
+            stage goes here as a task instead. */}
+        <div className="phase-tasks">
+          <div className="phase-tasks-head">Tasks in this stage</div>
+          <TaskList
+            tasks={tasks}
+            showProject={false}
+            showPhase={false}
+            onEdit={onEditTask}
+            emptyText="Nothing raised against this stage yet."
+          />
+        </div>
+
         <div className="field-grid">
           {visible.map((h) =>
             h.type === 'checkbox' ? (
@@ -247,6 +299,7 @@ function Accordion({ phase, project, open, onToggle, canEdit, toggleField, commi
             )
           )}
         </div>
+
       </div>
     </div>
   );
@@ -358,7 +411,7 @@ function readShowDone() {
   }
 }
 
-function ProjectTasks({ projectId, tasks, canEdit, onAddTask }) {
+function ProjectTasks({ projectId, tasks, canEdit, onAddTask, onEditTask }) {
   const [showDone, setShowDone] = useState(readShowDone);
 
   const mine = tasks.filter((t) => t.projectId === projectId);
@@ -403,6 +456,7 @@ function ProjectTasks({ projectId, tasks, canEdit, onAddTask }) {
         <TaskList
           tasks={visible}
           showProject={false}
+          onEdit={onEditTask}
           emptyText={
             mine.length
               ? 'Nothing open — every task here is complete.'
