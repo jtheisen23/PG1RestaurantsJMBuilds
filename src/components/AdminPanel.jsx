@@ -9,6 +9,21 @@ import {
 } from '../lib/firestore';
 import { ROLES, useAuth } from '../context/AuthContext';
 
+const APP_URL = window.location.origin;
+
+function invitationText(address) {
+  return [
+    `You've been given access to the PG1 development pipeline dashboard.`,
+    '',
+    `1. Go to ${APP_URL}`,
+    `2. Choose "Set up your account"`,
+    `3. Sign up with this exact address: ${address}`,
+    `4. Pick your own password`,
+    '',
+    `That address is the one that has been invited, so it has to match exactly.`,
+  ].join('\n');
+}
+
 export default function AdminPanel() {
   const { data: users, loading } = useUsers();
   const { data: invites } = useInvites();
@@ -20,6 +35,7 @@ export default function AdminPanel() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [invited, setInvited] = useState('');
+  const [copied, setCopied] = useState('');
 
   // An invite is "used up" once that person has signed in and been provisioned.
   const signedUp = useMemo(
@@ -53,12 +69,32 @@ export default function AdminPanel() {
     await setUserRole(uid, next);
   }
 
+  // Inviting someone records that they are allowed in; it does not send them
+  // anything. Nothing in this app can send mail -- there is no server to send
+  // it from -- so the invitation has to be passed on by whoever created it.
+  // This puts the whole message on the clipboard so that is one click.
+  async function copyInvite(address) {
+    const text = invitationText(address);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(address);
+      setTimeout(() => setCopied(''), 4000);
+    } catch {
+      // Clipboard access can be refused (an insecure origin, a locked-down
+      // browser). Fall back to something they can copy by hand.
+      window.prompt('Copy this message and send it to them:', text);
+    }
+  }
+
   return (
     <>
       <div className="role-banner">
         Invite someone by email and they can set their own password at the sign-in page. Nobody
         can reach any data without an invitation — that is enforced by the security rules, not
         just hidden in the interface.
+        <br />
+        <strong>Inviting does not email them.</strong> Use <em>Copy invitation</em> below and send
+        it to them yourself, however you normally would.
       </div>
 
       <form className="invite-form" onSubmit={handleInvite}>
@@ -100,8 +136,11 @@ export default function AdminPanel() {
         {error && <div className="login-error">{error}</div>}
         {invited && !error && (
           <div className="invite-ok">
-            <strong>{invited}</strong> is invited. Send them the dashboard link and tell them to
-            choose <em>“Set up your account”</em> using that exact address.
+            <strong>{invited}</strong> is invited — but nothing has been emailed to them.{' '}
+            <button type="button" className="link-btn" onClick={() => copyInvite(invited)}>
+              {copied === invited ? 'Copied ✓' : 'Copy invitation'}
+            </button>{' '}
+            and send it to them, then they can set their own password.
           </div>
         )}
       </form>
@@ -128,6 +167,14 @@ export default function AdminPanel() {
                   <td>{i.name || '—'}</td>
                   <td>{i.role}</td>
                   <td style={{ textAlign: 'right' }}>
+                    <button
+                      type="button"
+                      className="link-btn"
+                      style={{ marginRight: 12 }}
+                      onClick={() => copyInvite(i.email)}
+                    >
+                      {copied === i.email ? 'Copied ✓' : 'Copy invitation'}
+                    </button>
                     <button
                       className="row-del"
                       title="Withdraw invitation"
@@ -190,6 +237,9 @@ export default function AdminPanel() {
       </table>
 
       <div className="footer-note">
+        Anyone listed as invited has not signed up yet. If they say they never got anything, that
+        is expected — the invitation is only sent when you send it.
+        <br />
         Removing someone: withdraw a pending invitation here, or set an existing member to
         “viewer” to make the dashboard read-only for them. Deleting their sign-in credentials
         outright is still a Firebase console job (Authentication → Users).

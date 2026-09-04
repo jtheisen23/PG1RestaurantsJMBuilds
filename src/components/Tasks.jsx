@@ -3,7 +3,7 @@ import { useTasks } from '../lib/firestore';
 import { useAuth } from '../context/AuthContext';
 import TaskList from './TaskList';
 
-export default function Tasks({ projects, onAddTask }) {
+export default function Tasks({ projects, onAddTask, onEditTask }) {
   const { user, canEdit } = useAuth();
   const { data: tasks, loading } = useTasks();
   const [who, setWho] = useState('all');
@@ -75,6 +75,7 @@ export default function Tasks({ projects, onAddTask }) {
 
       <TaskList
         tasks={filtered}
+        onEdit={onEditTask}
         emptyText={
           showDone ? 'No tasks match these filters.' : 'No open tasks match these filters.'
         }

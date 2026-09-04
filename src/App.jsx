@@ -16,7 +16,8 @@ export default function App() {
   const { user, loading, isAdmin, notInvited, authError, logout } = useAuth();
   const [view, setView] = useState('overview');
   const [selectedProjectId, setSelectedProjectId] = useState(null);
-  // null = closed. { projectId } = open, with the project pre-filled or not.
+  // null = closed. { projectId, phase } opens a blank form with those
+  // pre-filled; { task } opens the same form editing an existing task.
   const [taskDialog, setTaskDialog] = useState(null);
 
   const { data: projects, loading: loadingProjects } = useProjects();
@@ -86,8 +87,12 @@ export default function App() {
     setView('detail');
   }
 
-  function handleAddTask(projectId) {
-    setTaskDialog({ projectId: projectId || '' });
+  function handleAddTask(projectId, phase) {
+    setTaskDialog({ projectId: projectId || '', phase: phase || '' });
+  }
+
+  function handleEditTask(task) {
+    setTaskDialog({ task });
   }
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
@@ -103,6 +108,7 @@ export default function App() {
             project={selectedProject}
             onBack={() => handleNav('overview')}
             onAddTask={handleAddTask}
+            onEditTask={handleEditTask}
           />
         )}
         {view === 'detail' && !selectedProject && !loadingProjects && (
@@ -115,7 +121,9 @@ export default function App() {
         )}
         {view === 'contacts' && <Contacts contacts={contacts} />}
         {view === 'construction' && <ConstructionPlaybook projects={projects} timeline={timeline} />}
-        {view === 'tasks' && <Tasks projects={projects} onAddTask={handleAddTask} />}
+        {view === 'tasks' && (
+          <Tasks projects={projects} onAddTask={handleAddTask} onEditTask={handleEditTask} />
+        )}
         {view === 'activity' && <Activity projects={projects} />}
         {view === 'admin' && isAdmin && <AdminPanel />}
       </main>
@@ -123,6 +131,8 @@ export default function App() {
         <TaskDialog
           projects={projects}
           fixedProjectId={taskDialog.projectId}
+          fixedPhase={taskDialog.phase}
+          task={taskDialog.task}
           onClose={() => setTaskDialog(null)}
         />
       )}
