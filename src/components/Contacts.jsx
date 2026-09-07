@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { createContact, updateContact, deleteContact } from '../lib/firestore';
 import { useAuth } from '../context/AuthContext';
+import { BRANDS, BRAND_BY_KEY, brandKeyFor } from '../lib/helpers';
 
 const FIELDS = [
   ['category', 'Category / Role', 1],
@@ -10,14 +11,37 @@ const FIELDS = [
   ['notes', 'Notes', 2],
 ];
 
-export default function Contacts({ contacts }) {
+export default function Contacts({ contacts: allContacts, brandKey, onSelectBrand }) {
   const { canEdit } = useAuth();
   const [adding, setAdding] = useState(false);
+
+  // Each brand keeps its own vendors, GCs and reps, so the list is scoped the
+  // way the project list is. Contacts that pre-date brands have no brandKey
+  // and resolve to Jersey Mike's, which is what they are.
+  const contacts = useMemo(
+    () => allContacts.filter((c) => brandKeyFor(c) === brandKey),
+    [allContacts, brandKey]
+  );
 
   async function handleAdd() {
     setAdding(true);
     try {
-      await createContact({ category: '', company: '', contact_name: '', contact: '', notes: '' });
+      const nextOrder =
+        allContacts.reduce(
+          (max, c) => (typeof c.order === 'number' && c.order > max ? c.order : max),
+          -1
+        ) + 1;
+      await createContact({
+        category: '',
+        company: '',
+        contact_name: '',
+        contact: '',
+        notes: '',
+        // Without this the new row would resolve to Jersey Mike's and vanish
+        // from the list the person is looking at.
+        brandKey,
+        order: nextOrder,
+      });
     } finally {
       setAdding(false);
     }
@@ -26,6 +50,16 @@ export default function Contacts({ contacts }) {
   return (
     <>
       <div className="controls">
+        {BRANDS.map((b) => (
+          <button
+            key={b.key}
+            className={`filter-chip ${brandKey === b.key ? 'active' : ''}`}
+            onClick={() => onSelectBrand(b.key)}
+          >
+            {b.name}
+          </button>
+        ))}
+        <div style={{ flex: 1 }} />
         {canEdit && (
           <button className="btn" onClick={handleAdd} disabled={adding}>
             {adding ? 'Adding…' : '+ Add Contact'}
@@ -47,13 +81,16 @@ export default function Contacts({ contacts }) {
           ) : (
             <tr>
               <td colSpan={FIELDS.length + 1} style={{ padding: 24, textAlign: 'center', color: 'var(--slate)' }}>
-                No contacts yet.
+                No contacts for {BRAND_BY_KEY[brandKey]?.name || 'this brand'} yet.
               </td>
             </tr>
           )}
         </tbody>
       </table>
-      <div className="footer-note">Vendors, GCs, architects, and other partner contacts for the development pipeline.</div>
+      <div className="footer-note">
+        Vendors, GCs, architects, and other partner contacts, kept separately for each brand.
+        Adding one here adds it to {BRAND_BY_KEY[brandKey]?.name || 'this brand'}.
+      </div>
     </>
   );
 }

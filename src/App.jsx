@@ -12,6 +12,7 @@ import Activity from './components/Activity';
 import Tasks from './components/Tasks';
 import TaskDialog from './components/TaskDialog';
 import { useProjects, useContacts, useTimeline } from './lib/firestore';
+import { DEFAULT_BRAND_KEY } from './lib/brands';
 
 const BRAND_KEY_STORAGE = 'pg1.brand';
 
@@ -159,7 +160,13 @@ export default function App() {
             </button>
           </div>
         )}
-        {view === 'contacts' && <Contacts contacts={contacts} />}
+        {view === 'contacts' && (
+          <Contacts
+            contacts={contacts}
+            brandKey={brandKey || DEFAULT_BRAND_KEY}
+            onSelectBrand={chooseBrand}
+          />
+        )}
         {view === 'construction' && <ConstructionPlaybook projects={projects} timeline={timeline} />}
         {view === 'tasks' && (
           <Tasks projects={projects} onAddTask={handleAddTask} onEditTask={handleEditTask} />

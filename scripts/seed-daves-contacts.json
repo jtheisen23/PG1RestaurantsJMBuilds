@@ -1,0 +1,236 @@
+[
+ {
+  "category": "Development:",
+  "company": null,
+  "contact_name": null,
+  "contact": null,
+  "notes": null,
+  "brandKey": "daves",
+  "order": 0
+ },
+ {
+  "category": "RTI",
+  "company": "Grease Vats",
+  "contact_name": "Melissa Milloit",
+  "contact": "mmilloit@rti-inc.com, 985-222-5368",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 1
+ },
+ {
+  "category": "Ecolab:",
+  "company": null,
+  "contact_name": "Roy Erickson",
+  "contact": "Cell: 336-687-8943 Email: roy.erickson@ecolab.com",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 2
+ },
+ {
+  "category": "Randal",
+  "company": "Millwork",
+  "contact_name": "Katherine Hinman",
+  "contact": "katherineh@randalretail.com",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 3
+ },
+ {
+  "category": "Pagers:",
+  "company": null,
+  "contact_name": "JTech",
+  "contact": "Rick Sierra: 470-539-6596 | 678-779-7392 - rsierra@jtech.com",
+  "notes": "www.jtech.com",
+  "brandKey": "daves",
+  "order": 4
+ },
+ {
+  "category": "Arc 3",
+  "company": "CO2",
+  "contact_name": "Jerry Beaver",
+  "contact": "540-537-0160, jerry.beaver@arc3gases.com",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 5
+ },
+ {
+  "category": "Pheonix Signs",
+  "company": "Exterior Signage",
+  "contact_name": "Randy Ulrey",
+  "contact": null,
+  "notes": null,
+  "brandKey": "daves",
+  "order": 6
+ },
+ {
+  "category": "Coke",
+  "company": null,
+  "contact_name": "Dominique Gordon",
+  "contact": "domigordon@coca-cola.com",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 7
+ },
+ {
+  "category": "Dynamic Media",
+  "company": null,
+  "contact_name": "Jamie Waldie",
+  "contact": "800-684-7050 x1096\n586-693-1096 (direct)\nJWaldie@dm-us.com",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 8
+ },
+ {
+  "category": "Vivant",
+  "company": null,
+  "contact_name": "kimberly@vivantcorp.com, projects@vivantcorp.com",
+  "contact": null,
+  "notes": null,
+  "brandKey": "daves",
+  "order": 9
+ },
+ {
+  "category": "Avati:",
+  "company": null,
+  "contact_name": "James Paino",
+  "contact": "916-878-1161, Jpaino@avanticorporate.com",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 10
+ },
+ {
+  "category": "Sign:",
+  "company": null,
+  "contact_name": "Randy Ulery: Pheonix Signs",
+  "contact": "Randy@phoenix-signs.com, 704.301.4303",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 11
+ },
+ {
+  "category": "Permitting Consult",
+  "company": null,
+  "contact_name": "Tim Collins",
+  "contact": null,
+  "notes": null,
+  "brandKey": "daves",
+  "order": 12
+ },
+ {
+  "category": "Easy Ice",
+  "company": "Ice Machine",
+  "contact_name": "Skyler Clark-Rep",
+  "contact": "sclark@easyice.com",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 13
+ },
+ {
+  "category": "Patio Shoppers",
+  "company": "Outdoor Umbrella and Bases",
+  "contact_name": "Myra Stokes",
+  "contact": "customerservice@patioshoppers.com, Direct (951) 696-1700 ext. 218",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 14
+ },
+ {
+  "category": "Prolink",
+  "company": null,
+  "contact_name": null,
+  "contact": null,
+  "notes": null,
+  "brandKey": "daves",
+  "order": 15
+ },
+ {
+  "category": "RPOS",
+  "company": "POS installation, low voltage, and other IT installation services.",
+  "contact_name": "Bryan Burrow",
+  "contact": "bburrow@resourcepos.com",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 16
+ },
+ {
+  "category": "Qu POS",
+  "company": null,
+  "contact_name": null,
+  "contact": null,
+  "notes": null,
+  "brandKey": "daves",
+  "order": 17
+ },
+ {
+  "category": "Crunchtime",
+  "company": null,
+  "contact_name": "Ariel Sickles",
+  "contact": "asickles@crunchtime.com",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 18
+ },
+ {
+  "category": "CaptiveAir Tech Support",
+  "company": null,
+  "contact_name": null,
+  "contact": "1-866-784-6900",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 19
+ },
+ {
+  "category": "Singer EVI",
+  "company": "New Store Smallwares",
+  "contact_name": "Danielle",
+  "contact": "dpysher@singerequipment.com",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 20
+ },
+ {
+  "category": "Cintas",
+  "company": "Towels & Aprons",
+  "contact_name": "Eric Gatchel",
+  "contact": "GatchelE@cintas.com",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 21
+ },
+ {
+  "category": "Corp Rep",
+  "company": null,
+  "contact_name": "Steven Ledesma",
+  "contact": null,
+  "notes": null,
+  "brandKey": "daves",
+  "order": 22
+ },
+ {
+  "category": "Cert of Insurance",
+  "company": null,
+  "contact_name": null,
+  "contact": "certificates@acoinsurance.com",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 23
+ },
+ {
+  "category": "Unifirst",
+  "company": "Cleaning/Mats/Rentals",
+  "contact_name": null,
+  "contact": "Phone: 800-794-2706\nEmail: Customerservice@unifirst.com",
+  "notes": null,
+  "brandKey": "daves",
+  "order": 24
+ },
+ {
+  "category": "R365",
+  "company": "Inventory",
+  "contact_name": "Ian Starkey: istarkey@restaurant365.com",
+  "contact": null,
+  "notes": null,
+  "brandKey": "daves",
+  "order": 25
+ }
+]
