@@ -1,21 +1,12 @@
 import { useState } from 'react';
-import {
-  HEADERS,
-  PHASES,
-  PHASE_COLOR,
-  headersByPhase,
-  notesHeaders,
-  checkboxCountByPhase,
-  phaseProgress,
-  pct,
-} from '../lib/helpers';
+import { phaseColor, phaseKey, phaseProgress, pct, templateForProject } from '../lib/helpers';
 import { updateProjectField, updateProjectMeta, deleteProject, useTasks } from '../lib/firestore';
 import TaskList from './TaskList';
 import { useAuth } from '../context/AuthContext';
 
 const QUICK_LETTERS = ['C', 'F', 'T', 'U', 'X', 'AA', 'DF', 'GM'];
 
-export default function ProjectDetail({ project, onBack, onAddTask }) {
+export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }) {
   const { user, canEdit, isAdmin } = useAuth();
   const { data: allTasks } = useTasks();
   const [openPhase, setOpenPhase] = useState('Real Estate');
@@ -24,16 +15,27 @@ export default function ProjectDetail({ project, onBack, onAddTask }) {
 
   if (!project) return null;
 
+  // Which brand's checklist this project is filled in against. A column
+  // letter means a different item in a different brand's spreadsheet, so
+  // every lookup below goes through the project's own template.
+  const tpl = templateForProject(project);
   const fields = project.fields || {};
 
   async function commitMeta(patch) {
     if (!canEdit) return;
-    await updateProjectMeta(project.id, patch, user);
+    // `brand` is the free-text label from the spreadsheet; `brandKey` is what
+    // decides which checklist the ticked letters are read against. On a
+    // project that pre-dates brands, pin the key to whatever it resolves to
+    // now, so renaming the label cannot silently re-point 200 columns at a
+    // different brand's checklist.
+    const guard =
+      'brand' in patch && !project.brandKey ? { brandKey: tpl.key } : null;
+    await updateProjectMeta(project.id, guard ? { ...patch, ...guard } : patch, user);
   }
 
   async function toggleField(letter, checked) {
     if (!canEdit) return;
-    const header = HEADERS.find((h) => h.letter === letter);
+    const header = tpl.headers.find((h) => h.letter === letter);
     await updateProjectField(project.id, letter, checked, user, {
       projectName: project.name || project.brand || '',
       label: header?.label || letter,
@@ -55,9 +57,7 @@ export default function ProjectDetail({ project, onBack, onAddTask }) {
   }
 
   const quick = QUICK_LETTERS.map((letter) => {
-    const h = headersByPhase['Real Estate']
-      .concat(headersByPhase['Pre-Construction'], headersByPhase['Construction/Ops'])
-      .find((hh) => hh.letter === letter);
+    const h = tpl.headers.find((hh) => hh.letter === letter && hh.phase);
     if (!h || h.type === 'checkbox') return null;
     return (
       <div className="qf-item" key={letter}>
@@ -121,8 +121,8 @@ export default function ProjectDetail({ project, onBack, onAddTask }) {
         </div>
 
         <div className="rails3">
-          {PHASES.map((phase) => (
-            <Rail3Row key={phase} phase={phase} value={phaseProgress(project, phase)} />
+          {tpl.phases.map((phase, i) => (
+            <Rail3Row key={phase} phase={phase} index={i} value={phaseProgress(project, phase)} />
           ))}
         </div>
 
@@ -132,24 +132,43 @@ export default function ProjectDetail({ project, onBack, onAddTask }) {
         )}
       </div>
 
-      <ProjectTasks projectId={project.id} tasks={allTasks} canEdit={canEdit} onAddTask={onAddTask} />
+      <ProjectTasks
+        projectId={project.id}
+        tasks={allTasks}
+        canEdit={canEdit}
+        onAddTask={onAddTask}
+        onEditTask={onEditTask}
+      />
 
-      {PHASES.map((phase) => (
+      {tpl.isEmpty && (
+        <div className="acc-hint brand-empty">
+          The {tpl.name} checklist has not been imported yet, so the phases below are empty. You
+          can still raise tasks against a stage, and they will stay put once the checklist lands.
+        </div>
+      )}
+
+      {tpl.phases.map((phase, i) => (
         <Accordion
           key={phase}
           phase={phase}
+          index={i}
           project={project}
+          template={tpl}
           open={openPhase === phase}
           onToggle={() => setOpenPhase(openPhase === phase ? null : phase)}
           canEdit={canEdit}
           toggleField={toggleField}
           commitText={commitText}
+          tasks={allTasks.filter((t) => t.projectId === project.id && t.phase === phase)}
+          onAddTask={onAddTask}
+          onEditTask={onEditTask}
         />
       ))}
 
-      {notesHeaders.length > 0 && (
+      {tpl.notesHeaders.length > 0 && (
         <NotesAccordion
           project={project}
+          template={tpl}
           open={openPhase === 'Notes/PSA'}
           onToggle={() => setOpenPhase(openPhase === 'Notes/PSA' ? null : 'Notes/PSA')}
           canEdit={canEdit}
@@ -161,26 +180,41 @@ export default function ProjectDetail({ project, onBack, onAddTask }) {
   );
 }
 
-function Rail3Row({ phase, value }) {
+function Rail3Row({ phase, index, value }) {
   return (
     <div className="rail3-row">
       <div className="lbl">{phase}</div>
       <div className="rail-track">
-        <div className="fill" style={{ width: `${pct(value)}%`, background: PHASE_COLOR[phase] }} />
+        <div className="fill" style={{ width: `${pct(value)}%`, background: phaseColor(phase, index) }} />
       </div>
       <div className="pct">{pct(value)}%</div>
     </div>
   );
 }
 
-function Accordion({ phase, project, open, onToggle, canEdit, toggleField, commitText }) {
-  const hs = headersByPhase[phase];
+function Accordion({
+  phase,
+  index,
+  project,
+  template,
+  open,
+  onToggle,
+  canEdit,
+  toggleField,
+  commitText,
+  tasks,
+  onAddTask,
+  onEditTask,
+}) {
+  const hs = template.headersByPhase[phase] || [];
   const prog = phaseProgress(project, phase);
   const fields = project.fields || {};
   const doneCount = hs.filter((h) => h.type === 'checkbox' && fields[h.letter] === true).length;
-  const key = { 'Real Estate': 're', 'Pre-Construction': 'pc', 'Construction/Ops': 'co' }[phase];
+  const key = phaseKey(phase, index);
 
   const [hideDone, setHideDone] = useState(() => readHideDone(phase));
+
+  const openTasks = tasks.filter((t) => !t.done);
 
   // Only ticked checkboxes are hidden. Text and date fields are data entry
   // rather than progress -- there is no "completed" state to hide them by, and
@@ -207,14 +241,30 @@ function Accordion({ phase, project, open, onToggle, canEdit, toggleField, commi
         <span className={`dot ${key}`} />
         <h3>{phase}</h3>
         <div className="track">
-          <div className="fill" style={{ width: `${pct(prog)}%`, background: PHASE_COLOR[phase] }} />
+          <div className="fill" style={{ width: `${pct(prog)}%`, background: phaseColor(phase, index) }} />
         </div>
-        <div className="pct">{doneCount}/{checkboxCountByPhase[phase]} done</div>
+        <div className="pct">{doneCount}/{template.checkboxCountByPhase[phase] ?? 0} done</div>
         {open && doneCount > 0 && (
           <label className="check-inline acc-filter" onClick={(e) => e.stopPropagation()}>
             <input type="checkbox" checked={hideDone} onChange={onHideDoneChange} />
             Hide completed
           </label>
+        )}
+        {openTasks.length > 0 && (
+          <span className="task-count" title="Open tasks in this stage">
+            {openTasks.length} task{openTasks.length === 1 ? '' : 's'}
+          </span>
+        )}
+        {open && canEdit && (
+          <button
+            className="btn ghost small"
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddTask(project.id, phase);
+            }}
+          >
+            + Add Task
+          </button>
         )}
         <span className="chev">&#9656;</span>
       </div>
@@ -226,6 +276,20 @@ function Accordion({ phase, project, open, onToggle, canEdit, toggleField, commi
             {doneCount} completed {doneCount === 1 ? 'item is' : 'items are'} hidden.
           </div>
         )}
+        {/* The checklist below is the same fixed template on every project, so
+            it cannot be added to. Anything specific to this location and this
+            stage goes here as a task instead. */}
+        <div className="phase-tasks">
+          <div className="phase-tasks-head">Tasks in this stage</div>
+          <TaskList
+            tasks={tasks}
+            showProject={false}
+            showPhase={false}
+            onEdit={onEditTask}
+            emptyText="Nothing raised against this stage yet."
+          />
+        </div>
+
         <div className="field-grid">
           {visible.map((h) =>
             h.type === 'checkbox' ? (
@@ -247,12 +311,13 @@ function Accordion({ phase, project, open, onToggle, canEdit, toggleField, commi
             )
           )}
         </div>
+
       </div>
     </div>
   );
 }
 
-function NotesAccordion({ project, open, onToggle, canEdit, toggleField, commitText }) {
+function NotesAccordion({ project, template, open, onToggle, canEdit, toggleField, commitText }) {
   const fields = project.fields || {};
   return (
     <div className={`accordion ${open ? 'open' : ''}`}>
@@ -265,7 +330,7 @@ function NotesAccordion({ project, open, onToggle, canEdit, toggleField, commitT
       </div>
       <div className="acc-body">
         <div className="field-grid">
-          {notesHeaders.map((h) =>
+          {template.notesHeaders.map((h) =>
             h.type === 'checkbox' ? (
               <CheckField
                 key={h.letter}
@@ -358,7 +423,7 @@ function readShowDone() {
   }
 }
 
-function ProjectTasks({ projectId, tasks, canEdit, onAddTask }) {
+function ProjectTasks({ projectId, tasks, canEdit, onAddTask, onEditTask }) {
   const [showDone, setShowDone] = useState(readShowDone);
 
   const mine = tasks.filter((t) => t.projectId === projectId);
@@ -403,6 +468,7 @@ function ProjectTasks({ projectId, tasks, canEdit, onAddTask }) {
         <TaskList
           tasks={visible}
           showProject={false}
+          onEdit={onEditTask}
           emptyText={
             mine.length
               ? 'Nothing open — every task here is complete.'

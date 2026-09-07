@@ -271,6 +271,9 @@ export async function createTask(task, user) {
     title: '',
     projectId: '',
     projectName: '',
+    // Which stage the task sits under, or '' for one that belongs to the
+    // project as a whole. Matches a value in PHASES.
+    phase: '',
     assigneeEmail: '',
     assigneeName: '',
     due: '',

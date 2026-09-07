@@ -103,12 +103,26 @@ service cloud.firestore {
 
     // Ad-hoc tasks raised against a project, each with someone responsible.
     // Editors can create and update them -- updating matters because anyone
-    // may tick off a task, not only whoever raised it. Deleting is limited to
-    // admins, since a task is a commitment someone else may be relying on.
+    // may tick off a task, not only whoever raised it.
+    //
+    // Deleting someone else's task stays admin-only: a task is a commitment
+    // another person may be relying on. But an editor can remove one they
+    // raised themselves, which is almost always a typo or a duplicate they
+    // just created -- needing an admin for that was pure friction.
+    // `createdBy` is stamped by createTask() and is not editable in the UI.
     match /tasks/{taskId} {
       allow read: if isMember();
-      allow create, update: if isEditor();
-      allow delete: if isAdmin();
+      allow create: if isEditor();
+      // `createdBy` is what the delete rule trusts, so it must not be
+      // rewritable -- otherwise anyone could claim a task and then delete it.
+      // Read with a default so a document that somehow lacks the field is
+      // still editable rather than frozen.
+      allow update: if isEditor()
+                    && request.resource.data.get('createdBy', '')
+                       == resource.data.get('createdBy', '');
+      allow delete: if isAdmin()
+                    || (isEditor()
+                        && resource.data.get('createdBy', '') == request.auth.token.email);
     }
 
     // Activity log: an append-only record of checklist items completed.

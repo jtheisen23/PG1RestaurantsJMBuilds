@@ -42,6 +42,9 @@ const check = async (label, promise) => {
     await setDoc(doc(db, 'invites/invited@x.com'), { email: 'invited@x.com', role: 'editor' });
     await setDoc(doc(db, 'projects/p1'), { name: 'Lexington Park', fields: {} });
     await setDoc(doc(db, 'tasks/t1'), { title: 'Chase landlord', projectId: 'p1' });
+    await setDoc(doc(db, 'tasks/t_mine'),  { title: 'Typo I made',  createdBy: 'editor@x.com' });
+    await setDoc(doc(db, 'tasks/t_yours'), { title: 'Someone else\'s', createdBy: 'admin@x.com' });
+    await setDoc(doc(db, 'tasks/t_admin'), { title: 'For the admin to bin', createdBy: 'editor@x.com' });
     await setDoc(doc(db, 'activity/a1'), { by: 'editor@x.com', item: 'LOI Sent', done: true });
   });
 
@@ -99,6 +102,20 @@ const check = async (label, promise) => {
     assertFails(setDoc(doc(editor, 'invites/friend@x.com'), { email: 'friend@x.com', role: 'admin' })));
   await check('editor cannot change roles',
     assertFails(setDoc(doc(editor, 'users/editor1'), { email: 'editor@x.com', role: 'admin' })));
+
+  console.log('\n--- DELETING A TASK ---');
+  // Deleting someone else's task stays admin-only; removing your own typo
+  // should not need one.
+  await check('editor cannot delete a task someone else raised',
+    assertFails(deleteDoc(doc(editor, 'tasks/t_yours'))));
+  await check('editor cannot claim someone else\'s task by rewriting createdBy',
+    assertFails(setDoc(doc(editor, 'tasks/t_yours'), { title: 'Someone else\'s', createdBy: 'editor@x.com' })));
+  await check('editor can still edit a task without touching createdBy',
+    assertSucceeds(setDoc(doc(editor, 'tasks/t_yours'), { title: 'Retitled', createdBy: 'admin@x.com' })));
+  await check('editor CAN delete a task they raised themselves',
+    assertSucceeds(deleteDoc(doc(editor, 'tasks/t_mine'))));
+  await check('admin can delete anyone\'s task',
+    assertSucceeds(deleteDoc(doc(admin, 'tasks/t_admin'))));
 
   console.log('\n--- ADMIN ---');
   await check('admin invites someone',

@@ -369,3 +369,67 @@
 .invite-ok{background:var(--accent-light);color:var(--accent-dark);border-radius:8px;padding:10px 13px;font-size:13px;margin-top:14px;line-height:1.5;}
 .admin-table + .section-head{margin-top:30px;}
 @media (max-width:760px){ .invite-fields{grid-template-columns:1fr;} }
+
+/* Task rows carry an edit button alongside the delete one. */
+.task-row-actions{display:flex;align-items:center;gap:4px;}
+.row-edit{
+  background:none;border:none;color:var(--slate);cursor:pointer;
+  font:inherit;font-size:12px;font-weight:600;padding:4px 6px;border-radius:6px;
+}
+.row-edit:hover{background:var(--paper);color:var(--accent-dark);}
+.task-phase{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:1px 8px;font-weight:600;}
+
+/* Tasks filed under one stage, shown inside that stage's accordion. */
+.phase-tasks{margin-top:14px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--line);}
+.phase-tasks-head{
+  font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;
+  color:var(--slate);margin-bottom:9px;
+}
+.phase-tasks .task-empty{padding:6px 4px;font-size:12.5px;}
+
+/* ---------- BRANDS ---------- */
+.brand-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:22px;}
+.brand-card{
+  display:flex;align-items:center;gap:15px;text-align:left;width:100%;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:20px 18px;cursor:pointer;font:inherit;color:inherit;
+  transition:border-color .13s,box-shadow .13s,transform .13s;
+}
+.brand-card:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(16,20,24,0.09);transform:translateY(-1px);}
+.brand-mark{
+  width:52px;height:52px;border-radius:11px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;
+  background:var(--ink);color:#fff;letter-spacing:-0.03em;
+}
+.brand-mark.jerseymikes{background:var(--accent);}
+.brand-mark.daves{background:var(--brick);}
+.brand-mark.mogu{background:var(--slate);}
+.brand-body{flex:1;min-width:0;}
+.brand-name{font-size:17px;font-weight:700;color:var(--ink);}
+.brand-counts{font-size:12.5px;color:var(--slate);margin-top:3px;}
+.brand-counts .muted{color:var(--slate);opacity:0.75;}
+.brand-rail{height:6px;background:var(--line);border-radius:4px;overflow:hidden;margin:9px 0 6px;}
+.brand-rail .fill{height:100%;background:var(--accent);}
+.brand-note{font-size:11.5px;color:var(--slate);}
+.brand-chev{color:var(--slate);font-size:15px;flex-shrink:0;}
+
+.brand-head{display:flex;align-items:center;gap:12px;margin:2px 0 18px;}
+.brand-head h2{margin:0;font-size:26px;}
+.brand-warn{
+  font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;
+  background:var(--amber-light);color:#8a5c14;border-radius:10px;padding:3px 10px;
+}
+.brand-empty{margin:0 0 14px;}
+
+/* Phase colours for a brand whose flow is not PG1's usual three stages.
+   Those three keep their named classes above; anything else is keyed by
+   position so the dots and stage badges still render. */
+.acc-head .dot.ph0{background:var(--accent);}
+.acc-head .dot.ph1{background:var(--amber);}
+.acc-head .dot.ph2{background:var(--brick);}
+.acc-head .dot.ph3{background:var(--slate);}
+.stage-badge.ph0{background:var(--accent-light);color:var(--accent-dark);}
+.stage-badge.ph1{background:var(--amber-light);color:#8a5c14;}
+.stage-badge.ph2{background:var(--brick-light);color:var(--brick);}
+.stage-badge.ph3{background:#e4e8ed;color:var(--chrome);}
