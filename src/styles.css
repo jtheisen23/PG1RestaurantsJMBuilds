@@ -434,3 +434,11 @@
 .stage-badge.ph2{background:var(--brick-light);color:var(--brick);}
 .stage-badge.ph3{background:#e4e8ed;color:var(--chrome);}
 .modal-sub{margin:0;font-size:12.5px;color:var(--slate);}
+
+/* Playbook rows carry the trade, duration and whether an inspection is
+   needed, where the brand's sheet supplies them. */
+.citem-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end;}
+.cmeta{font-size:11px;font-weight:700;border-radius:10px;padding:2px 8px;white-space:nowrap;}
+.cmeta.dur{background:var(--paper);border:1px solid var(--line);color:var(--slate);font-family:'JetBrains Mono',monospace;}
+.cmeta.insp{background:var(--amber-light);color:#8a5c14;}
+.citem-note{grid-column:2 / -1;font-size:12px;color:var(--slate);line-height:1.5;}

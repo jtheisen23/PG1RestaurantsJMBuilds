@@ -1,5 +1,6 @@
 /**
- * Stamps an explicit `brandKey` on every project and contact that lacks one.
+ * Stamps an explicit `brandKey` on every project, contact and playbook step
+ * that lacks one.
  *
  * Projects imported from the original spreadsheet carry only a free-text
  * `brand` column ("Jersey Mikes ", trailing space and all). The app resolves
@@ -55,7 +56,32 @@ const db = getFirestore();
 async function main() {
   await stampProjects();
   await stampContacts();
+  await stampCollection('timeline', 'Playbook steps');
   process.exit(0);
+}
+
+// Generic stamper for the collections whose rows carry no brand of their own:
+// everything that pre-dates brands came from the Jersey Mike's workbook.
+async function stampCollection(name, label) {
+  const snap = await db.collection(name).get();
+  const todo = [];
+  snap.forEach((doc) => {
+    if (!doc.data().brandKey) todo.push(doc.id);
+  });
+
+  console.log(`\n${label}: ${snap.size} total, ${snap.size - todo.length} already stamped.`);
+  if (!todo.length) return console.log('  Nothing to do.');
+  console.log(`  ${todo.length} would be stamped ${DEFAULT_BRAND_KEY}.`);
+  if (!APPLY) return console.log('  DRY RUN - nothing written.');
+
+  for (let i = 0; i < todo.length; i += 400) {
+    const batch = db.batch();
+    todo.slice(i, i + 400).forEach((id) =>
+      batch.update(db.collection(name).doc(id), { brandKey: DEFAULT_BRAND_KEY })
+    );
+    await batch.commit();
+  }
+  console.log(`  Stamped ${todo.length}.`);
 }
 
 // Contacts have no brand column of their own -- the ones that pre-date brands

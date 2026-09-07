@@ -1,0 +1,222 @@
+[
+ {
+  "week": "Pre-Construction",
+  "detail": "Permits, final plans, health/fire sign-offs",
+  "who": "GC, Architect, Health Dept, Fire Marshal",
+  "duration": "1-2 weeks",
+  "inspection": "Yes",
+  "note": "Permits often cause delays; start early.",
+  "brandKey": "daves",
+  "order": 0
+ },
+ {
+  "week": "Site Prep",
+  "detail": "Demo (if any), layout, chalk lines",
+  "who": "GC, Demo Crew",
+  "duration": "2-3 days",
+  "inspection": "No",
+  "note": "Quick stage unless major demo required.",
+  "brandKey": "daves",
+  "order": 1
+ },
+ {
+  "week": "Underground Work",
+  "detail": "Cut slab, grease interceptor, drains, floor boxes, conduit, concrete patch",
+  "who": "Plumber, Electrician, Concrete Crew",
+  "duration": "1 week",
+  "inspection": "Yes",
+  "note": "Grease trap installation is critical early step.",
+  "brandKey": "daves",
+  "order": 2
+ },
+ {
+  "week": "Framing",
+  "detail": "Metal studs, wall layout, blocking for signage/neons",
+  "who": "Carpenter/Drywall Crew",
+  "duration": "3-5 days",
+  "inspection": "No",
+  "note": "Extra blocking for heavy neons and menu boards.",
+  "brandKey": "daves",
+  "order": 3
+ },
+ {
+  "week": "Rough-In - Plumbing",
+  "detail": "Water, vent, waste lines",
+  "who": "Plumber",
+  "duration": "3-5 days",
+  "inspection": "Yes",
+  "note": "Must be complete before drywall.",
+  "brandKey": "daves",
+  "order": 4
+ },
+ {
+  "week": "Rough-In - Electrical",
+  "detail": "Conduit, wiring, panels, neon prep boxes",
+  "who": "Electrician",
+  "duration": "1 week",
+  "inspection": "Yes",
+  "note": "Extra circuits for neon and branding elements.",
+  "brandKey": "daves",
+  "order": 5
+ },
+ {
+  "week": "Rough-In - HVAC",
+  "detail": "Ductwork, rooftop unit curbs, grease hood ducting",
+  "who": "HVAC Crew",
+  "duration": "1 week",
+  "inspection": "Yes",
+  "note": "Coordinate with roof penetration schedule.",
+  "brandKey": "daves",
+  "order": 6
+ },
+ {
+  "week": "Rough-In - Fire Suppression",
+  "detail": "Hood system installation",
+  "who": "Fire Suppression Contractor",
+  "duration": "3-4 days",
+  "inspection": "Yes",
+  "note": "Inspection required before ceiling close.",
+  "brandKey": "daves",
+  "order": 7
+ },
+ {
+  "week": "Rough-In - Low Voltage",
+  "detail": "Data, security, speakers, POS wiring",
+  "who": "Low-Voltage Contractor",
+  "duration": "2-3 days",
+  "inspection": "No",
+  "note": "POS drops often inspected by corporate QA.",
+  "brandKey": "daves",
+  "order": 8
+ },
+ {
+  "week": "Inspections",
+  "detail": "Framing, plumbing, electrical, HVAC rough-ins",
+  "who": "Inspectors, GC present",
+  "duration": "2-3 days",
+  "inspection": "Yes",
+  "note": "All trades sign off needed.",
+  "brandKey": "daves",
+  "order": 9
+ },
+ {
+  "week": "Drywall",
+  "detail": "Insulation, drywall hang/tape/mud, primer coat",
+  "who": "Insulation Crew, Drywall Crew",
+  "duration": "1-2 weeks",
+  "inspection": "No",
+  "note": "Prime before murals/graffiti.",
+  "brandKey": "daves",
+  "order": 10
+ },
+ {
+  "week": "Brand Build-Out - Graffiti",
+  "detail": "Graffiti artists paint murals on primed walls",
+  "who": "Graffiti/Mural Artists",
+  "duration": "2-4 days",
+  "inspection": "No",
+  "note": "Schedule artists after prime, before clear coat.",
+  "brandKey": "daves",
+  "order": 11
+ },
+ {
+  "week": "Brand Build-Out - Neon",
+  "detail": "Install neon signs, wire into boxes",
+  "who": "Neon Installers, Electrician",
+  "duration": "2-3 days",
+  "inspection": "Yes",
+  "note": "Requires electrical inspection after install.",
+  "brandKey": "daves",
+  "order": 12
+ },
+ {
+  "week": "Brand Build-Out - D\u00e9cor",
+  "detail": "Install d\u00e9cor package, signage prep, menu boards",
+  "who": "D\u00e9cor/Signage Installers",
+  "duration": "3-5 days",
+  "inspection": "No",
+  "note": "Coordinate with corporate designers.",
+  "brandKey": "daves",
+  "order": 13
+ },
+ {
+  "week": "Flooring & Ceiling",
+  "detail": "Tile/quarry, polished concrete, ceiling grid install",
+  "who": "Flooring Crew, Ceiling Grid Crew",
+  "duration": "1 week",
+  "inspection": "No",
+  "note": "Do after branding walls are complete.",
+  "brandKey": "daves",
+  "order": 14
+ },
+ {
+  "week": "Millwork & Equipment",
+  "detail": "Counters, shelving, kitchen equipment delivery",
+  "who": "Millwork Installer, Equipment Installer",
+  "duration": "1 week",
+  "inspection": "No",
+  "note": "Ensure counter design aligns with mural backdrops.",
+  "brandKey": "daves",
+  "order": 15
+ },
+ {
+  "week": "Trim-Out - Plumbing",
+  "detail": "Sinks, faucets, grease trap connections",
+  "who": "Plumber",
+  "duration": "2-3 days",
+  "inspection": "Yes",
+  "note": "Final plumbing inspection required.",
+  "brandKey": "daves",
+  "order": 16
+ },
+ {
+  "week": "Trim-Out - Electrical",
+  "detail": "Fixtures, neon hook-ups, POS, equipment",
+  "who": "Electrician",
+  "duration": "1 week",
+  "inspection": "Yes",
+  "note": "Lighting/neon inspection required.",
+  "brandKey": "daves",
+  "order": 17
+ },
+ {
+  "week": "Trim-Out - HVAC",
+  "detail": "Registers, thermostats, startup",
+  "who": "HVAC Crew",
+  "duration": "2-3 days",
+  "inspection": "Yes",
+  "note": "System test & balancing required.",
+  "brandKey": "daves",
+  "order": 18
+ },
+ {
+  "week": "Trim-Out - Fire Suppression",
+  "detail": "Final hookup & test",
+  "who": "Fire Suppression Contractor",
+  "duration": "1-2 days",
+  "inspection": "Yes",
+  "note": "Fire marshal sign-off needed.",
+  "brandKey": "daves",
+  "order": 19
+ },
+ {
+  "week": "Final Finishes",
+  "detail": "Final paint, sealing, furniture & d\u00e9cor install",
+  "who": "Painter, Furniture Installers, D\u00e9cor Installers",
+  "duration": "1 week",
+  "inspection": "No",
+  "note": "Coordinate with furniture delivery schedule.",
+  "brandKey": "daves",
+  "order": 20
+ },
+ {
+  "week": "Inspections & CO",
+  "detail": "Building, fire, health dept, CO issued",
+  "who": "Inspectors, GC present",
+  "duration": "3-5 days",
+  "inspection": "Yes",
+  "note": "Health inspection is critical for opening.",
+  "brandKey": "daves",
+  "order": 21
+ }
+]
