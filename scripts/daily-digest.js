@@ -178,15 +178,16 @@ function summarise(entries, nameById) {
 function buildText({ projects, people }, completed, reopened) {
   const lines = [`PG1 Pipeline - ${dayHeading}`, ''];
   lines.push(`${completed} item${completed === 1 ? '' : 's'} completed across ${projects.length} project${projects.length === 1 ? '' : 's'}.`);
-  if (reopened) lines.push(`${reopened} item${reopened === 1 ? '' : 's'} reopened.`);
+  if (reopened) lines.push(`${reopened} item${reopened === 1 ? '' : 's'} reopened (not listed below).`);
   if (people.length) {
     lines.push('', people.map(([who, n]) => `${who}: ${n}`).join('  |  '));
   }
   projects.forEach(([name, items]) => {
     lines.push('', name.toUpperCase(), '-'.repeat(name.length));
     items.forEach((e) => {
+      // Every listed entry is a completion; reversals are summarised above.
       lines.push(
-        `  ${e.done ? '[x]' : '[ ]'} ${e.item}${e.phase ? ` (${e.phase})` : ''} - ${e.by}, ${timeIn(e.date)}`
+        `  [x] ${e.item}${e.phase ? ` (${e.phase})` : ''} - ${e.by}, ${timeIn(e.date)}`
       );
     });
   });
@@ -209,8 +210,8 @@ function buildHtml({ projects, people }, completed, reopened) {
       .map(
         (e) => `<tr><td style="padding:6px 0;border-top:1px solid #e3e7ec;">
         <table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr>
-          <td width="20" valign="top" style="font:700 13px/1.5 Helvetica,Arial,sans-serif;color:${e.done ? '#125e9b' : '#8a939e'};">${e.done ? '&#10003;' : '&#8634;'}</td>
-          <td valign="top" style="font:400 14px/1.45 Helvetica,Arial,sans-serif;color:${e.done ? '#14181d' : '#5c6672'};">
+          <td width="20" valign="top" style="font:700 13px/1.5 Helvetica,Arial,sans-serif;color:#125e9b;">&#10003;</td>
+          <td valign="top" style="font:400 14px/1.45 Helvetica,Arial,sans-serif;color:#14181d;">
             ${escapeHtml(e.item)}
             <div style="font:400 12px/1.5 Helvetica,Arial,sans-serif;color:#5c6672;padding-top:2px;">
               ${escapeHtml(e.phase || '')}${e.phase ? ' &middot; ' : ''}${escapeHtml(e.by)} &middot; ${timeIn(e.date)}
@@ -297,7 +298,10 @@ async function main() {
     projectSnap.docs.map((d) => [d.id, d.data().name || d.data().brand || ''])
   );
 
-  const grouped = summarise(entries, nameById);
+  // Only completions are listed. A reversal is still counted and named in the
+  // summary line, but printing every un-tick alongside the real work was the
+  // noisiest part of this email -- and a mis-click produces one of each.
+  const grouped = summarise(entries.filter((e) => e.done), nameById);
   const subject = entries.length
     ? `PG1 Pipeline - ${completed} item${completed === 1 ? '' : 's'} completed, ${dayHeading}`
     : `PG1 Pipeline - no activity, ${dayHeading}`;

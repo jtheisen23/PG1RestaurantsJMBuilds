@@ -38,6 +38,7 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }
     const header = tpl.headers.find((h) => h.letter === letter);
     await updateProjectField(project.id, letter, checked, user, {
       projectName: project.name || project.brand || '',
+      brandKey: tpl.key,
       label: header?.label || letter,
       phase: header?.phase || '',
     });

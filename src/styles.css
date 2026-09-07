@@ -281,7 +281,7 @@
 .log-count{margin-left:auto;font-size:11.5px;color:var(--slate);font-family:'JetBrains Mono',monospace;}
 .log-day{margin-bottom:8px;}
 .log-day .section-head{margin:24px 0 10px;}
-.log-row{display:grid;grid-template-columns:62px 22px 1fr auto;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px 14px;margin-bottom:6px;}
+.log-row{display:grid;grid-template-columns:62px 22px 1fr auto auto;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px 14px;margin-bottom:6px;}
 .log-time{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--slate);white-space:nowrap;}
 .log-mark{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
 .log-mark.done{background:var(--accent-light);color:var(--accent-dark);}
@@ -292,6 +292,7 @@
 .log-who{font-size:11.5px;color:var(--slate);white-space:nowrap;text-align:right;}
 @media (max-width:760px){
   .log-row{grid-template-columns:52px 22px 1fr;gap:9px;}
+  .log-brand{grid-column:3;justify-self:start;margin-top:4px;}
   .log-who{grid-column:3;text-align:left;margin-top:2px;}
 }
 
@@ -442,3 +443,13 @@
 .cmeta.dur{background:var(--paper);border:1px solid var(--line);color:var(--slate);font-family:'JetBrains Mono',monospace;}
 .cmeta.insp{background:var(--amber-light);color:#8a5c14;}
 .citem-note{grid-column:2 / -1;font-size:12px;color:var(--slate);line-height:1.5;}
+
+/* Which brand an activity entry belongs to. */
+.log-brand{
+  font-size:11px;font-weight:700;border-radius:10px;padding:2px 9px;white-space:nowrap;
+  background:var(--paper);border:1px solid var(--line);color:var(--slate);
+}
+.log-brand.jerseymikes{background:var(--accent-light);border-color:var(--accent-light);color:var(--accent-dark);}
+.log-brand.daves{background:var(--brick-light);border-color:var(--brick-light);color:var(--brick);}
+.log-brand.mogu{background:#eef1f5;border-color:#eef1f5;color:var(--slate);}
+.log-hidden{color:var(--slate);opacity:0.8;}

@@ -218,6 +218,9 @@ export async function updateProjectField(projectId, field, value, user, meta) {
       by: user?.email || 'unknown',
       projectId,
       projectName: meta.projectName || '',
+      // Stored so the log still shows the brand after a project is deleted,
+      // the same reason the project name is stored rather than looked up.
+      brandKey: meta.brandKey || '',
       phase: meta.phase || '',
       item: meta.label || field,
       done: value,
@@ -276,6 +279,7 @@ export async function setConstructionCheck(projectId, taskId, checked, user, met
       by: user?.email || 'unknown',
       projectId,
       projectName: meta.projectName || '',
+      brandKey: meta.brandKey || '',
       phase: meta.week || 'Construction Playbook',
       item: meta.item || taskId,
       done: checked,
@@ -289,6 +293,9 @@ export async function createTask(task, user) {
     title: '',
     projectId: '',
     projectName: '',
+    // The project's brand, so completing a task can be attributed to a brand
+    // in the activity log without looking the project up.
+    brandKey: '',
     // Which stage the task sits under, or '' for one that belongs to the
     // project as a whole. Matches a value in PHASES.
     phase: '',
@@ -323,6 +330,7 @@ export async function setTaskDone(task, done, user) {
     by: user?.email || 'unknown',
     projectId: task.projectId || '',
     projectName: task.projectName || '',
+    brandKey: task.brandKey || '',
     phase: 'Task',
     item: task.title || 'Task',
     done,
