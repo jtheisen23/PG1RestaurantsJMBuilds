@@ -1,4 +1,5 @@
 import jerseyMikes from '../data/brands/jersey-mikes.json';
+import davesHotChicken from '../data/brands/daves-hot-chicken.json';
 
 // The three phases every brand's checklist is grouped into. A brand may
 // override this, but nothing does yet: the phases are how PG1 runs a
@@ -28,7 +29,7 @@ export const BRANDS = [
     name: "Dave's Hot Chicken",
     initials: 'DHC',
     aliases: ['daves hot chicken', "dave's hot chicken", 'dhc', 'daves'],
-    headers: [],
+    headers: davesHotChicken,
   },
   {
     key: 'mogu',

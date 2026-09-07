@@ -1,0 +1,1478 @@
+[
+ {
+  "col": 1,
+  "letter": "A",
+  "label": "Brand",
+  "phase": null,
+  "resp": "Responsibilities",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 2,
+  "letter": "B",
+  "label": "Nickname",
+  "phase": null,
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 3,
+  "letter": "C",
+  "label": "Full Address",
+  "phase": "Real Estate",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 4,
+  "letter": "D",
+  "label": "City",
+  "phase": "Real Estate",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 5,
+  "letter": "E",
+  "label": "State",
+  "phase": "Real Estate",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 6,
+  "letter": "F",
+  "label": "LLC Name",
+  "phase": "Real Estate",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 7,
+  "letter": "G",
+  "label": "Notes",
+  "phase": "Real Estate",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 8,
+  "letter": "H",
+  "label": "1st Gen, 2nd Gen or New Build",
+  "phase": "Real Estate",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 9,
+  "letter": "I",
+  "label": "Approved by REC?",
+  "phase": "Real Estate",
+  "resp": null,
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 10,
+  "letter": "J",
+  "label": "LOI Sent",
+  "phase": "Real Estate",
+  "resp": "Founders",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 11,
+  "letter": "K",
+  "label": "LOI Signed",
+  "phase": "Real Estate",
+  "resp": "Founders",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 12,
+  "letter": "L",
+  "label": "LLC Created",
+  "phase": "Real Estate",
+  "resp": "Mook",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 13,
+  "letter": "M",
+  "label": "Create Operating/Cash Account",
+  "phase": "Real Estate",
+  "resp": "Mook",
+  "hint": "Truist or Wells Ideal, Let Andrea know ASAP to get deposit slips",
+  "type": "text"
+ },
+ {
+  "col": 14,
+  "letter": "N",
+  "label": "Negotiate Lease",
+  "phase": "Real Estate",
+  "resp": "Founders",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 15,
+  "letter": "O",
+  "label": "Lease Sent",
+  "phase": "Real Estate",
+  "resp": "Mook",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 16,
+  "letter": "P",
+  "label": "Site Survey",
+  "phase": "Real Estate",
+  "resp": "Development",
+  "hint": "(Contact Greg Ralph)",
+  "type": "checkbox"
+ },
+ {
+  "col": 17,
+  "letter": "Q",
+  "label": "Design Request Submitted",
+  "phase": "Real Estate",
+  "resp": "Kim",
+  "hint": "kevin k savannah and tiffany : (Savannah Moore) savannah.moore@daveshotchicken.com or design@daveshotchicken.com",
+  "type": "checkbox"
+ },
+ {
+  "col": 18,
+  "letter": "R",
+  "label": "Store Layout Recieved",
+  "phase": "Real Estate",
+  "resp": "Kim",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 19,
+  "letter": "S",
+  "label": "Store Layout Approved",
+  "phase": "Real Estate",
+  "resp": "Kim",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 20,
+  "letter": "T",
+  "label": "Lease Signed",
+  "phase": "Real Estate",
+  "resp": "Mook",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 21,
+  "letter": "U",
+  "label": "Lease Countersigned",
+  "phase": "Real Estate",
+  "resp": "Mookie",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 22,
+  "letter": "V",
+  "label": "Landlord Contact",
+  "phase": "Real Estate",
+  "resp": "Mason",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 23,
+  "letter": "W",
+  "label": "GLA (SF)",
+  "phase": "Real Estate",
+  "resp": "Kim",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 24,
+  "letter": "X",
+  "label": "Rent/SF",
+  "phase": "Real Estate",
+  "resp": "Kim",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 25,
+  "letter": "Y",
+  "label": "NNN",
+  "phase": "Real Estate",
+  "resp": "Kim",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 26,
+  "letter": "Z",
+  "label": "Gross Rent",
+  "phase": "Real Estate",
+  "resp": "Kim",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 27,
+  "letter": "AA",
+  "label": "Initial Rent/Yr OR Purchase Price",
+  "phase": "Real Estate",
+  "resp": "Kim",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 28,
+  "letter": "AB",
+  "label": "TI Allowance (Per SF)",
+  "phase": "Real Estate",
+  "resp": "Kim",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 29,
+  "letter": "AC",
+  "label": "Total TI",
+  "phase": "Real Estate",
+  "resp": "Kim",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 30,
+  "letter": "AD",
+  "label": "Turnover date",
+  "phase": "Real Estate",
+  "resp": "Kim",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 31,
+  "letter": "AE",
+  "label": "Rent Commencement Date",
+  "phase": "Real Estate",
+  "resp": "Kim",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 32,
+  "letter": "AF",
+  "label": "Lease Term",
+  "phase": "Real Estate",
+  "resp": "Kim",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 33,
+  "letter": "AG",
+  "label": "Renewal Options",
+  "phase": "Real Estate",
+  "resp": "Kim",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 34,
+  "letter": "AH",
+  "label": "Free Rent",
+  "phase": "Real Estate",
+  "resp": "Kim > Andrea",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 35,
+  "letter": "AI",
+  "label": "Security Deposit",
+  "phase": "Real Estate",
+  "resp": "Andrea",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 36,
+  "letter": "AJ",
+  "label": "Escalators",
+  "phase": "Real Estate",
+  "resp": "Kim",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 37,
+  "letter": "AK",
+  "label": "Zoning Requirements",
+  "phase": "Real Estate",
+  "resp": "Architect",
+  "hint": "Architect handles",
+  "type": "text"
+ },
+ {
+  "col": 38,
+  "letter": "AL",
+  "label": "Property Inspection",
+  "phase": "Real Estate",
+  "resp": null,
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 39,
+  "letter": "AM",
+  "label": "Architectural Survey",
+  "phase": "Real Estate",
+  "resp": null,
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 40,
+  "letter": "AN",
+  "label": "Building Permit?",
+  "phase": "Real Estate",
+  "resp": null,
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 41,
+  "letter": "AO",
+  "label": "Proforma Link",
+  "phase": "Real Estate",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 42,
+  "letter": "AP",
+  "label": "LET GC KNOW ABOUT ALUMINUM SHEETS",
+  "phase": "Real Estate",
+  "resp": null,
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 43,
+  "letter": "AQ",
+  "label": "Notes",
+  "phase": "Real Estate",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 45,
+  "letter": "AS",
+  "label": "LLC Created",
+  "phase": "Pre-Construction",
+  "resp": null,
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 46,
+  "letter": "AT",
+  "label": "Business License",
+  "phase": "Pre-Construction",
+  "resp": "Andrea",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 47,
+  "letter": "AU",
+  "label": "VEC Account",
+  "phase": "Pre-Construction",
+  "resp": "Andrea",
+  "hint": "VA specific",
+  "type": "checkbox"
+ },
+ {
+  "col": 48,
+  "letter": "AV",
+  "label": "Sales Tax Paperwork",
+  "phase": "Pre-Construction",
+  "resp": "Andrea",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 49,
+  "letter": "AW",
+  "label": "Tax Rate (Co,City,State)",
+  "phase": "Pre-Construction",
+  "resp": "Andrea",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 50,
+  "letter": "AX",
+  "label": "Prelim CAP Budget",
+  "phase": "Pre-Construction",
+  "resp": "Andrea",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 51,
+  "letter": "AY",
+  "label": "Drawing Status:",
+  "phase": "Pre-Construction",
+  "resp": null,
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 52,
+  "letter": "AZ",
+  "label": "Link to Approvals:",
+  "phase": "Pre-Construction",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 53,
+  "letter": "BA",
+  "label": "Permit Status:",
+  "phase": "Pre-Construction",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 54,
+  "letter": "BB",
+  "label": "Architect Contact Info",
+  "phase": "Pre-Construction",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 55,
+  "letter": "BC",
+  "label": "Architect Invoice Paid?",
+  "phase": "Pre-Construction",
+  "resp": "Andrea",
+  "hint": "DHC: Gregory Ralph: tammy@varisys.com",
+  "type": "checkbox"
+ },
+ {
+  "col": 56,
+  "letter": "BD",
+  "label": "Exterior Signage Company",
+  "phase": "Pre-Construction",
+  "resp": null,
+  "hint": "Randy Ulrey- Pheonix Signs",
+  "type": "text"
+ },
+ {
+  "col": 57,
+  "letter": "BE",
+  "label": "Exterior Signage Status",
+  "phase": "Pre-Construction",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 58,
+  "letter": "BF",
+  "label": "Exterior Signage Renderings Requested",
+  "phase": "Pre-Construction",
+  "resp": "Kim",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 59,
+  "letter": "BG",
+  "label": "Exterior Signage Approved",
+  "phase": "Pre-Construction",
+  "resp": "Kim",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 60,
+  "letter": "BH",
+  "label": "Exterior Signage Approved by LL?",
+  "phase": "Pre-Construction",
+  "resp": "LL",
+  "hint": "I don't think all leases/permits require?",
+  "type": "checkbox"
+ },
+ {
+  "col": 61,
+  "letter": "BI",
+  "label": "Exterior Signage Paid",
+  "phase": "Pre-Construction",
+  "resp": "Andrea",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 62,
+  "letter": "BJ",
+  "label": "Gas Account/ Meter",
+  "phase": "Pre-Construction",
+  "resp": "Kim",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 63,
+  "letter": "BK",
+  "label": "Electric Account/ Meter",
+  "phase": "Pre-Construction",
+  "resp": "Kim",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 64,
+  "letter": "BL",
+  "label": "Water/Sewer Account",
+  "phase": "Pre-Construction",
+  "resp": "Kim",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 65,
+  "letter": "BM",
+  "label": "Phone | Internet Company",
+  "phase": "Pre-Construction",
+  "resp": "Kim",
+  "hint": "Vivant",
+  "type": "text"
+ },
+ {
+  "col": 66,
+  "letter": "BN",
+  "label": "Phone | Internet",
+  "phase": "Pre-Construction",
+  "resp": "Kim",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 67,
+  "letter": "BO",
+  "label": "Do we need a dumpster?",
+  "phase": "Pre-Construction",
+  "resp": "Terry",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 68,
+  "letter": "BP",
+  "label": "Landlord Required Insurance",
+  "phase": "Pre-Construction",
+  "resp": "Mook",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 69,
+  "letter": "BQ",
+  "label": "GC Bids Due",
+  "phase": "Pre-Construction",
+  "resp": "Terry",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 70,
+  "letter": "BR",
+  "label": "GC Bids Recieved",
+  "phase": "Pre-Construction",
+  "resp": "Terry",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 71,
+  "letter": "BS",
+  "label": "GC Selected/ Contact Info",
+  "phase": "Pre-Construction",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 72,
+  "letter": "BT",
+  "label": "GC Deposit Paid",
+  "phase": "Pre-Construction",
+  "resp": "Andrea",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 73,
+  "letter": "BU",
+  "label": "EasyIce Signup",
+  "phase": "Pre-Construction",
+  "resp": "Kim",
+  "hint": "Joni JOhnson",
+  "type": "checkbox"
+ },
+ {
+  "col": 74,
+  "letter": "BV",
+  "label": "Coke Setup",
+  "phase": "Pre-Construction",
+  "resp": "Terry",
+  "hint": "DHC: dhc@coca-cola.com, let them know adapters to mate their soda dispensers to the 22\u201d wide Scotsman NS1322A-32 ice machine",
+  "type": "checkbox"
+ },
+ {
+  "col": 75,
+  "letter": "BW",
+  "label": "FOH Quote",
+  "phase": "Pre-Construction",
+  "resp": "Kim & Terry",
+  "hint": "(Ashley Randazzo, ashleyr@randalretail.com, Randal Retail Group)",
+  "type": "checkbox"
+ },
+ {
+  "col": 76,
+  "letter": "BX",
+  "label": "FOH Signed",
+  "phase": "Pre-Construction",
+  "resp": "Kim & Terry",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 77,
+  "letter": "BY",
+  "label": "FOH Delivery Date",
+  "phase": "Pre-Construction",
+  "resp": "Kim & Terry",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 78,
+  "letter": "BZ",
+  "label": "Request Equipment Quote",
+  "phase": "Pre-Construction",
+  "resp": "Kim & Terry",
+  "hint": "James Paino",
+  "type": "checkbox"
+ },
+ {
+  "col": 79,
+  "letter": "CA",
+  "label": "Equipment Quote Received",
+  "phase": "Pre-Construction",
+  "resp": "Kim & Terry",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 80,
+  "letter": "CB",
+  "label": "Equipment Quote Approved",
+  "phase": "Pre-Construction",
+  "resp": "Kim & Terry",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 81,
+  "letter": "CC",
+  "label": "Equipment Deposit Paid",
+  "phase": "Pre-Construction",
+  "resp": "Andrea",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 82,
+  "letter": "CD",
+  "label": "GC Submittal Forms Completed",
+  "phase": "Pre-Construction",
+  "resp": null,
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 83,
+  "letter": "CE",
+  "label": "Identify District Manager",
+  "phase": "Pre-Construction",
+  "resp": "Tony",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 85,
+  "letter": "CG",
+  "label": "Start Const",
+  "phase": "Construction/Ops",
+  "resp": null,
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 86,
+  "letter": "CH",
+  "label": "Construction Schedule Recieved",
+  "phase": "Construction/Ops",
+  "resp": null,
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 87,
+  "letter": "CI",
+  "label": "Estimated CO Date",
+  "phase": "Construction/Ops",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 88,
+  "letter": "CJ",
+  "label": "Estimated Opening Date",
+  "phase": "Construction/Ops",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 89,
+  "letter": "CK",
+  "label": "Identify GM",
+  "phase": "Construction/Ops",
+  "resp": "Tony",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 90,
+  "letter": "CL",
+  "label": "Update CAP Budget",
+  "phase": "Construction/Ops",
+  "resp": "Andrea",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 91,
+  "letter": "CM",
+  "label": "POS ID",
+  "phase": "Construction/Ops",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 92,
+  "letter": "CN",
+  "label": "CO2",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": "Arc3",
+  "type": "checkbox"
+ },
+ {
+  "col": 93,
+  "letter": "CO",
+  "label": "Grand Open Kit Order Placed",
+  "phase": "Construction/Ops",
+  "resp": "Kim or Tony",
+  "hint": "UBest",
+  "type": "checkbox"
+ },
+ {
+  "col": 94,
+  "letter": "CP",
+  "label": "Smallwares Order Placed",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "Singer EVi",
+  "type": "checkbox"
+ },
+ {
+  "col": 95,
+  "letter": "CQ",
+  "label": "Order masterfil fryer-filter paper",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "https://www.webstaurantstore.com/oil-solutions-group-fe1820-masterfil-filter-fabric/806FE1820.html",
+  "type": "checkbox"
+ },
+ {
+  "col": 96,
+  "letter": "CR",
+  "label": "Order Wall Diamond Plate",
+  "phase": "Construction/Ops",
+  "resp": "Kim & terry",
+  "hint": "FASADE - 4' x 8' x .013\" Diamond Plate Brushed Aluminum Decorative Vinyl Wall Panel \nhttps://a.co/d/7sco0sC",
+  "type": "checkbox"
+ },
+ {
+  "col": 97,
+  "letter": "CS",
+  "label": "Order pagers",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "Rick Sierra\nCorporate Sales Manager \n\n470-539-6596 | 678-779-7392\n\nrsierra@jtech.com\n\nwww.jtech.com",
+  "type": "checkbox"
+ },
+ {
+  "col": 98,
+  "letter": "CT",
+  "label": "Smallwares Order Correct?",
+  "phase": "Construction/Ops",
+  "resp": "DO",
+  "hint": "Area DO",
+  "type": "checkbox"
+ },
+ {
+  "col": 99,
+  "letter": "CU",
+  "label": "Store Opening Insurance",
+  "phase": "Construction/Ops",
+  "resp": "Mason > COI",
+  "hint": "ACO Insurance",
+  "type": "checkbox"
+ },
+ {
+  "col": 100,
+  "letter": "CV",
+  "label": "Food/ Beverage Vendor Set Up",
+  "phase": "Construction/Ops",
+  "resp": "Andrea",
+  "hint": "DHC: PFG (Diana.Mathews@pfgc.com)",
+  "type": "checkbox"
+ },
+ {
+  "col": 101,
+  "letter": "CW",
+  "label": "Cleaning/Linens Set Up",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "DHC- Unifirst",
+  "type": "checkbox"
+ },
+ {
+  "col": 102,
+  "letter": "CX",
+  "label": "Pest Control",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 103,
+  "letter": "CY",
+  "label": "Set up EcoLab- Chemicals",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "DHC: M 336 687 8943 E roy.erickson@ecolab.com",
+  "type": "checkbox"
+ },
+ {
+  "col": 104,
+  "letter": "CZ",
+  "label": "Order Print N Prep & PPE",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "Ecolab: michelle.harden@ecolab.com",
+  "type": "text"
+ },
+ {
+  "col": 105,
+  "letter": "DA",
+  "label": "New Keys",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 106,
+  "letter": "DB",
+  "label": "Approve Neon Sign",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "DHC: Once we get the ai. doc we will send for production: randy@phoenix-signs.com",
+  "type": "checkbox"
+ },
+ {
+  "col": 107,
+  "letter": "DC",
+  "label": "Reclaimed Wood for the Front Counter",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": "Creative Materials Corp. \nTamara Ramsey\ntramsey@creativematerialscorp.com\n469-796-9389 cell\nOR\nhttps://www.lowes.com/pd/Style-Selections-48-in-x-96-in-Smooth-Brown-Mdf-Wall-Panel/5015199887",
+  "type": "checkbox"
+ },
+ {
+  "col": 108,
+  "letter": "DD",
+  "label": "Order Restroom Wallpaper",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "Ubest: Ask Terry the sq footage",
+  "type": "checkbox"
+ },
+ {
+  "col": 109,
+  "letter": "DE",
+  "label": "Order Indoor Chairs",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "Websteraunt",
+  "type": "checkbox"
+ },
+ {
+  "col": 110,
+  "letter": "DF",
+  "label": "Order Outdoor Tables (chairs must be plastic)",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "https://www.webstaurantstore.com/lancaster-table-seating-alloy-red-stackable-metal-indoor-outdoor-industrial-barstool-with-drain-hole-seat/164BMBKLSRED.html\n\nhttps://www.webstaurantstore.com/lancaster-table-seating-alloy-series-red-metal-indoor-outdoor-industrial-cafe-chair-with-vertical-slat-back-and-drain-hole-seat/164CMCAFERED.html",
+  "type": "checkbox"
+ },
+ {
+  "col": 111,
+  "letter": "DG",
+  "label": "POS Equipment Ordered",
+  "phase": "Construction/Ops",
+  "resp": "Kim>Andrea",
+  "hint": "QuPOS we will order from. Anthony from RPOS will do install.",
+  "type": "checkbox"
+ },
+ {
+  "col": 112,
+  "letter": "DH",
+  "label": "OSHA Safety Posters",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "DHC- Safety Posters",
+  "type": "checkbox"
+ },
+ {
+  "col": 113,
+  "letter": "DI",
+  "label": "Splatterhaus contacted",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": "Valyou: https://forms.fillout.com/t/qLA3HvYdDnus, In store need to have: Scissor Lift\n4 ladders (tall enough to reach the ceiling)\nLeftover touch up paint\n2 Large fans\nArticulating Boom lift (if you are doing an exterior)",
+  "type": "checkbox"
+ },
+ {
+  "col": 114,
+  "letter": "DJ",
+  "label": "Safe Ordered",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "https://www.amazon.com/dp/B0BZS52YH4?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1",
+  "type": "checkbox"
+ },
+ {
+  "col": 115,
+  "letter": "DK",
+  "label": "Equipment Start-Ups",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 116,
+  "letter": "DL",
+  "label": "Training Requirements Met",
+  "phase": "Construction/Ops",
+  "resp": "DO",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 117,
+  "letter": "DM",
+  "label": "Order Ipad",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "https://www.amazon.com/dp/B0D4XF3Z8K?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1\nNeed to order 3/store",
+  "type": "checkbox"
+ },
+ {
+  "col": 118,
+  "letter": "DN",
+  "label": "iPad Recieved",
+  "phase": "Construction/Ops",
+  "resp": "DO",
+  "hint": "Set up with Harri",
+  "type": "checkbox"
+ },
+ {
+  "col": 119,
+  "letter": "DO",
+  "label": "Milkeshake Install",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": "Avanti will coordinate with Terry\nOrder product prior",
+  "type": "checkbox"
+ },
+ {
+  "col": 120,
+  "letter": "DP",
+  "label": "Icee",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": "Hallie with Slusher\nOrder product prior",
+  "type": "checkbox"
+ },
+ {
+  "col": 121,
+  "letter": "DQ",
+  "label": "Tea Set Up",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": "Coke will coordinate with terry\nOrder product prior",
+  "type": "checkbox"
+ },
+ {
+  "col": 122,
+  "letter": "DR",
+  "label": "Prolink Camera",
+  "phase": "Construction/Ops",
+  "resp": null,
+  "hint": "Will evaluate for next store\nBen and Chris",
+  "type": "checkbox"
+ },
+ {
+  "col": 123,
+  "letter": "DS",
+  "label": "Set up QSR (digital ready board)",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "cmanuel@qsrautomations.com, support@qsrautomations.com, Steve Ledesma",
+  "type": "checkbox"
+ },
+ {
+  "col": 124,
+  "letter": "DT",
+  "label": "R365- Inventory",
+  "phase": "Construction/Ops",
+  "resp": "Andrea",
+  "hint": "Ian Starkey: istarkey@restaurant365.com",
+  "type": "checkbox"
+ },
+ {
+  "col": 125,
+  "letter": "DU",
+  "label": "First Data/FiServ Setup",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "DHC: steven.ledesma@daveshotchicken.com, ken.keifer@fiserv.com",
+  "type": "checkbox"
+ },
+ {
+  "col": 126,
+  "letter": "DV",
+  "label": "Gift Card Set-up (Givex)",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "Greg.Morales@daveshotchicken.com, jessica.conner@daveshotchicken.com,and steven@daveshotchicken.com",
+  "type": "checkbox"
+ },
+ {
+  "col": 127,
+  "letter": "DW",
+  "label": "3rd Party (Uber, DD,  Grub Hub)",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "Set up once date is set: DHC: steven.ledesma@daveshotchicken.com",
+  "type": "checkbox"
+ },
+ {
+  "col": 128,
+  "letter": "DX",
+  "label": "Catering (EZCater, etc.)",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "Both: EZ & ATG (reissa.leigh@americatogo.com)",
+  "type": "checkbox"
+ },
+ {
+  "col": 129,
+  "letter": "DY",
+  "label": "Force for Good",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "Fundraisers",
+  "type": "checkbox"
+ },
+ {
+  "col": 130,
+  "letter": "DZ",
+  "label": "OLO",
+  "phase": "Construction/Ops",
+  "resp": null,
+  "hint": "DHC: steven.ledesma@daveshotchicken.com",
+  "type": "checkbox"
+ },
+ {
+  "col": 131,
+  "letter": "EA",
+  "label": "Banners Ordered",
+  "phase": "Construction/Ops",
+  "resp": "Tony",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 132,
+  "letter": "EB",
+  "label": "Vivant INternet",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "DHC Only (customersuccess@vivantcorp.com, kimberly@vivantcorp.com)",
+  "type": "checkbox"
+ },
+ {
+  "col": 133,
+  "letter": "EC",
+  "label": "Vivant Local Install",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 134,
+  "letter": "ED",
+  "label": "Dynamic Media (Speakers & Music)",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "DHC: Jamie 586.693.1096, JWaldie@dm-us.com",
+  "type": "checkbox"
+ },
+ {
+  "col": 135,
+  "letter": "EE",
+  "label": "Dynamic Media Local Install",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "DHC: Jamie 586.693.1096, JWaldie@dm-us.com",
+  "type": "checkbox"
+ },
+ {
+  "col": 136,
+  "letter": "EF",
+  "label": "Make sure Gas is on before Equipment Delivery",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 137,
+  "letter": "EG",
+  "label": "Equipment Delivered",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 138,
+  "letter": "EH",
+  "label": "Place Coke Order (before coke machine is placed)",
+  "phase": "Construction/Ops",
+  "resp": "Tony",
+  "hint": "Steve Petting: Office 804-287-8150\nCell  503-329-1691\nSteve.pettingill@pfgc.com",
+  "type": "checkbox"
+ },
+ {
+  "col": 139,
+  "letter": "EI",
+  "label": "Coke Machine Delivered",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 140,
+  "letter": "EJ",
+  "label": "Lock in Daves Influencer",
+  "phase": "Construction/Ops",
+  "resp": "Mason",
+  "hint": "DHC Only",
+  "type": "checkbox"
+ },
+ {
+  "col": 141,
+  "letter": "EK",
+  "label": "Update CAP Budget",
+  "phase": "Construction/Ops",
+  "resp": "Andrea",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 142,
+  "letter": "EL",
+  "label": "Obtain Health Permits",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 143,
+  "letter": "EM",
+  "label": "Fire Suppression System Installation & Inspection",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 144,
+  "letter": "EN",
+  "label": "Fire Suppression System Contact",
+  "phase": "Construction/Ops",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 145,
+  "letter": "EO",
+  "label": "Oil Setup RTI",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": "Terry & GC get Schedlued",
+  "type": "checkbox"
+ },
+ {
+  "col": 146,
+  "letter": "EP",
+  "label": "Obtain Fire Permits",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 147,
+  "letter": "EQ",
+  "label": "Obtain Building Inspections",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 148,
+  "letter": "ER",
+  "label": "Store Set Up Completed",
+  "phase": "Construction/Ops",
+  "resp": "Tony",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 149,
+  "letter": "ES",
+  "label": "Health Inspection",
+  "phase": "Construction/Ops",
+  "resp": "Kim",
+  "hint": "Coordinate timing with Ops team",
+  "type": "checkbox"
+ },
+ {
+  "col": 150,
+  "letter": "ET",
+  "label": "CO",
+  "phase": "Construction/Ops",
+  "resp": "Terry",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 151,
+  "letter": "EU",
+  "label": "Initial Order Placed",
+  "phase": "Construction/Ops",
+  "resp": "Tony",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 152,
+  "letter": "EV",
+  "label": "Order Friends and Family and Grand Open Flyers",
+  "phase": "Construction/Ops",
+  "resp": "Mason",
+  "hint": "https://dhcportal.com/collections/stationary/products/grand-opening-flyers-editable",
+  "type": "checkbox"
+ },
+ {
+  "col": 153,
+  "letter": "EW",
+  "label": "Ops Approval to Open",
+  "phase": "Construction/Ops",
+  "resp": "Tony",
+  "hint": "Confirm date with Corp.",
+  "type": "text"
+ },
+ {
+  "col": 154,
+  "letter": "EX",
+  "label": "Hiring",
+  "phase": "Construction/Ops",
+  "resp": "Loredana",
+  "hint": "DHC: 80-100",
+  "type": "text"
+ },
+ {
+  "col": 155,
+  "letter": "EY",
+  "label": "# Hired",
+  "phase": "Construction/Ops",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 156,
+  "letter": "EZ",
+  "label": "Orientation/ Trianing",
+  "phase": "Construction/Ops",
+  "resp": "Tony",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 157,
+  "letter": "FA",
+  "label": "Grassrooting",
+  "phase": "Construction/Ops",
+  "resp": "Mason",
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 158,
+  "letter": "FB",
+  "label": "Change Order In Store",
+  "phase": "Construction/Ops",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 159,
+  "letter": "FC",
+  "label": "Address correct in G-Maps?",
+  "phase": "Construction/Ops",
+  "resp": null,
+  "hint": null,
+  "type": "checkbox"
+ },
+ {
+  "col": 160,
+  "letter": "FD",
+  "label": "Actual Open Date",
+  "phase": "Construction/Ops",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 162,
+  "letter": "FF",
+  "label": "PSA",
+  "phase": "Notes/PSA",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 163,
+  "letter": "FG",
+  "label": "Zone Requirements",
+  "phase": "Notes/PSA",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 164,
+  "letter": "FH",
+  "label": "Permit Status",
+  "phase": "Notes/PSA",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 165,
+  "letter": "FI",
+  "label": "Notes",
+  "phase": "Notes/PSA",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 166,
+  "letter": "FJ",
+  "label": "Link to Approvals",
+  "phase": "Notes/PSA",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 167,
+  "letter": "FK",
+  "label": "Projected Permit Date",
+  "phase": "Notes/PSA",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ }
+]
