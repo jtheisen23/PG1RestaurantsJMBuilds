@@ -3,6 +3,7 @@ import { useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import TopBar from './components/TopBar';
 import Overview from './components/Overview';
+import BrandPicker from './components/BrandPicker';
 import ProjectDetail from './components/ProjectDetail';
 import Contacts from './components/Contacts';
 import ConstructionPlaybook from './components/ConstructionPlaybook';
@@ -12,10 +13,34 @@ import Tasks from './components/Tasks';
 import TaskDialog from './components/TaskDialog';
 import { useProjects, useContacts, useTimeline } from './lib/firestore';
 
+const BRAND_KEY_STORAGE = 'pg1.brand';
+
+// The last brand chosen, so the Projects tab reopens where you left it.
+// localStorage can throw in a private window, so both accesses are guarded.
+function readBrand() {
+  try {
+    return localStorage.getItem(BRAND_KEY_STORAGE) || null;
+  } catch {
+    return null;
+  }
+}
+
+function writeBrand(key) {
+  try {
+    if (key) localStorage.setItem(BRAND_KEY_STORAGE, key);
+    else localStorage.removeItem(BRAND_KEY_STORAGE);
+  } catch {
+    // Preference just won't persist; the picker still works this session.
+  }
+}
+
 export default function App() {
   const { user, loading, isAdmin, notInvited, authError, logout } = useAuth();
   const [view, setView] = useState('overview');
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  // null = show the brand picker. Remembered so someone who only works on one
+  // brand is not choosing it again on every visit.
+  const [brandKey, setBrandKey] = useState(readBrand);
   // null = closed. { projectId, phase } opens a blank form with those
   // pre-filled; { task } opens the same form editing an existing task.
   const [taskDialog, setTaskDialog] = useState(null);
@@ -82,6 +107,11 @@ export default function App() {
     if (key !== 'detail') setSelectedProjectId(null);
   }
 
+  function chooseBrand(key) {
+    setBrandKey(key);
+    writeBrand(key);
+  }
+
   function handleSelectProject(id) {
     setSelectedProjectId(id);
     setView('detail');
@@ -101,7 +131,17 @@ export default function App() {
     <div id="app">
       <TopBar view={view} onNav={handleNav} saving={loadingProjects} onAddTask={handleAddTask} />
       <main>
-        {view === 'overview' && <Overview projects={projects} onSelect={handleSelectProject} />}
+        {view === 'overview' &&
+          (brandKey ? (
+            <Overview
+              projects={projects}
+              brandKey={brandKey}
+              onSelect={handleSelectProject}
+              onBack={() => chooseBrand(null)}
+            />
+          ) : (
+            <BrandPicker projects={projects} onSelectBrand={chooseBrand} />
+          ))}
         {view === 'detail' && selectedProject && (
           <ProjectDetail
             key={selectedProject.id}

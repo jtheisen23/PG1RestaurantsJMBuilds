@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createTask, updateTask, useUsers } from '../lib/firestore';
 import { useAuth } from '../context/AuthContext';
-import { PHASES } from '../lib/helpers';
+import { templateForProject } from '../lib/helpers';
 
 // Modal for raising a task against a project, or editing one that exists.
 // Opened from the top bar (project not chosen yet), a project page (project
@@ -21,6 +21,11 @@ export default function TaskDialog({ projects, fixedProjectId, fixedPhase, task,
   const [notes, setNotes] = useState(task?.notes || '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
+  // Stages come from the chosen project's brand, since brands can group their
+  // checklists differently.
+  const chosen = projects.find((p) => p.id === projectId);
+  const phases = chosen ? templateForProject(chosen).phases : [];
 
   useEffect(() => {
     function onKey(e) {
@@ -105,7 +110,7 @@ export default function TaskDialog({ projects, fixedProjectId, fixedPhase, task,
             <label htmlFor="task-phase">Stage</label>
             <select id="task-phase" value={phase} onChange={(e) => setPhase(e.target.value)}>
               <option value="">No stage</option>
-              {PHASES.map((p) => (
+              {phases.map((p) => (
                 <option key={p} value={p}>
                   {p}
                 </option>

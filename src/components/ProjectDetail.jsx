@@ -1,14 +1,5 @@
 import { useState } from 'react';
-import {
-  HEADERS,
-  PHASES,
-  PHASE_COLOR,
-  headersByPhase,
-  notesHeaders,
-  checkboxCountByPhase,
-  phaseProgress,
-  pct,
-} from '../lib/helpers';
+import { PHASE_COLOR, phaseProgress, pct, templateForProject } from '../lib/helpers';
 import { updateProjectField, updateProjectMeta, deleteProject, useTasks } from '../lib/firestore';
 import TaskList from './TaskList';
 import { useAuth } from '../context/AuthContext';
@@ -24,16 +15,27 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }
 
   if (!project) return null;
 
+  // Which brand's checklist this project is filled in against. A column
+  // letter means a different item in a different brand's spreadsheet, so
+  // every lookup below goes through the project's own template.
+  const tpl = templateForProject(project);
   const fields = project.fields || {};
 
   async function commitMeta(patch) {
     if (!canEdit) return;
-    await updateProjectMeta(project.id, patch, user);
+    // `brand` is the free-text label from the spreadsheet; `brandKey` is what
+    // decides which checklist the ticked letters are read against. On a
+    // project that pre-dates brands, pin the key to whatever it resolves to
+    // now, so renaming the label cannot silently re-point 200 columns at a
+    // different brand's checklist.
+    const guard =
+      'brand' in patch && !project.brandKey ? { brandKey: tpl.key } : null;
+    await updateProjectMeta(project.id, guard ? { ...patch, ...guard } : patch, user);
   }
 
   async function toggleField(letter, checked) {
     if (!canEdit) return;
-    const header = HEADERS.find((h) => h.letter === letter);
+    const header = tpl.headers.find((h) => h.letter === letter);
     await updateProjectField(project.id, letter, checked, user, {
       projectName: project.name || project.brand || '',
       label: header?.label || letter,
@@ -55,9 +57,7 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }
   }
 
   const quick = QUICK_LETTERS.map((letter) => {
-    const h = headersByPhase['Real Estate']
-      .concat(headersByPhase['Pre-Construction'], headersByPhase['Construction/Ops'])
-      .find((hh) => hh.letter === letter);
+    const h = tpl.headers.find((hh) => hh.letter === letter && hh.phase);
     if (!h || h.type === 'checkbox') return null;
     return (
       <div className="qf-item" key={letter}>
@@ -121,7 +121,7 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }
         </div>
 
         <div className="rails3">
-          {PHASES.map((phase) => (
+          {tpl.phases.map((phase) => (
             <Rail3Row key={phase} phase={phase} value={phaseProgress(project, phase)} />
           ))}
         </div>
@@ -140,11 +140,19 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }
         onEditTask={onEditTask}
       />
 
-      {PHASES.map((phase) => (
+      {tpl.isEmpty && (
+        <div className="acc-hint brand-empty">
+          The {tpl.name} checklist has not been imported yet, so the phases below are empty. You
+          can still raise tasks against a stage, and they will stay put once the checklist lands.
+        </div>
+      )}
+
+      {tpl.phases.map((phase) => (
         <Accordion
           key={phase}
           phase={phase}
           project={project}
+          template={tpl}
           open={openPhase === phase}
           onToggle={() => setOpenPhase(openPhase === phase ? null : phase)}
           canEdit={canEdit}
@@ -156,9 +164,10 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }
         />
       ))}
 
-      {notesHeaders.length > 0 && (
+      {tpl.notesHeaders.length > 0 && (
         <NotesAccordion
           project={project}
+          template={tpl}
           open={openPhase === 'Notes/PSA'}
           onToggle={() => setOpenPhase(openPhase === 'Notes/PSA' ? null : 'Notes/PSA')}
           canEdit={canEdit}
@@ -185,6 +194,7 @@ function Rail3Row({ phase, value }) {
 function Accordion({
   phase,
   project,
+  template,
   open,
   onToggle,
   canEdit,
@@ -194,7 +204,7 @@ function Accordion({
   onAddTask,
   onEditTask,
 }) {
-  const hs = headersByPhase[phase];
+  const hs = template.headersByPhase[phase] || [];
   const prog = phaseProgress(project, phase);
   const fields = project.fields || {};
   const doneCount = hs.filter((h) => h.type === 'checkbox' && fields[h.letter] === true).length;
@@ -231,7 +241,7 @@ function Accordion({
         <div className="track">
           <div className="fill" style={{ width: `${pct(prog)}%`, background: PHASE_COLOR[phase] }} />
         </div>
-        <div className="pct">{doneCount}/{checkboxCountByPhase[phase]} done</div>
+        <div className="pct">{doneCount}/{template.checkboxCountByPhase[phase] ?? 0} done</div>
         {open && doneCount > 0 && (
           <label className="check-inline acc-filter" onClick={(e) => e.stopPropagation()}>
             <input type="checkbox" checked={hideDone} onChange={onHideDoneChange} />
@@ -305,7 +315,7 @@ function Accordion({
   );
 }
 
-function NotesAccordion({ project, open, onToggle, canEdit, toggleField, commitText }) {
+function NotesAccordion({ project, template, open, onToggle, canEdit, toggleField, commitText }) {
   const fields = project.fields || {};
   return (
     <div className={`accordion ${open ? 'open' : ''}`}>
@@ -318,7 +328,7 @@ function NotesAccordion({ project, open, onToggle, canEdit, toggleField, commitT
       </div>
       <div className="acc-body">
         <div className="field-grid">
-          {notesHeaders.map((h) =>
+          {template.notesHeaders.map((h) =>
             h.type === 'checkbox' ? (
               <CheckField
                 key={h.letter}

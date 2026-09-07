@@ -1,10 +1,28 @@
 import { useMemo, useState } from 'react';
-import { phaseProgress, overallProgress, currentStage, pct } from '../lib/helpers';
+import {
+  phaseProgress,
+  overallProgress,
+  currentStage,
+  pct,
+  brandKeyFor,
+  templateFor,
+  BRAND_BY_KEY,
+} from '../lib/helpers';
 import { createProject } from '../lib/firestore';
 import { useAuth } from '../context/AuthContext';
 
-export default function Overview({ projects, onSelect }) {
+export default function Overview({ projects: allProjects, brandKey, onSelect, onBack }) {
   const { user, canEdit } = useAuth();
+  const brand = BRAND_BY_KEY[brandKey];
+  const template = templateFor(brandKey);
+
+  // Only this brand's projects, everywhere on the page -- the stat tiles
+  // included, since averaging across brands with different checklists would
+  // not mean anything.
+  const projects = useMemo(
+    () => allProjects.filter((p) => brandKeyFor(p) === brandKey),
+    [allProjects, brandKey]
+  );
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
   const [adding, setAdding] = useState(false);
@@ -54,9 +72,21 @@ export default function Overview({ projects, onSelect }) {
     try {
       // Place new projects after every existing one.
       const nextOrder =
-        projects.reduce((max, p) => (typeof p.order === 'number' && p.order > max ? p.order : max), -1) + 1;
+        allProjects.reduce(
+          (max, p) => (typeof p.order === 'number' && p.order > max ? p.order : max),
+          -1
+        ) + 1;
       const ref = await createProject(
-        { brand: 'Jersey Mikes', name: 'New Location', fields: {}, order: nextOrder },
+        {
+          brand: brand.name,
+          // Pins the project to this brand's checklist. Without it the ticked
+          // boxes would be read against whichever brand the free-text name
+          // happened to match.
+          brandKey,
+          name: 'New Location',
+          fields: {},
+          order: nextOrder,
+        },
         user
       );
       onSelect(ref.id);
@@ -67,6 +97,16 @@ export default function Overview({ projects, onSelect }) {
 
   return (
     <>
+      <button className="back-link" onClick={onBack}>
+        &larr; All Brands
+      </button>
+      <div className="brand-head">
+        <h2>{brand.name}</h2>
+        {template.isEmpty && (
+          <span className="brand-warn">Checklist not loaded yet</span>
+        )}
+      </div>
+
       <div className="stat-row">
         <div className="stat-card"><div className="num">{stats.total}</div><div className="lbl">Active Projects</div></div>
         <div className="stat-card"><div className="num">{stats.re}%</div><div className="lbl">Real Estate</div></div>
