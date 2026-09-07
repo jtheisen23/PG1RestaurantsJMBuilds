@@ -452,3 +452,4 @@
 .log-brand.jerseymikes{background:var(--accent-light);border-color:var(--accent-light);color:var(--accent-dark);}
 .log-brand.daves{background:var(--brick-light);border-color:var(--brick-light);color:var(--brick);}
 .log-brand.mogu{background:#eef1f5;border-color:#eef1f5;color:var(--slate);}
+.log-hidden{color:var(--slate);opacity:0.8;}
