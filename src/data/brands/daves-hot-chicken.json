@@ -195,7 +195,7 @@
   "phase": "Real Estate",
   "resp": "Mason",
   "hint": null,
-  "type": "checkbox"
+  "type": "text"
  },
  {
   "col": 23,
