@@ -53,8 +53,18 @@ export function useProjects() {
   return { data: sorted, loading };
 }
 
+// Sorted by the order they had in the brand's spreadsheet, so the list reads
+// the way the people who maintain it expect. Anything without an order sorts
+// to the end -- the same rule projects use.
 export function useContacts() {
-  return useCollection('contacts');
+  const { data, loading } = useCollection('contacts');
+  const sorted = useMemo(() => {
+    const rank = (c) => (typeof c.order === 'number' ? c.order : Number.MAX_SAFE_INTEGER);
+    return [...data].sort(
+      (a, b) => rank(a) - rank(b) || (a.category || '').localeCompare(b.category || '')
+    );
+  }, [data]);
+  return { data: sorted, loading };
 }
 
 export function useTimeline() {

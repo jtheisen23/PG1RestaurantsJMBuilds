@@ -1,5 +1,5 @@
 /**
- * Stamps an explicit `brandKey` on every project that lacks one.
+ * Stamps an explicit `brandKey` on every project and contact that lacks one.
  *
  * Projects imported from the original spreadsheet carry only a free-text
  * `brand` column ("Jersey Mikes ", trailing space and all). The app resolves
@@ -53,6 +53,37 @@ initializeApp({ credential: cert(serviceAccount) });
 const db = getFirestore();
 
 async function main() {
+  await stampProjects();
+  await stampContacts();
+  process.exit(0);
+}
+
+// Contacts have no brand column of their own -- the ones that pre-date brands
+// all came from the Jersey Mike's workbook, so they are stamped as such.
+async function stampContacts() {
+  const snap = await db.collection('contacts').get();
+  const todo = [];
+  snap.forEach((doc) => {
+    if (!doc.data().brandKey) todo.push(doc.id);
+  });
+
+  console.log(`\nContacts: ${snap.size} total, ${snap.size - todo.length} already stamped.`);
+  if (!todo.length) return console.log('  Nothing to do.');
+  console.log(`  ${todo.length} would be stamped ${DEFAULT_BRAND_KEY}.`);
+
+  if (!APPLY) return console.log('  DRY RUN - nothing written.');
+
+  for (let i = 0; i < todo.length; i += 400) {
+    const batch = db.batch();
+    todo.slice(i, i + 400).forEach((id) =>
+      batch.update(db.collection('contacts').doc(id), { brandKey: DEFAULT_BRAND_KEY })
+    );
+    await batch.commit();
+  }
+  console.log(`  Stamped ${todo.length} contact(s).`);
+}
+
+async function stampProjects() {
   const snap = await db.collection('projects').get();
   const todo = [];
   let already = 0;
@@ -68,7 +99,7 @@ async function main() {
 
   if (!todo.length) {
     console.log('Nothing to do.');
-    process.exit(0);
+    return;
   }
 
   const guessed = todo.filter((t) => !t.matched);
@@ -84,7 +115,7 @@ async function main() {
 
   if (!APPLY) {
     console.log(`\nDRY RUN - nothing written. Re-run with --apply to stamp ${todo.length} project(s).`);
-    process.exit(0);
+    return;
   }
 
   // Firestore batches cap at 500 writes; well clear of that here, but chunk
@@ -98,7 +129,6 @@ async function main() {
   }
 
   console.log(`\nStamped ${todo.length} project(s).`);
-  process.exit(0);
 }
 
 main().catch((err) => {
