@@ -421,3 +421,15 @@
   background:var(--amber-light);color:#8a5c14;border-radius:10px;padding:3px 10px;
 }
 .brand-empty{margin:0 0 14px;}
+
+/* Phase colours for a brand whose flow is not PG1's usual three stages.
+   Those three keep their named classes above; anything else is keyed by
+   position so the dots and stage badges still render. */
+.acc-head .dot.ph0{background:var(--accent);}
+.acc-head .dot.ph1{background:var(--amber);}
+.acc-head .dot.ph2{background:var(--brick);}
+.acc-head .dot.ph3{background:var(--slate);}
+.stage-badge.ph0{background:var(--accent-light);color:var(--accent-dark);}
+.stage-badge.ph1{background:var(--amber-light);color:#8a5c14;}
+.stage-badge.ph2{background:var(--brick-light);color:var(--brick);}
+.stage-badge.ph3{background:#e4e8ed;color:var(--chrome);}

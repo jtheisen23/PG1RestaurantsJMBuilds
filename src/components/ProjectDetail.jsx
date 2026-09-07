@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PHASE_COLOR, phaseProgress, pct, templateForProject } from '../lib/helpers';
+import { phaseColor, phaseKey, phaseProgress, pct, templateForProject } from '../lib/helpers';
 import { updateProjectField, updateProjectMeta, deleteProject, useTasks } from '../lib/firestore';
 import TaskList from './TaskList';
 import { useAuth } from '../context/AuthContext';
@@ -121,8 +121,8 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }
         </div>
 
         <div className="rails3">
-          {tpl.phases.map((phase) => (
-            <Rail3Row key={phase} phase={phase} value={phaseProgress(project, phase)} />
+          {tpl.phases.map((phase, i) => (
+            <Rail3Row key={phase} phase={phase} index={i} value={phaseProgress(project, phase)} />
           ))}
         </div>
 
@@ -147,10 +147,11 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }
         </div>
       )}
 
-      {tpl.phases.map((phase) => (
+      {tpl.phases.map((phase, i) => (
         <Accordion
           key={phase}
           phase={phase}
+          index={i}
           project={project}
           template={tpl}
           open={openPhase === phase}
@@ -179,12 +180,12 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }
   );
 }
 
-function Rail3Row({ phase, value }) {
+function Rail3Row({ phase, index, value }) {
   return (
     <div className="rail3-row">
       <div className="lbl">{phase}</div>
       <div className="rail-track">
-        <div className="fill" style={{ width: `${pct(value)}%`, background: PHASE_COLOR[phase] }} />
+        <div className="fill" style={{ width: `${pct(value)}%`, background: phaseColor(phase, index) }} />
       </div>
       <div className="pct">{pct(value)}%</div>
     </div>
@@ -193,6 +194,7 @@ function Rail3Row({ phase, value }) {
 
 function Accordion({
   phase,
+  index,
   project,
   template,
   open,
@@ -208,7 +210,7 @@ function Accordion({
   const prog = phaseProgress(project, phase);
   const fields = project.fields || {};
   const doneCount = hs.filter((h) => h.type === 'checkbox' && fields[h.letter] === true).length;
-  const key = { 'Real Estate': 're', 'Pre-Construction': 'pc', 'Construction/Ops': 'co' }[phase];
+  const key = phaseKey(phase, index);
 
   const [hideDone, setHideDone] = useState(() => readHideDone(phase));
 
@@ -239,7 +241,7 @@ function Accordion({
         <span className={`dot ${key}`} />
         <h3>{phase}</h3>
         <div className="track">
-          <div className="fill" style={{ width: `${pct(prog)}%`, background: PHASE_COLOR[phase] }} />
+          <div className="fill" style={{ width: `${pct(prog)}%`, background: phaseColor(phase, index) }} />
         </div>
         <div className="pct">{doneCount}/{template.checkboxCountByPhase[phase] ?? 0} done</div>
         {open && doneCount > 0 && (
