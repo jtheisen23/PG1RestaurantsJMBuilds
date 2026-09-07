@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useActivity } from '../lib/firestore';
+import { BRANDS, BRAND_BY_KEY, brandKeyFor } from '../lib/helpers';
 
 // Groups activity entries under a heading per calendar day, newest first.
 function dayKey(date) {
@@ -31,6 +32,7 @@ export default function Activity({ projects }) {
   const { data: entries, loading } = useActivity();
   const [who, setWho] = useState('all');
   const [project, setProject] = useState('all');
+  const [brand, setBrand] = useState('all');
 
   const people = useMemo(
     () => [...new Set(entries.map((e) => e.by).filter(Boolean))].sort(),
@@ -46,12 +48,23 @@ export default function Activity({ projects }) {
     return (e) => e.projectName || byId.get(e.projectId) || 'Unknown project';
   }, [projects]);
 
+  // The brand is stamped on entries written from now on. Everything logged
+  // before that is resolved from the project it points at, which covers every
+  // existing entry -- they are all Jersey Mike's, the only brand at the time.
+  const brandKeyOf = useMemo(() => {
+    const byId = new Map(projects.map((p) => [p.id, brandKeyFor(p)]));
+    return (e) => e.brandKey || byId.get(e.projectId) || '';
+  }, [projects]);
+
   const filtered = useMemo(
     () =>
       entries.filter(
-        (e) => (who === 'all' || e.by === who) && (project === 'all' || e.projectId === project)
+        (e) =>
+          (who === 'all' || e.by === who) &&
+          (project === 'all' || e.projectId === project) &&
+          (brand === 'all' || brandKeyOf(e) === brand)
       ),
-    [entries, who, project]
+    [entries, who, project, brand, brandKeyOf]
   );
 
   // serverTimestamp() is null for a beat on the writer's own client until the
@@ -81,17 +94,27 @@ export default function Activity({ projects }) {
             </option>
           ))}
         </select>
+        <select className="log-select" value={brand} onChange={(e) => setBrand(e.target.value)}>
+          <option value="all">All brands</option>
+          {BRANDS.map((b) => (
+            <option key={b.key} value={b.key}>
+              {b.name}
+            </option>
+          ))}
+        </select>
         <select
           className="log-select"
           value={project}
           onChange={(e) => setProject(e.target.value)}
         >
           <option value="all">All projects</option>
-          {projects.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name || 'Unnamed Location'}
-            </option>
-          ))}
+          {projects
+            .filter((p) => brand === 'all' || brandKeyFor(p) === brand)
+            .map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name || 'Unnamed Location'}
+              </option>
+            ))}
         </select>
         <div className="log-count">
           {filtered.length} {filtered.length === 1 ? 'entry' : 'entries'}
@@ -123,6 +146,9 @@ export default function Activity({ projects }) {
                     {e.phase ? ` · ${e.phase}` : ''}
                   </div>
                 </div>
+                <span className={`log-brand ${brandKeyOf(e)}`}>
+                  {BRAND_BY_KEY[brandKeyOf(e)]?.name || '—'}
+                </span>
                 <span className="log-who">{e.by}</span>
               </div>
             ))}

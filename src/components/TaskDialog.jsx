@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createTask, updateTask, useUsers } from '../lib/firestore';
 import { useAuth } from '../context/AuthContext';
-import { templateForProject } from '../lib/helpers';
+import { brandKeyFor, templateForProject } from '../lib/helpers';
 
 // Modal for raising a task against a project, or editing one that exists.
 // Opened from the top bar (project not chosen yet), a project page (project
@@ -48,6 +48,7 @@ export default function TaskDialog({ projects, fixedProjectId, fixedPhase, task,
       projectId,
       // Stored so the task stays readable if the project is renamed.
       projectName: project?.name || project?.brand || '',
+      brandKey: project ? brandKeyFor(project) : '',
       phase,
       title: title.trim(),
       assigneeEmail: assignee,

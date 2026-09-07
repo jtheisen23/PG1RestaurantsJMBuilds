@@ -54,6 +54,7 @@ export default function ConstructionPlaybook({
     const proj = projects.find((p) => p.id === effectiveProjectId);
     await setConstructionCheck(effectiveProjectId, taskId, checked, user, {
       projectName: proj?.name || proj?.brand || '',
+      brandKey,
       item: task?.detail || taskId,
       week: task?.week || 'Construction Playbook',
     });
