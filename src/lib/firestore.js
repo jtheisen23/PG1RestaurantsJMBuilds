@@ -67,8 +67,16 @@ export function useContacts() {
   return { data: sorted, loading };
 }
 
+// Ordered by the sequence in the brand's sheet. Sorted client-side rather
+// than with a Firestore orderBy because a document missing `order` is silently
+// dropped by orderBy -- the same trap projects hit.
 export function useTimeline() {
-  return useCollection('timeline', 'order');
+  const { data, loading } = useCollection('timeline');
+  const sorted = useMemo(() => {
+    const rank = (t) => (typeof t.order === 'number' ? t.order : Number.MAX_SAFE_INTEGER);
+    return [...data].sort((a, b) => rank(a) - rank(b));
+  }, [data]);
+  return { data: sorted, loading };
 }
 
 export function useUsers() {

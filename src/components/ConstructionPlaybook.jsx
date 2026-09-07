@@ -1,14 +1,36 @@
 import { useMemo, useState } from 'react';
 import { useConstructionProgress, createTimelineTask, updateTimelineTask, deleteTimelineTask, setConstructionCheck } from '../lib/firestore';
 import { useAuth } from '../context/AuthContext';
+import { BRANDS, BRAND_BY_KEY, brandKeyFor } from '../lib/helpers';
 
-export default function ConstructionPlaybook({ projects, timeline }) {
+export default function ConstructionPlaybook({
+  projects: allProjects,
+  timeline: allTimeline,
+  brandKey,
+  onSelectBrand,
+}) {
   const { user, canEdit } = useAuth();
-  const [projectId, setProjectId] = useState(projects[0]?.id || '');
-  const { data: progress } = useConstructionProgress(projectId);
+  const [projectId, setProjectId] = useState('');
   const [addingTask, setAddingTask] = useState(false);
 
-  const effectiveProjectId = projectId || projects[0]?.id || '';
+  // Each brand builds its stores differently -- Jersey Mike's runs a 12-week
+  // schedule, Dave's a sequence of build phases -- so the playbook and the
+  // projects it can be tracked against are both scoped to one brand.
+  const projects = useMemo(
+    () => allProjects.filter((p) => brandKeyFor(p) === brandKey),
+    [allProjects, brandKey]
+  );
+  const timeline = useMemo(
+    () => allTimeline.filter((t) => brandKeyFor(t) === brandKey),
+    [allTimeline, brandKey]
+  );
+
+  // Falling back to the first project of the brand keeps the selector valid
+  // when the brand changes underneath it.
+  const effectiveProjectId = projects.some((p) => p.id === projectId)
+    ? projectId
+    : projects[0]?.id || '';
+  const { data: progress } = useConstructionProgress(effectiveProjectId);
 
   const byWeek = useMemo(() => {
     const map = {};
@@ -41,19 +63,55 @@ export default function ConstructionPlaybook({ projects, timeline }) {
     if (!canEdit) return;
     setAddingTask(true);
     try {
-      const lastWeek = timeline.length ? timeline[timeline.length - 1].week : 'Week 1';
-      await createTimelineTask({ week: lastWeek, detail: 'New task', who: '', order: timeline.length });
+      const lastGroup = timeline.length ? timeline[timeline.length - 1].week : 'Week 1';
+      const nextOrder =
+        allTimeline.reduce(
+          (max, t) => (typeof t.order === 'number' && t.order > max ? t.order : max),
+          -1
+        ) + 1;
+      await createTimelineTask({
+        week: lastGroup,
+        detail: 'New task',
+        who: '',
+        // Without the brand the new row would resolve to Jersey Mike's and
+        // vanish from the playbook of whoever added it.
+        brandKey,
+        order: nextOrder,
+      });
     } finally {
       setAddingTask(false);
     }
   }
 
+  const brandChips = (
+    <div className="controls">
+      {BRANDS.map((b) => (
+        <button
+          key={b.key}
+          className={`filter-chip ${brandKey === b.key ? 'active' : ''}`}
+          onClick={() => onSelectBrand(b.key)}
+        >
+          {b.name}
+        </button>
+      ))}
+    </div>
+  );
+
   if (!projects.length) {
-    return <div className="empty-state">Add a project first to start tracking construction.</div>;
+    return (
+      <>
+        {brandChips}
+        <div className="empty-state">
+          <div className="big">No {BRAND_BY_KEY[brandKey]?.name || ''} projects yet</div>
+          Add a project for this brand to start tracking construction.
+        </div>
+      </>
+    );
   }
 
   return (
     <>
+      {brandChips}
       <div className="cselect">
         <label style={{ fontWeight: 600, fontSize: 13.5, color: 'var(--slate)' }}>Tracking construction for:</label>
         <select value={effectiveProjectId} onChange={(e) => setProjectId(e.target.value)}>
@@ -85,12 +143,15 @@ export default function ConstructionPlaybook({ projects, timeline }) {
           />
         ))
       ) : (
-        <div className="empty-state">No construction playbook tasks yet.</div>
+        <div className="empty-state">
+          <div className="big">No playbook for {BRAND_BY_KEY[brandKey]?.name || 'this brand'} yet</div>
+          Its build-out steps have not been imported.
+        </div>
       )}
 
       <div className="footer-note">
-        This is the standard 12-week build-out playbook. Checkboxes track progress per project; editing
-        task text updates the shared template for everyone.
+        The build-out playbook for {BRAND_BY_KEY[brandKey]?.name || 'this brand'}. Checkboxes track
+        progress per project; editing a step's text changes the template for everyone on this brand.
       </div>
     </>
   );
@@ -133,12 +194,19 @@ function TaskItem({ item, checked, canEdit, onCheck }) {
         onChange={(e) => setDetail(e.target.value)}
         onBlur={commitDetail}
       />
-      <span className="who">{item.who || ''}</span>
+      <div className="citem-meta">
+        {item.who && <span className="who">{item.who}</span>}
+        {item.duration && <span className="cmeta dur">{item.duration}</span>}
+        {String(item.inspection || '').toLowerCase() === 'yes' && (
+          <span className="cmeta insp">Inspection</span>
+        )}
+      </div>
       {canEdit && (
         <button className="row-del" title="Remove task" onClick={handleDelete}>
           &times;
         </button>
       )}
+      {item.note && <div className="citem-note">{item.note}</div>}
     </div>
   );
 }

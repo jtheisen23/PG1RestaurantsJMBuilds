@@ -167,7 +167,14 @@ export default function App() {
             onSelectBrand={chooseBrand}
           />
         )}
-        {view === 'construction' && <ConstructionPlaybook projects={projects} timeline={timeline} />}
+        {view === 'construction' && (
+          <ConstructionPlaybook
+            projects={projects}
+            timeline={timeline}
+            brandKey={brandKey || DEFAULT_BRAND_KEY}
+            onSelectBrand={chooseBrand}
+          />
+        )}
         {view === 'tasks' && (
           <Tasks projects={projects} onAddTask={handleAddTask} onEditTask={handleEditTask} />
         )}
