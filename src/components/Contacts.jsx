@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
-import { createContact, updateContact, deleteContact } from '../lib/firestore';
+import { updateContact, deleteContact } from '../lib/firestore';
 import { useAuth } from '../context/AuthContext';
 import { BRANDS, BRAND_BY_KEY, brandKeyFor } from '../lib/helpers';
+import ContactDialog from './ContactDialog';
 
 const FIELDS = [
   ['category', 'Category / Role', 1],
@@ -23,29 +24,13 @@ export default function Contacts({ contacts: allContacts, brandKey, onSelectBran
     [allContacts, brandKey]
   );
 
-  async function handleAdd() {
-    setAdding(true);
-    try {
-      const nextOrder =
-        allContacts.reduce(
-          (max, c) => (typeof c.order === 'number' && c.order > max ? c.order : max),
-          -1
-        ) + 1;
-      await createContact({
-        category: '',
-        company: '',
-        contact_name: '',
-        contact: '',
-        notes: '',
-        // Without this the new row would resolve to Jersey Mike's and vanish
-        // from the list the person is looking at.
-        brandKey,
-        order: nextOrder,
-      });
-    } finally {
-      setAdding(false);
-    }
-  }
+  // Placed after every existing contact, across all brands, so the orders
+  // stay unique and a contact never jumps the list it was added to.
+  const nextOrder =
+    allContacts.reduce(
+      (max, c) => (typeof c.order === 'number' && c.order > max ? c.order : max),
+      -1
+    ) + 1;
 
   return (
     <>
@@ -61,8 +46,8 @@ export default function Contacts({ contacts: allContacts, brandKey, onSelectBran
         ))}
         <div style={{ flex: 1 }} />
         {canEdit && (
-          <button className="btn" onClick={handleAdd} disabled={adding}>
-            {adding ? 'Adding…' : '+ Add Contact'}
+          <button className="btn" onClick={() => setAdding(true)}>
+            + Add Contact
           </button>
         )}
       </div>
@@ -87,6 +72,14 @@ export default function Contacts({ contacts: allContacts, brandKey, onSelectBran
           )}
         </tbody>
       </table>
+      {adding && (
+        <ContactDialog
+          brandKey={brandKey}
+          nextOrder={nextOrder}
+          onClose={() => setAdding(false)}
+        />
+      )}
+
       <div className="footer-note">
         Vendors, GCs, architects, and other partner contacts, kept separately for each brand.
         Adding one here adds it to {BRAND_BY_KEY[brandKey]?.name || 'this brand'}.
