@@ -59,9 +59,24 @@ export function templateForProject(project) {
   return templateFor(brandKeyFor(project));
 }
 
-export function phaseProgress(project, phase) {
+// Checklist items an admin has removed from this one project, because they do
+// not apply to this location. They are gone from its page and excluded from
+// both sides of its progress -- otherwise a project with an inapplicable item
+// could never reach 100%.
+export function hiddenFieldsOf(project) {
+  const list = project?.hiddenFields;
+  return new Set(Array.isArray(list) ? list : []);
+}
+
+// The headers of one phase that this project actually has, removals excluded.
+export function visibleHeaders(project, phase) {
   const tpl = templateForProject(project);
-  const hs = (tpl.headersByPhase[phase] || []).filter((h) => h.type === 'checkbox');
+  const hidden = hiddenFieldsOf(project);
+  return (tpl.headersByPhase[phase] || []).filter((h) => !hidden.has(h.letter));
+}
+
+export function phaseProgress(project, phase) {
+  const hs = visibleHeaders(project, phase).filter((h) => h.type === 'checkbox');
   if (!hs.length) return 0;
   const fields = project.fields || {};
   let checked = 0;
@@ -77,7 +92,7 @@ export function overallProgress(project) {
   let total = 0;
   const fields = project.fields || {};
   tpl.phases.forEach((p) => {
-    (tpl.headersByPhase[p] || [])
+    visibleHeaders(project, p)
       .filter((h) => h.type === 'checkbox')
       .forEach((h) => {
         total++;

@@ -466,3 +466,20 @@
 .data-error-body code{font-family:'JetBrains Mono',monospace;font-size:12px;}
 .data-error-hint{margin-top:9px;color:var(--slate);}
 .data-error-x{background:none;border:none;font-size:20px;line-height:1;color:var(--slate);cursor:pointer;padding:0 4px;}
+
+/* Admin-only removal of a checklist item from one project. */
+.cb-field{position:relative;}
+.fld-remove{
+  background:none;border:none;color:var(--slate);cursor:pointer;
+  font-size:15px;line-height:1;padding:0 4px;opacity:0;transition:opacity .12s,color .12s;
+}
+.cb-field:hover .fld-remove,.fld-remove:focus{opacity:1;}
+.fld-remove:hover{color:var(--brick);}
+.txt-field label{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.removed-block{margin-top:16px;padding-top:12px;border-top:1px dashed var(--line-strong);}
+.removed-list{margin-top:8px;display:flex;flex-direction:column;gap:5px;}
+.removed-row{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  font-size:13px;color:var(--slate);background:var(--paper);
+  border:1px solid var(--line);border-radius:7px;padding:7px 11px;
+}

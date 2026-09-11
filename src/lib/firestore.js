@@ -262,6 +262,27 @@ export async function updateProjectMeta(projectId, patch, user) {
   );
 }
 
+// Removing a checklist item from one project, or putting it back. Admin-only,
+// enforced by the security rules as well as the interface: it changes what the
+// project is measured against, and the template it comes from is shared by
+// every project of that brand.
+//
+// The stored value is left alone rather than deleted. A removal is a judgement
+// that an item does not apply here, and judgements get revised -- restoring it
+// should bring back what was there, not a blank.
+export async function setFieldHidden(projectId, letter, hidden, currentHidden, user) {
+  const next = new Set(Array.isArray(currentHidden) ? currentHidden : []);
+  if (hidden) next.add(letter);
+  else next.delete(letter);
+  return reportingWrite(hidden ? 'removing a checklist item' : 'restoring a checklist item', () =>
+    updateDoc(doc(db, 'projects', projectId), {
+      hiddenFields: [...next],
+      updatedAt: serverTimestamp(),
+      updatedBy: user?.email || 'unknown',
+    })
+  );
+}
+
 export async function deleteProject(projectId) {
   await reportingWrite('deleting a project', () => deleteDoc(doc(db, 'projects', projectId)));
   await deleteDoc(doc(db, 'constructionProgress', projectId)).catch(() => {});
