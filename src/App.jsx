@@ -11,6 +11,7 @@ import AdminPanel from './components/AdminPanel';
 import Activity from './components/Activity';
 import Tasks from './components/Tasks';
 import TaskDialog from './components/TaskDialog';
+import DataErrorBanner from './components/DataErrorBanner';
 import { useProjects, useContacts, useTimeline } from './lib/firestore';
 import { DEFAULT_BRAND_KEY } from './lib/brands';
 
@@ -132,6 +133,7 @@ export default function App() {
     <div id="app">
       <TopBar view={view} onNav={handleNav} saving={loadingProjects} onAddTask={handleAddTask} />
       <main>
+        <DataErrorBanner />
         {view === 'overview' &&
           (brandKey ? (
             <Overview

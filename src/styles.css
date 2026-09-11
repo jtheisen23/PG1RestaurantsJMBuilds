@@ -453,3 +453,16 @@
 .log-brand.daves{background:var(--brick-light);border-color:var(--brick-light);color:var(--brick);}
 .log-brand.mogu{background:#eef1f5;border-color:#eef1f5;color:var(--slate);}
 .log-hidden{color:var(--slate);opacity:0.8;}
+
+/* ---------- DATA ERRORS ---------- */
+.data-error{
+  display:flex;gap:12px;align-items:flex-start;
+  background:var(--amber-light);border:1px solid #e3c58a;border-radius:10px;
+  padding:14px 16px;margin-bottom:18px;
+}
+.data-error.denied{background:var(--brick-light);border-color:#e0b4ad;}
+.data-error-body{flex:1;font-size:13px;color:var(--ink);line-height:1.55;}
+.data-error-body ul{margin:6px 0 0;padding-left:18px;}
+.data-error-body code{font-family:'JetBrains Mono',monospace;font-size:12px;}
+.data-error-hint{margin-top:9px;color:var(--slate);}
+.data-error-x{background:none;border:none;font-size:20px;line-height:1;color:var(--slate);cursor:pointer;padding:0 4px;}

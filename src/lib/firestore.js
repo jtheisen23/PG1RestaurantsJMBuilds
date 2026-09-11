@@ -13,6 +13,7 @@ import {
   limit,
 } from 'firebase/firestore';
 import { db } from '../firebase';
+import { reportDataError } from './dataErrors';
 
 // ---------- generic realtime collection hook ----------
 function useCollection(name, orderField) {
@@ -29,7 +30,7 @@ function useCollection(name, orderField) {
         setLoading(false);
       },
       (err) => {
-        console.error(`Failed to load ${name}:`, err);
+        reportDataError(`loading ${name}`, err);
         setLoading(false);
       }
     );
@@ -141,7 +142,10 @@ export function useConstructionProgress(projectId) {
         setData(snap.exists() ? snap.data() : {});
         setLoading(false);
       },
-      () => setLoading(false)
+      (err) => {
+        reportDataError('loading construction progress', err);
+        setLoading(false);
+      }
     );
     return unsub;
   }, [projectId]);
@@ -161,7 +165,21 @@ async function logActivity(entry) {
   try {
     await addDoc(collection(db, 'activity'), { ...entry, at: serverTimestamp() });
   } catch (err) {
-    console.error('Activity log write failed (the edit itself was saved):', err);
+    // Still never blocks the edit that triggered it, but no longer invisible:
+    // a log that silently stops recording is worse than one that complains.
+    reportDataError('recording activity', err);
+  }
+}
+
+// Wraps a write so a refusal reaches the screen instead of becoming an
+// unhandled rejection. The error is re-thrown, so callers that already show
+// their own message (the task and contact dialogs) still do.
+async function reportingWrite(what, run) {
+  try {
+    return await run();
+  } catch (err) {
+    reportDataError(what, err);
+    throw err;
   }
 }
 
@@ -179,7 +197,7 @@ export function useActivity(max = 500) {
         setLoading(false);
       },
       (err) => {
-        console.error('Failed to load activity:', err);
+        reportDataError('loading activity', err);
         setLoading(false);
       }
     );
@@ -194,13 +212,15 @@ export function useActivity(max = 500) {
 // record last (shown in the UI as a small "last edited by" note).
 
 export async function createProject(project, user) {
-  return addDoc(collection(db, 'projects'), {
+  return reportingWrite('creating a project', () =>
+    addDoc(collection(db, 'projects'), {
     order: Number.MAX_SAFE_INTEGER,
     ...project,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-    updatedBy: user?.email || 'unknown',
-  });
+      updatedBy: user?.email || 'unknown',
+    })
+  );
 }
 
 // `meta` ({ projectName, label, phase }) is supplied by the caller, which has
@@ -208,11 +228,13 @@ export async function createProject(project, user) {
 // text edit would bury the checklist history in noise.
 export async function updateProjectField(projectId, field, value, user, meta) {
   const ref = doc(db, 'projects', projectId);
-  const result = await updateDoc(ref, {
-    [`fields.${field}`]: value,
-    updatedAt: serverTimestamp(),
-    updatedBy: user?.email || 'unknown',
-  });
+  const result = await reportingWrite('saving a checklist item', () =>
+    updateDoc(ref, {
+      [`fields.${field}`]: value,
+      updatedAt: serverTimestamp(),
+      updatedBy: user?.email || 'unknown',
+    })
+  );
   if (typeof value === 'boolean' && meta) {
     await logActivity({
       by: user?.email || 'unknown',
@@ -231,48 +253,58 @@ export async function updateProjectField(projectId, field, value, user, meta) {
 
 export async function updateProjectMeta(projectId, patch, user) {
   const ref = doc(db, 'projects', projectId);
-  return updateDoc(ref, {
-    ...patch,
-    updatedAt: serverTimestamp(),
-    updatedBy: user?.email || 'unknown',
-  });
+  return reportingWrite('saving project details', () =>
+    updateDoc(ref, {
+      ...patch,
+      updatedAt: serverTimestamp(),
+      updatedBy: user?.email || 'unknown',
+    })
+  );
 }
 
 export async function deleteProject(projectId) {
-  await deleteDoc(doc(db, 'projects', projectId));
+  await reportingWrite('deleting a project', () => deleteDoc(doc(db, 'projects', projectId)));
   await deleteDoc(doc(db, 'constructionProgress', projectId)).catch(() => {});
 }
 
 export async function createContact(contact) {
-  return addDoc(collection(db, 'contacts'), contact);
+  return reportingWrite('adding a contact', () => addDoc(collection(db, 'contacts'), contact));
 }
 
 export async function updateContact(contactId, patch) {
-  return updateDoc(doc(db, 'contacts', contactId), patch);
+  return reportingWrite('saving a contact', () =>
+    updateDoc(doc(db, 'contacts', contactId), patch)
+  );
 }
 
 export async function deleteContact(contactId) {
-  return deleteDoc(doc(db, 'contacts', contactId));
+  return reportingWrite('deleting a contact', () => deleteDoc(doc(db, 'contacts', contactId)));
 }
 
 export async function createTimelineTask(task) {
-  return addDoc(collection(db, 'timeline'), task);
+  return reportingWrite('adding a playbook step', () => addDoc(collection(db, 'timeline'), task));
 }
 
 export async function updateTimelineTask(taskId, patch) {
-  return updateDoc(doc(db, 'timeline', taskId), patch);
+  return reportingWrite('saving a playbook step', () =>
+    updateDoc(doc(db, 'timeline', taskId), patch)
+  );
 }
 
 export async function deleteTimelineTask(taskId) {
-  return deleteDoc(doc(db, 'timeline', taskId));
+  return reportingWrite('deleting a playbook step', () =>
+    deleteDoc(doc(db, 'timeline', taskId))
+  );
 }
 
 export async function setConstructionCheck(projectId, taskId, checked, user, meta) {
   const ref = doc(db, 'constructionProgress', projectId);
-  const result = await setDoc(
-    ref,
-    { [taskId]: checked, updatedAt: serverTimestamp(), updatedBy: user?.email || 'unknown' },
-    { merge: true }
+  const result = await reportingWrite('saving a playbook step', () =>
+    setDoc(
+      ref,
+      { [taskId]: checked, updatedAt: serverTimestamp(), updatedBy: user?.email || 'unknown' },
+      { merge: true }
+    )
   );
   if (meta) {
     await logActivity({
@@ -289,7 +321,8 @@ export async function setConstructionCheck(projectId, taskId, checked, user, met
 }
 
 export async function createTask(task, user) {
-  return addDoc(collection(db, 'tasks'), {
+  return reportingWrite('creating a task', () =>
+    addDoc(collection(db, 'tasks'), {
     title: '',
     projectId: '',
     projectName: '',
@@ -304,18 +337,21 @@ export async function createTask(task, user) {
     due: '',
     notes: '',
     ...task,
-    done: false,
-    createdAt: serverTimestamp(),
-    createdBy: user?.email || 'unknown',
-  });
+      done: false,
+      createdAt: serverTimestamp(),
+      createdBy: user?.email || 'unknown',
+    })
+  );
 }
 
 export async function updateTask(taskId, patch, user) {
-  return updateDoc(doc(db, 'tasks', taskId), {
-    ...patch,
-    updatedAt: serverTimestamp(),
-    updatedBy: user?.email || 'unknown',
-  });
+  return reportingWrite('saving a task', () =>
+    updateDoc(doc(db, 'tasks', taskId), {
+      ...patch,
+      updatedAt: serverTimestamp(),
+      updatedBy: user?.email || 'unknown',
+    })
+  );
 }
 
 // Completing a task is real progress, so it belongs in the activity log and
@@ -339,9 +375,9 @@ export async function setTaskDone(task, done, user) {
 }
 
 export async function deleteTask(taskId) {
-  return deleteDoc(doc(db, 'tasks', taskId));
+  return reportingWrite('deleting a task', () => deleteDoc(doc(db, 'tasks', taskId)));
 }
 
 export async function setUserRole(uid, role) {
-  return updateDoc(doc(db, 'users', uid), { role });
+  return reportingWrite('changing a role', () => updateDoc(doc(db, 'users', uid), { role }));
 }
