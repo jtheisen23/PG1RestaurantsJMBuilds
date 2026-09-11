@@ -1,6 +1,19 @@
 import { useState } from 'react';
-import { phaseColor, phaseKey, phaseProgress, pct, templateForProject } from '../lib/helpers';
-import { updateProjectField, updateProjectMeta, deleteProject, useTasks } from '../lib/firestore';
+import {
+  phaseColor,
+  phaseKey,
+  phaseProgress,
+  pct,
+  templateForProject,
+  hiddenFieldsOf,
+} from '../lib/helpers';
+import {
+  updateProjectField,
+  updateProjectMeta,
+  deleteProject,
+  setFieldHidden,
+  useTasks,
+} from '../lib/firestore';
 import TaskList from './TaskList';
 import { useAuth } from '../context/AuthContext';
 
@@ -20,6 +33,26 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }
   // every lookup below goes through the project's own template.
   const tpl = templateForProject(project);
   const fields = project.fields || {};
+  const hidden = hiddenFieldsOf(project);
+
+  // Removing a checklist item affects only this project; the template it comes
+  // from is shared by every project of the brand. The rules enforce admin-only
+  // as well, so this is not the only thing standing between an editor and a
+  // 200-column template.
+  async function setHidden(letter, label, isHidden) {
+    if (!isAdmin) return;
+    if (
+      isHidden &&
+      !confirm(
+        `Remove "${label}" from this project?\n\n` +
+          `It disappears from this page and stops counting towards progress. ` +
+          `Every other project keeps it. You can put it back afterwards.`
+      )
+    ) {
+      return;
+    }
+    await setFieldHidden(project.id, letter, isHidden, project.hiddenFields, user);
+  }
 
   async function commitMeta(patch) {
     if (!canEdit) return;
@@ -163,6 +196,9 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }
           tasks={allTasks.filter((t) => t.projectId === project.id && t.phase === phase)}
           onAddTask={onAddTask}
           onEditTask={onEditTask}
+          isAdmin={isAdmin}
+          hidden={hidden}
+          onSetHidden={setHidden}
         />
       ))}
 
@@ -170,6 +206,9 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }
         <NotesAccordion
           project={project}
           template={tpl}
+          isAdmin={isAdmin}
+          hidden={hidden}
+          onSetHidden={setHidden}
           open={openPhase === 'Notes/PSA'}
           onToggle={() => setOpenPhase(openPhase === 'Notes/PSA' ? null : 'Notes/PSA')}
           canEdit={canEdit}
@@ -206,11 +245,17 @@ function Accordion({
   tasks,
   onAddTask,
   onEditTask,
+  isAdmin,
+  hidden,
+  onSetHidden,
 }) {
-  const hs = template.headersByPhase[phase] || [];
+  const all = template.headersByPhase[phase] || [];
+  const hs = all.filter((h) => !hidden.has(h.letter));
+  const removed = all.filter((h) => hidden.has(h.letter));
   const prog = phaseProgress(project, phase);
   const fields = project.fields || {};
   const doneCount = hs.filter((h) => h.type === 'checkbox' && fields[h.letter] === true).length;
+  const checkboxTotal = hs.filter((h) => h.type === 'checkbox').length;
   const key = phaseKey(phase, index);
 
   const [hideDone, setHideDone] = useState(() => readHideDone(phase));
@@ -244,7 +289,7 @@ function Accordion({
         <div className="track">
           <div className="fill" style={{ width: `${pct(prog)}%`, background: phaseColor(phase, index) }} />
         </div>
-        <div className="pct">{doneCount}/{template.checkboxCountByPhase[phase] ?? 0} done</div>
+        <div className="pct">{doneCount}/{checkboxTotal} done</div>
         {open && doneCount > 0 && (
           <label className="check-inline acc-filter" onClick={(e) => e.stopPropagation()}>
             <input type="checkbox" checked={hideDone} onChange={onHideDoneChange} />
@@ -300,6 +345,8 @@ function Accordion({
                 checked={fields[h.letter] === true}
                 disabled={!canEdit}
                 onChange={(checked) => toggleField(h.letter, checked)}
+                isAdmin={isAdmin}
+                onRemove={() => onSetHidden(h.letter, h.label, true)}
               />
             ) : (
               <TextField
@@ -308,18 +355,38 @@ function Accordion({
                 value={fields[h.letter]}
                 disabled={!canEdit}
                 onCommit={(v) => commitText(h.letter, v)}
+                isAdmin={isAdmin}
+                onRemove={() => onSetHidden(h.letter, h.label, true)}
               />
             )
           )}
         </div>
+
+        {isAdmin && removed.length > 0 && (
+          <RemovedList items={removed} onRestore={onSetHidden} />
+        )}
 
       </div>
     </div>
   );
 }
 
-function NotesAccordion({ project, template, open, onToggle, canEdit, toggleField, commitText }) {
+function NotesAccordion({
+  project,
+  template,
+  open,
+  onToggle,
+  canEdit,
+  toggleField,
+  commitText,
+  isAdmin,
+  hidden,
+  onSetHidden,
+}) {
   const fields = project.fields || {};
+  const all = template.notesHeaders;
+  const visible = all.filter((h) => !hidden.has(h.letter));
+  const removed = all.filter((h) => hidden.has(h.letter));
   return (
     <div className={`accordion ${open ? 'open' : ''}`}>
       <div className="acc-head" onClick={onToggle}>
@@ -331,7 +398,7 @@ function NotesAccordion({ project, template, open, onToggle, canEdit, toggleFiel
       </div>
       <div className="acc-body">
         <div className="field-grid">
-          {template.notesHeaders.map((h) =>
+          {visible.map((h) =>
             h.type === 'checkbox' ? (
               <CheckField
                 key={h.letter}
@@ -339,6 +406,8 @@ function NotesAccordion({ project, template, open, onToggle, canEdit, toggleFiel
                 checked={fields[h.letter] === true}
                 disabled={!canEdit}
                 onChange={(checked) => toggleField(h.letter, checked)}
+                isAdmin={isAdmin}
+                onRemove={() => onSetHidden(h.letter, h.label, true)}
               />
             ) : (
               <TextField
@@ -347,16 +416,22 @@ function NotesAccordion({ project, template, open, onToggle, canEdit, toggleFiel
                 value={fields[h.letter]}
                 disabled={!canEdit}
                 onCommit={(v) => commitText(h.letter, v)}
+                isAdmin={isAdmin}
+                onRemove={() => onSetHidden(h.letter, h.label, true)}
               />
             )
           )}
         </div>
+
+        {isAdmin && removed.length > 0 && (
+          <RemovedList items={removed} onRestore={onSetHidden} />
+        )}
       </div>
     </div>
   );
 }
 
-function CheckField({ h, checked, disabled, onChange }) {
+function CheckField({ h, checked, disabled, onChange, isAdmin, onRemove }) {
   return (
     <div className="cb-field">
       <input
@@ -370,15 +445,65 @@ function CheckField({ h, checked, disabled, onChange }) {
         {h.label}
         {h.resp ? <span className="resp-tag">({h.resp})</span> : null}
       </label>
+      {isAdmin && <RemoveField label={h.label} onRemove={onRemove} />}
     </div>
   );
 }
 
-function TextField({ h, value, disabled, onCommit }) {
+// Admin-only. Removing an item takes it off this project alone, so the wording
+// avoids "delete", which would imply the shared template is being edited.
+function RemoveField({ label, onRemove }) {
+  return (
+    <button
+      type="button"
+      className="fld-remove"
+      title={`Remove "${label}" from this project`}
+      aria-label={`Remove ${label} from this project`}
+      onClick={onRemove}
+    >
+      &times;
+    </button>
+  );
+}
+
+// Restoring is deliberately tucked behind a toggle: it is a short list that
+// only admins see, and it should not compete with the checklist itself.
+function RemovedList({ items, onRestore }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="removed-block">
+      <button type="button" className="link-btn" onClick={() => setOpen(!open)}>
+        {items.length} item{items.length === 1 ? '' : 's'} removed from this project
+        {open ? ' — hide' : ' — show'}
+      </button>
+      {open && (
+        <div className="removed-list">
+          {items.map((h) => (
+            <div className="removed-row" key={h.letter}>
+              <span>{h.label}</span>
+              <button
+                type="button"
+                className="link-btn"
+                onClick={() => onRestore(h.letter, h.label, false)}
+              >
+                Restore
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TextField({ h, value, disabled, onCommit, isAdmin, onRemove }) {
   const [val, setVal] = useState(value || '');
   return (
     <div className="cb-field txt-field">
-      <label>{h.label}</label>
+      <label>
+        {h.label}
+        {isAdmin && <RemoveField label={h.label} onRemove={onRemove} />}
+      </label>
       <textarea
         rows={1}
         value={val}

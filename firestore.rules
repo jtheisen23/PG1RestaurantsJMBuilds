@@ -76,9 +76,19 @@ service cloud.firestore {
 
     // Projects: everyone signed in can read. Editors/admins can create and
     // update. Only admins can delete.
+    //
+    // `hiddenFields` lists checklist items removed from this one project --
+    // items that do not apply to this location, so they should not be on its
+    // page or count against its progress. Removing one is an admin decision,
+    // because it changes what the project is measured against, so an editor's
+    // update must leave the list exactly as it was.
     match /projects/{projectId} {
       allow read: if isMember();
-      allow create, update: if isEditor();
+      allow create: if isEditor();
+      allow update: if isAdmin()
+                    || (isEditor()
+                        && request.resource.data.get('hiddenFields', [])
+                           == resource.data.get('hiddenFields', []));
       allow delete: if isAdmin();
     }
 

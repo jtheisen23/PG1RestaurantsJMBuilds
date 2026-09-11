@@ -40,7 +40,8 @@ const check = async (label, promise) => {
     await setDoc(doc(db, 'users/admin1'), { email: 'admin@x.com', role: 'admin', name: 'Admin' });
     await setDoc(doc(db, 'users/editor1'), { email: 'editor@x.com', role: 'editor', name: 'Ed' });
     await setDoc(doc(db, 'invites/invited@x.com'), { email: 'invited@x.com', role: 'editor' });
-    await setDoc(doc(db, 'projects/p1'), { name: 'Lexington Park', fields: {} });
+    await setDoc(doc(db, 'projects/p1'), { name: 'Lexington Park', fields: {}, hiddenFields: [] });
+    await setDoc(doc(db, 'projects/p2'), { name: 'Bristol', fields: {}, hiddenFields: ['E'] });
     await setDoc(doc(db, 'tasks/t1'), { title: 'Chase landlord', projectId: 'p1' });
     await setDoc(doc(db, 'tasks/t_mine'),  { title: 'Typo I made',  createdBy: 'editor@x.com' });
     await setDoc(doc(db, 'tasks/t_yours'), { title: 'Someone else\'s', createdBy: 'admin@x.com' });
@@ -102,6 +103,22 @@ const check = async (label, promise) => {
     assertFails(setDoc(doc(editor, 'invites/friend@x.com'), { email: 'friend@x.com', role: 'admin' })));
   await check('editor cannot change roles',
     assertFails(setDoc(doc(editor, 'users/editor1'), { email: 'editor@x.com', role: 'admin' })));
+
+  console.log('\n--- REMOVING A CHECKLIST ITEM FROM ONE PROJECT ---');
+  // Removing an item changes what a project is measured against, so it is an
+  // admin decision -- but editors must still be able to make ordinary edits.
+  await check('editor can edit a project without touching hiddenFields',
+    assertSucceeds(setDoc(doc(editor, 'projects/p2'), { name: 'Bristol', fields: { E: true }, hiddenFields: ['E'] })));
+  await check('editor cannot remove a checklist item',
+    assertFails(setDoc(doc(editor, 'projects/p1'), { name: 'Lexington Park', fields: {}, hiddenFields: ['G'] })));
+  await check('editor cannot restore a removed checklist item',
+    assertFails(setDoc(doc(editor, 'projects/p2'), { name: 'Bristol', fields: {}, hiddenFields: [] })));
+  await check('editor cannot drop the field entirely to dodge the check',
+    assertFails(setDoc(doc(editor, 'projects/p2'), { name: 'Bristol', fields: {} })));
+  await check('admin CAN remove a checklist item',
+    assertSucceeds(setDoc(doc(admin, 'projects/p1'), { name: 'Lexington Park', fields: {}, hiddenFields: ['G'] })));
+  await check('admin CAN restore one',
+    assertSucceeds(setDoc(doc(admin, 'projects/p1'), { name: 'Lexington Park', fields: {}, hiddenFields: [] })));
 
   console.log('\n--- DELETING A TASK ---');
   // Deleting someone else's task stays admin-only; removing your own typo
