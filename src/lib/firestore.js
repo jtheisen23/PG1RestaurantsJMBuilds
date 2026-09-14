@@ -12,15 +12,38 @@ import {
   orderBy,
   limit,
 } from 'firebase/firestore';
-import { db } from '../firebase';
-import { reportDataError } from './dataErrors';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, db } from '../firebase';
+import { reportDataError, clearDataError } from './dataErrors';
+
+// Who is signed in, as far as Firestore is concerned.
+//
+// This exists because every listener below must wait for it. Firebase resolves
+// the signed-in user asynchronously, and React runs hooks unconditionally --
+// so without this, a listener attaches on the first render, while the user is
+// still unknown. The rules see no auth, refuse the read, and the listener's
+// dependencies never change again, so it is never retried: the collection
+// stays empty for the rest of the session. That is a race, which is why it
+// looked intermittent, and why a fresh sign-in lost to it most often.
+function useAuthUid() {
+  const [uid, setUid] = useState(() => auth.currentUser?.uid ?? null);
+  useEffect(() => onAuthStateChanged(auth, (u) => setUid(u?.uid ?? null)), []);
+  return uid;
+}
 
 // ---------- generic realtime collection hook ----------
 function useCollection(name, orderField) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const uid = useAuthUid();
 
   useEffect(() => {
+    // No user yet, or signed out: hold off rather than being refused. `uid` is
+    // in the dependencies, so signing in re-subscribes.
+    if (!uid) {
+      setData([]);
+      return undefined;
+    }
     const col = collection(db, name);
     const q = orderField ? query(col, orderBy(orderField)) : col;
     const unsub = onSnapshot(
@@ -28,6 +51,8 @@ function useCollection(name, orderField) {
       (snap) => {
         setData(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
         setLoading(false);
+        // A listener that recovers should not leave its complaint on screen.
+        clearDataError(`loading ${name}`);
       },
       (err) => {
         reportDataError(`loading ${name}`, err);
@@ -35,7 +60,7 @@ function useCollection(name, orderField) {
       }
     );
     return unsub;
-  }, [name, orderField]);
+  }, [name, orderField, uid]);
 
   return { data, loading };
 }
@@ -127,9 +152,10 @@ export function useTasks() {
 export function useConstructionProgress(projectId) {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
+  const uid = useAuthUid();
 
   useEffect(() => {
-    if (!projectId) {
+    if (!projectId || !uid) {
       setData({});
       setLoading(false);
       return;
@@ -141,6 +167,7 @@ export function useConstructionProgress(projectId) {
       (snap) => {
         setData(snap.exists() ? snap.data() : {});
         setLoading(false);
+        clearDataError('loading construction progress');
       },
       (err) => {
         reportDataError('loading construction progress', err);
@@ -148,7 +175,7 @@ export function useConstructionProgress(projectId) {
       }
     );
     return unsub;
-  }, [projectId]);
+  }, [projectId, uid]);
 
   return { data, loading };
 }
@@ -187,14 +214,20 @@ async function reportingWrite(what, run) {
 export function useActivity(max = 500) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const uid = useAuthUid();
 
   useEffect(() => {
+    if (!uid) {
+      setData([]);
+      return undefined;
+    }
     const q = query(collection(db, 'activity'), orderBy('at', 'desc'), limit(max));
     const unsub = onSnapshot(
       q,
       (snap) => {
         setData(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
         setLoading(false);
+        clearDataError('loading activity');
       },
       (err) => {
         reportDataError('loading activity', err);
@@ -202,7 +235,7 @@ export function useActivity(max = 500) {
       }
     );
     return unsub;
-  }, [max]);
+  }, [max, uid]);
 
   return { data, loading };
 }

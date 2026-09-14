@@ -28,6 +28,15 @@ export function reportDataError(what, err) {
   emit();
 }
 
+// Drops one source's complaint once it starts working again -- a listener
+// that recovers should not leave a stale banner on screen.
+export function clearDataError(what) {
+  const next = errors.filter((e) => e.what !== what);
+  if (next.length === errors.length) return;
+  errors = next;
+  emit();
+}
+
 export function clearDataErrors() {
   errors = [];
   emit();
