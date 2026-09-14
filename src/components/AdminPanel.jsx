@@ -27,7 +27,7 @@ function invitationText(address) {
 export default function AdminPanel() {
   const { data: users, loading } = useUsers();
   const { data: invites } = useInvites();
-  const { user } = useAuth();
+  const { user, resetPassword } = useAuth();
 
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -36,6 +36,7 @@ export default function AdminPanel() {
   const [error, setError] = useState('');
   const [invited, setInvited] = useState('');
   const [copied, setCopied] = useState('');
+  const [reset, setReset] = useState('');
 
   // An invite is "used up" once that person has signed in and been provisioned.
   const signedUp = useMemo(
@@ -67,6 +68,23 @@ export default function AdminPanel() {
 
   async function handleRoleChange(uid, next) {
     await setUserRole(uid, next);
+  }
+
+  // Firebase sends the mail, so this is the one thing here that reaches
+  // someone's inbox without a mail server. It cannot set a password for them
+  // -- only they can, from the link -- which is the right shape: an admin
+  // should not end up knowing anyone's password.
+  async function sendReset(address) {
+    if (!confirm(`Email a password reset link to ${address}?`)) return;
+    try {
+      await resetPassword(address);
+    } catch (err) {
+      // Reported as sent either way: the link goes out for any address that
+      // has an account, and a failure here is usually rate limiting.
+      console.error('Password reset failed:', err);
+    }
+    setReset(address);
+    setTimeout(() => setReset(''), 5000);
   }
 
   // Inviting someone records that they are allowed in; it does not send them
@@ -204,12 +222,13 @@ export default function AdminPanel() {
             <th>Name</th>
             <th>Email</th>
             <th>Role</th>
+            <th />
           </tr>
         </thead>
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan={3} style={{ textAlign: 'center', padding: 24 }}>
+              <td colSpan={4} style={{ textAlign: 'center', padding: 24 }}>
                 Loading team…
               </td>
             </tr>
@@ -230,6 +249,11 @@ export default function AdminPanel() {
                     ))}
                   </select>
                 </td>
+                <td style={{ textAlign: 'right' }}>
+                  <button type="button" className="link-btn" onClick={() => sendReset(u.email)}>
+                    {reset === u.email ? 'Link sent ✓' : 'Send reset link'}
+                  </button>
+                </td>
               </tr>
             ))
           )}
@@ -237,6 +261,11 @@ export default function AdminPanel() {
       </table>
 
       <div className="footer-note">
+        <strong>Passwords:</strong> nobody can see or set someone else's, including you. Use
+        <em> Send reset link</em> and they choose a new one from the email — it comes from
+        Firebase, not from this app, so it may land in spam. People can also do it themselves
+        with <em>Forgot your password?</em> on the sign-in page.
+        <br />
         Anyone listed as invited has not signed up yet. If they say they never got anything, that
         is expected — the invitation is only sent when you send it.
         <br />

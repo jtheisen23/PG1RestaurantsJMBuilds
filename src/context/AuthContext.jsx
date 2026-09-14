@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
 } from 'firebase/auth';
@@ -112,6 +113,14 @@ export function AuthProvider({ children }) {
   const signUp = (email, password) =>
     createUserWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
 
+  // Firebase sends this one itself, from its own servers. It is the only mail
+  // this app can send: there is no server here, which is why invitations have
+  // to be passed on by hand.
+  //
+  // Lowercased like sign-in, so a capitalised address still reaches the right
+  // account.
+  const resetPassword = (email) => sendPasswordResetEmail(auth, email.trim().toLowerCase());
+
   const logout = () => signOut(auth);
 
   const role = profile?.role || 'viewer';
@@ -126,6 +135,7 @@ export function AuthProvider({ children }) {
     loading: user === undefined || (user && profileLoading),
     login,
     signUp,
+    resetPassword,
     logout,
     role,
     canEdit,

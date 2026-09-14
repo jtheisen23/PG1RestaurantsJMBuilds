@@ -3,14 +3,16 @@ import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
 
 export default function Login() {
-  const { login, signUp } = useAuth();
-  const [mode, setMode] = useState('signin'); // 'signin' | 'setup'
+  const { login, signUp, resetPassword } = useAuth();
+  const [mode, setMode] = useState('signin'); // 'signin' | 'setup' | 'reset'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const isSetup = mode === 'setup';
+  const isReset = mode === 'reset';
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -20,10 +22,21 @@ export default function Login() {
     }
     setBusy(true);
     try {
-      if (isSetup) await signUp(email, password);
-      else await login(email, password);
+      if (isReset) {
+        await resetPassword(email);
+        setSent(true);
+      } else if (isSetup) {
+        await signUp(email, password);
+      } else {
+        await login(email, password);
+      }
     } catch (err) {
-      setError(friendlyError(err.code));
+      // A reset deliberately reports success whatever happens. Saying "no
+      // account with that address" would let anyone test addresses against
+      // this company's user list, and it is no help to the person typing --
+      // either way their next move is to check their inbox.
+      if (isReset) setSent(true);
+      else setError(friendlyError(err.code));
     } finally {
       setBusy(false);
     }
@@ -32,6 +45,7 @@ export default function Login() {
   function switchMode(next) {
     setMode(next);
     setError('');
+    setSent(false);
     setPassword('');
   }
 
@@ -41,10 +55,20 @@ export default function Login() {
         <Logo />
         <h2>Development Pipeline</h2>
         <p className="sub">
-          {isSetup
-            ? 'Set a password for the email address you were invited on.'
-            : "Sign in to view and track your team's projects."}
+          {isReset
+            ? 'Enter your address and we will email you a link to set a new password.'
+            : isSetup
+              ? 'Set a password for the email address you were invited on.'
+              : "Sign in to view and track your team's projects."}
         </p>
+
+        {sent && (
+          <div className="invite-ok">
+            If <strong>{email}</strong> has an account, a reset link is on its way. It arrives
+            from <strong>noreply@pg1-jm-builds.firebaseapp.com</strong>, so check spam if it is
+            not there in a minute.
+          </div>
+        )}
 
         <label htmlFor="email">Email</label>
         <input
@@ -56,24 +80,42 @@ export default function Login() {
           required
         />
 
-        <label htmlFor="password">{isSetup ? 'Choose a password' : 'Password'}</label>
-        <input
-          id="password"
-          type="password"
-          autoComplete={isSetup ? 'new-password' : 'current-password'}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        {!isReset && (
+          <>
+            <label htmlFor="password">{isSetup ? 'Choose a password' : 'Password'}</label>
+            <input
+              id="password"
+              type="password"
+              autoComplete={isSetup ? 'new-password' : 'current-password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </>
+        )}
 
         {error && <div className="login-error">{error}</div>}
 
         <button className="btn" type="submit" disabled={busy}>
-          {busy ? 'Working…' : isSetup ? 'Create my account' : 'Sign in'}
+          {busy
+            ? 'Working…'
+            : isReset
+              ? 'Email me a reset link'
+              : isSetup
+                ? 'Create my account'
+                : 'Sign in'}
         </button>
 
         <div className="login-hint">
-          {isSetup ? (
+          {isReset ? (
+            <>
+              Remembered it?{' '}
+              <button type="button" className="link-btn" onClick={() => switchMode('signin')}>
+                Back to sign in
+              </button>
+              .
+            </>
+          ) : isSetup ? (
             <>
               Already set up?{' '}
               <button type="button" className="link-btn" onClick={() => switchMode('signin')}>
@@ -83,6 +125,10 @@ export default function Login() {
             </>
           ) : (
             <>
+              <button type="button" className="link-btn" onClick={() => switchMode('reset')}>
+                Forgot your password?
+              </button>
+              <br />
               First time here?{' '}
               <button type="button" className="link-btn" onClick={() => switchMode('setup')}>
                 Set up your account
