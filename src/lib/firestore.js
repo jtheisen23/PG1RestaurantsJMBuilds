@@ -365,6 +365,60 @@ export async function setFieldHidden(projectId, letter, hidden, currentHidden, u
   );
 }
 
+// Adding a checklist item this project needs and its brand's spreadsheet does
+// not have. Admin-only, like removing and rewording, because it changes what
+// the project is measured against -- a new tick-box is one more thing standing
+// between here and 100%.
+//
+// The id is generated and prefixed so it can never collide with a spreadsheet
+// column letter, and the value lives in `fields` beside everything else, so
+// ticking and progress need no special case.
+export async function addCustomField(projectId, { phase, label, type }, current, user) {
+  const field = {
+    id: `cf_${Math.random().toString(16).slice(2, 10)}`,
+    phase,
+    label: (label || '').trim() || 'Untitled',
+    type: type === 'text' ? 'text' : 'checkbox',
+  };
+  const next = [...(Array.isArray(current) ? current : []), field];
+  await reportingWrite('adding a field', () =>
+    updateDoc(doc(db, 'projects', projectId), {
+      customFields: next,
+      updatedAt: serverTimestamp(),
+      updatedBy: user?.email || 'unknown',
+    })
+  );
+  return field;
+}
+
+// Deleting an added field, along with whatever was entered in it. Unlike a
+// spreadsheet item -- which is only ever hidden, because it belongs to the
+// brand -- this one exists nowhere else, so removing it really does remove it.
+export async function deleteCustomField(projectId, fieldId, current, user) {
+  const next = (Array.isArray(current) ? current : []).filter((f) => f?.id !== fieldId);
+  return reportingWrite('deleting a field', () =>
+    updateDoc(doc(db, 'projects', projectId), {
+      customFields: next,
+      [`fields.${fieldId}`]: deleteField(),
+      updatedAt: serverTimestamp(),
+      updatedBy: user?.email || 'unknown',
+    })
+  );
+}
+
+// The order fields appear in, for one phase of one project. Layout is a local
+// preference -- how this location's page reads -- so it is not shared with the
+// brand the way wording is.
+export async function setFieldOrder(projectId, phase, keys, user) {
+  return reportingWrite('reordering fields', () =>
+    updateDoc(doc(db, 'projects', projectId), {
+      [`fieldOrder.${phase}`]: keys,
+      updatedAt: serverTimestamp(),
+      updatedBy: user?.email || 'unknown',
+    })
+  );
+}
+
 export async function deleteProject(projectId) {
   await reportingWrite('deleting a project', () => deleteDoc(doc(db, 'projects', projectId)));
   await deleteDoc(doc(db, 'constructionProgress', projectId)).catch(() => {});

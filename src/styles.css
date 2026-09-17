@@ -495,3 +495,20 @@
 .fld-edit:hover{color:var(--accent-dark);}
 .fld-actions{display:inline-flex;align-items:center;gap:2px;}
 .label-edited{color:var(--accent-dark);}
+
+/* Added fields, and dragging any field into place. Admin-only, so the handle
+   is invisible to everyone else and the rows are not draggable at all. */
+.cb-field.draggable{cursor:grab;}
+.cb-field.dragging{opacity:0.4;}
+.cb-field.drop-before{box-shadow:-3px 0 0 var(--accent);}
+.fld-grip{
+  color:var(--line-strong);cursor:grab;font-size:13px;line-height:1;
+  padding:0 2px;opacity:0;transition:opacity .12s;user-select:none;
+}
+.cb-field:hover .fld-grip{opacity:1;}
+.fld-grip:active{cursor:grabbing;}
+.custom-tag{
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+  background:var(--accent-light);color:var(--accent-dark);border-radius:9px;
+  padding:1px 6px;margin-left:6px;
+}

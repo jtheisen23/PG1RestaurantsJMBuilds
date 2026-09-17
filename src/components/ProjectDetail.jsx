@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   phaseColor,
   phaseKey,
@@ -9,16 +9,22 @@ import {
   labelFor,
   brandKeyFor,
   BRAND_BY_KEY,
+  visibleHeaders,
+  removedHeaders,
+  NOTES_PHASE,
 } from '../lib/helpers';
 import {
   updateProjectField,
   updateProjectMeta,
   deleteProject,
   setFieldHidden,
+  deleteCustomField,
+  setFieldOrder,
   useTasks,
 } from '../lib/firestore';
 import TaskList from './TaskList';
 import FieldLabelDialog from './FieldLabelDialog';
+import AddFieldDialog from './AddFieldDialog';
 import { useAuth } from '../context/AuthContext';
 
 const QUICK_LETTERS = ['C', 'F', 'T', 'U', 'X', 'AA', 'DF', 'GM'];
@@ -39,6 +45,32 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
   const fields = project.fields || {};
   const hidden = hiddenFieldsOf(project);
   const [renaming, setRenaming] = useState(null);
+  const [addingTo, setAddingTo] = useState(null);
+
+  // An added field belongs to this project alone, so removing it really
+  // removes it -- unlike a spreadsheet item, which is only ever hidden.
+  async function removeField(header) {
+    if (!isAdmin) return;
+    if (header.custom) {
+      if (
+        !confirm(
+          `Delete "${nameOf(header)}" from this project?\n\n` +
+            'This field was added here, so deleting it also deletes whatever is in it. ' +
+            'This cannot be undone.'
+        )
+      ) {
+        return;
+      }
+      await deleteCustomField(project.id, header.letter, project.customFields, user);
+      return;
+    }
+    await setHidden(header.letter, nameOf(header), true);
+  }
+
+  async function reorder(phase, keys) {
+    if (!isAdmin) return;
+    await setFieldOrder(project.id, phase, keys, user);
+  }
 
   // Resolves the project's own wording, then the brand's, then the checklist
   // file. Passed down so every field renders the same way.
@@ -210,8 +242,19 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
           onSetHidden={setHidden}
           nameOf={nameOf}
           onRename={setRenaming}
+          onRemoveField={removeField}
+          onAddField={() => setAddingTo(phase)}
+          onReorder={reorder}
         />
       ))}
+
+      {addingTo && (
+        <AddFieldDialog
+          project={project}
+          phase={addingTo}
+          onClose={() => setAddingTo(null)}
+        />
+      )}
 
       {renaming && (
         <FieldLabelDialog
@@ -232,6 +275,9 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
           onSetHidden={setHidden}
           nameOf={nameOf}
           onRename={setRenaming}
+          onRemoveField={removeField}
+          onAddField={() => setAddingTo(NOTES_PHASE)}
+          onReorder={reorder}
           open={openPhase === 'Notes/PSA'}
           onToggle={() => setOpenPhase(openPhase === 'Notes/PSA' ? null : 'Notes/PSA')}
           canEdit={canEdit}
@@ -255,6 +301,68 @@ function Rail3Row({ phase, index, value }) {
   );
 }
 
+// Drag-to-reorder for a phase's fields. Shared by the phase sections and the
+// notes section, which differ in everything except this.
+function useFieldDrag(hs, phase, isAdmin, onReorder) {
+  const [dragKey, setDragKey] = useState(null);
+  const [overKey, setOverKey] = useState(null);
+  // The drop handler must not depend on the state set by dragstart. React has
+  // no obligation to have flushed it by the time the drop arrives, and the
+  // browser is already carrying the answer: the key went into the drag payload
+  // when the drag began. State is kept only for the styling.
+  const dragged = useRef(null);
+
+  // Dropping puts the dragged field immediately before the one under the
+  // cursor. The new order is written over the phase's full list, not the
+  // filtered one, so hiding completed items while dragging cannot quietly
+  // drop them out of the saved order.
+  function commitDrop(sourceKey, targetKey) {
+    const from = hs.findIndex((h) => h.letter === sourceKey);
+    const to = hs.findIndex((h) => h.letter === targetKey);
+    setDragKey(null);
+    setOverKey(null);
+    if (from < 0 || to < 0 || from === to) return;
+    const keys = hs.map((h) => h.letter);
+    keys.splice(to, 0, keys.splice(from, 1)[0]);
+    onReorder(phase, keys);
+  }
+
+  return function dragProps(h) {
+    if (!isAdmin) return {};
+    return {
+      draggable: true,
+      onDragStart: (e) => {
+        dragged.current = h.letter;
+        setDragKey(h.letter);
+        e.dataTransfer.effectAllowed = 'move';
+        // Firefox refuses to start a drag with no payload.
+        try {
+          e.dataTransfer.setData('text/plain', h.letter);
+        } catch {
+          // Not fatal: the key is already in state.
+        }
+      },
+      onDragEnd: () => {
+        dragged.current = null;
+        setDragKey(null);
+        setOverKey(null);
+      },
+      onDragOver: (e) => {
+        e.preventDefault();
+        if (overKey !== h.letter) setOverKey(h.letter);
+      },
+      onDrop: (e) => {
+        e.preventDefault();
+        const source = e.dataTransfer.getData('text/plain') || dragged.current;
+        dragged.current = null;
+        commitDrop(source, h.letter);
+      },
+      dragging: dragKey === h.letter,
+      dropTarget: overKey === h.letter && Boolean(dragKey) && dragKey !== h.letter,
+    };
+  };
+}
+
 function Accordion({
   phase,
   index,
@@ -273,10 +381,14 @@ function Accordion({
   onSetHidden,
   nameOf,
   onRename,
+  onRemoveField,
+  onAddField,
+  onReorder,
 }) {
-  const all = template.headersByPhase[phase] || [];
-  const hs = all.filter((h) => !hidden.has(h.letter));
-  const removed = all.filter((h) => hidden.has(h.letter));
+  // Both lists come from the project rather than the template, so added
+  // fields appear inline with the brand's and the saved order applies.
+  const hs = visibleHeaders(project, phase);
+  const removed = removedHeaders(project, phase);
   const prog = phaseProgress(project, phase);
   const fields = project.fields || {};
   const doneCount = hs.filter((h) => h.type === 'checkbox' && fields[h.letter] === true).length;
@@ -284,6 +396,7 @@ function Accordion({
   const key = phaseKey(phase, index);
 
   const [hideDone, setHideDone] = useState(() => readHideDone(phase));
+  const dragProps = useFieldDrag(hs, phase, isAdmin, onReorder);
 
   const openTasks = tasks.filter((t) => !t.done);
 
@@ -325,6 +438,17 @@ function Accordion({
           <span className="task-count" title="Open tasks in this stage">
             {openTasks.length} task{openTasks.length === 1 ? '' : 's'}
           </span>
+        )}
+        {open && isAdmin && (
+          <button
+            className="btn ghost small"
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddField();
+            }}
+          >
+            + Add Field
+          </button>
         )}
         {open && canEdit && (
           <button
@@ -372,8 +496,9 @@ function Accordion({
                 onChange={(checked) => toggleField(h.letter, checked)}
                 isAdmin={isAdmin}
                 label={nameOf(h)}
-                onRemove={() => onSetHidden(h.letter, nameOf(h), true)}
+                onRemove={() => onRemoveField(h)}
                 onRename={() => onRename(h)}
+                drag={dragProps(h)}
               />
             ) : (
               <TextField
@@ -384,8 +509,9 @@ function Accordion({
                 onCommit={(v) => commitText(h.letter, v)}
                 isAdmin={isAdmin}
                 label={nameOf(h)}
-                onRemove={() => onSetHidden(h.letter, nameOf(h), true)}
+                onRemove={() => onRemoveField(h)}
                 onRename={() => onRename(h)}
+                drag={dragProps(h)}
               />
             )
           )}
@@ -402,22 +528,22 @@ function Accordion({
 
 function NotesAccordion({
   project,
-  template,
   open,
   onToggle,
   canEdit,
   toggleField,
   commitText,
   isAdmin,
-  hidden,
-  onSetHidden,
   nameOf,
   onRename,
+  onRemoveField,
+  onAddField,
+  onReorder,
 }) {
   const fields = project.fields || {};
-  const all = template.notesHeaders;
-  const visible = all.filter((h) => !hidden.has(h.letter));
-  const removed = all.filter((h) => hidden.has(h.letter));
+  const visible = visibleHeaders(project, NOTES_PHASE);
+  const removed = removedHeaders(project, NOTES_PHASE);
+  const dragProps = useFieldDrag(visible, NOTES_PHASE, isAdmin, onReorder);
   return (
     <div className={`accordion ${open ? 'open' : ''}`}>
       <div className="acc-head" onClick={onToggle}>
@@ -425,6 +551,17 @@ function NotesAccordion({
         <h3>PSA / Notes</h3>
         <div className="track" />
         <div className="pct" />
+        {open && isAdmin && (
+          <button
+            className="btn ghost small"
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddField();
+            }}
+          >
+            + Add Field
+          </button>
+        )}
         <span className="chev">&#9656;</span>
       </div>
       <div className="acc-body">
@@ -439,8 +576,9 @@ function NotesAccordion({
                 onChange={(checked) => toggleField(h.letter, checked)}
                 isAdmin={isAdmin}
                 label={nameOf(h)}
-                onRemove={() => onSetHidden(h.letter, nameOf(h), true)}
+                onRemove={() => onRemoveField(h)}
                 onRename={() => onRename(h)}
+                drag={dragProps(h)}
               />
             ) : (
               <TextField
@@ -451,8 +589,9 @@ function NotesAccordion({
                 onCommit={(v) => commitText(h.letter, v)}
                 isAdmin={isAdmin}
                 label={nameOf(h)}
-                onRemove={() => onSetHidden(h.letter, nameOf(h), true)}
+                onRemove={() => onRemoveField(h)}
                 onRename={() => onRename(h)}
+                drag={dragProps(h)}
               />
             )
           )}
@@ -466,10 +605,12 @@ function NotesAccordion({
   );
 }
 
-function CheckField({ h, checked, disabled, onChange, isAdmin, label, onRemove, onRename }) {
+function CheckField({ h, checked, disabled, onChange, isAdmin, label, onRemove, onRename, drag = {} }) {
   const reworded = label !== h.label;
+  const { dragging, dropTarget, ...handlers } = drag;
   return (
-    <div className="cb-field">
+    <div className={fieldClass(handlers.draggable, dragging, dropTarget)} {...handlers}>
+      {isAdmin && <span className="fld-grip" aria-hidden="true">⠿</span>}
       <input
         type="checkbox"
         id={`fld-${h.letter}`}
@@ -480,15 +621,30 @@ function CheckField({ h, checked, disabled, onChange, isAdmin, label, onRemove, 
       <label htmlFor={`fld-${h.letter}`} className={reworded ? 'label-edited' : undefined}>
         {label}
         {h.resp ? <span className="resp-tag">({h.resp})</span> : null}
+        {h.custom && <span className="custom-tag">added</span>}
       </label>
-      {isAdmin && <FieldActions label={label} onRemove={onRemove} onRename={onRename} />}
+      {isAdmin && (
+        <FieldActions label={label} onRemove={onRemove} onRename={onRename} custom={h.custom} />
+      )}
     </div>
   );
 }
 
+function fieldClass(draggable, dragging, dropTarget) {
+  return [
+    'cb-field',
+    draggable ? 'draggable' : '',
+    dragging ? 'dragging' : '',
+    dropTarget ? 'drop-before' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
 // Admin-only. "Remove" rather than "delete", because the shared checklist is
-// not being edited -- this project's copy of it is.
-function FieldActions({ label, onRemove, onRename }) {
+// not being edited -- this project's copy of it is. An added field is the
+// exception: it exists only here, so its button really does delete it.
+function FieldActions({ label, onRemove, onRename, custom }) {
   return (
     <span className="fld-actions">
       <button
@@ -503,8 +659,8 @@ function FieldActions({ label, onRemove, onRename }) {
       <button
         type="button"
         className="fld-remove"
-        title={`Remove "${label}" from this project`}
-        aria-label={`Remove ${label} from this project`}
+        title={custom ? `Delete "${label}"` : `Remove "${label}" from this project`}
+        aria-label={custom ? `Delete ${label}` : `Remove ${label} from this project`}
         onClick={onRemove}
       >
         &times;
@@ -543,14 +699,19 @@ function RemovedList({ items, onRestore, nameOf }) {
   );
 }
 
-function TextField({ h, value, disabled, onCommit, isAdmin, label, onRemove, onRename }) {
+function TextField({ h, value, disabled, onCommit, isAdmin, label, onRemove, onRename, drag = {} }) {
   const [val, setVal] = useState(value || '');
   const reworded = label !== h.label;
+  const { dragging, dropTarget, ...handlers } = drag;
   return (
-    <div className="cb-field txt-field">
+    <div className={`${fieldClass(handlers.draggable, dragging, dropTarget)} txt-field`} {...handlers}>
       <label className={reworded ? 'label-edited' : undefined}>
+        {isAdmin && <span className="fld-grip" aria-hidden="true">⠿</span>}
         {label}
-        {isAdmin && <FieldActions label={label} onRemove={onRemove} onRename={onRename} />}
+        {h.custom && <span className="custom-tag">added</span>}
+        {isAdmin && (
+        <FieldActions label={label} onRemove={onRemove} onRename={onRename} custom={h.custom} />
+      )}
       </label>
       <textarea
         rows={1}
