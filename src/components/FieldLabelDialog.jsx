@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { setBrandFieldLabel, setProjectFieldLabel } from '../lib/firestore';
+import { setBrandFieldLabel, setProjectFieldLabel, updateCustomField, useUsers } from '../lib/firestore';
 import { useAuth } from '../context/AuthContext';
 
 // Rewording a checklist item. Admin-only.
@@ -11,10 +11,17 @@ import { useAuth } from '../context/AuthContext';
 // because it is the reversible one.
 export default function FieldLabelDialog({ project, header, brandName, original, onClose }) {
   const { user } = useAuth();
+  const { data: users } = useUsers();
   const [label, setLabel] = useState(original || '');
+  const [resp, setResp] = useState(header.resp || '');
   const [scope, setScope] = useState('project');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
+  // An added field is edited where it lives -- on the project or on the brand --
+  // so there is no scope to choose. Only items from the spreadsheet, which
+  // exist on every project of the brand, need that question asked.
+  const isCustom = Boolean(header.custom);
 
   useEffect(() => {
     function onKey(e) {
@@ -33,6 +40,19 @@ export default function FieldLabelDialog({ project, header, brandName, original,
     setError('');
     setSaving(true);
     try {
+      if (isCustom) {
+        await updateCustomField(
+          header.owner === 'brand'
+            ? { brandKey: project.brandKeyResolved }
+            : { projectId: project.id },
+          header.letter,
+          { label: trimmed || header.label, resp: resp.trim() },
+          header.owner === 'brand' ? project.brandFields : project.customFields,
+          user
+        );
+        onClose();
+        return;
+      }
       // Saving the original wording back clears the override rather than
       // storing a copy of it, so the item follows the checklist file again.
       const value = isReset ? '' : trimmed;
@@ -53,13 +73,15 @@ export default function FieldLabelDialog({ project, header, brandName, original,
     <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <form className="modal" onSubmit={handleSubmit}>
         <div className="modal-head">
-          <h3>Reword this item</h3>
+          <h3>{isCustom ? 'Edit this field' : 'Reword this item'}</h3>
           <button type="button" className="modal-x" onClick={onClose} aria-label="Close">
             ×
           </button>
         </div>
         <p className="modal-sub">
-          Column {header.letter} · originally “{fileLabel}”
+          {isCustom
+            ? `An added field${header.owner === 'brand' ? ` on every ${brandName} project` : ' on this project'}`
+            : `Column ${header.letter} · originally “${fileLabel}”`}
         </p>
 
         <label htmlFor="fld-label">Wording</label>
@@ -71,7 +93,25 @@ export default function FieldLabelDialog({ project, header, brandName, original,
           autoFocus
         />
 
-        <label>Apply to</label>
+        {isCustom && (
+          <>
+            <label htmlFor="fld-resp">Responsible</label>
+            <select id="fld-resp" value={resp} onChange={(e) => setResp(e.target.value)}>
+              <option value="">Nobody in particular</option>
+              {users.map((u) => (
+                <option key={u.id} value={u.name || u.email}>
+                  {u.name || u.email}
+                </option>
+              ))}
+              {resp && !users.some((u) => (u.name || u.email) === resp) && (
+                <option value={resp}>{resp}</option>
+              )}
+            </select>
+          </>
+        )}
+
+        {!isCustom && <label>Apply to</label>}
+        {!isCustom && (
         <div className="scope-choice">
           <label className="check-inline">
             <input
@@ -92,8 +132,9 @@ export default function FieldLabelDialog({ project, header, brandName, original,
             Every {brandName} project
           </label>
         </div>
+        )}
 
-        {isReset && (
+        {isReset && !isCustom && (
           <div className="acc-hint" style={{ marginTop: 12 }}>
             This is the original wording, so saving will clear the override
             {scope === 'brand' ? ' for the whole brand' : ' for this project'} rather than store
@@ -108,7 +149,7 @@ export default function FieldLabelDialog({ project, header, brandName, original,
             Cancel
           </button>
           <button className="btn" type="submit" disabled={saving}>
-            {saving ? 'Saving…' : isReset ? 'Reset to original' : 'Save wording'}
+            {saving ? 'Saving…' : isCustom ? 'Save field' : isReset ? 'Reset to original' : 'Save wording'}
           </button>
         </div>
       </form>
