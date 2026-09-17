@@ -483,3 +483,15 @@
   font-size:13px;color:var(--slate);background:var(--paper);
   border:1px solid var(--line);border-radius:7px;padding:7px 11px;
 }
+.scope-choice{display:flex;flex-direction:column;gap:8px;margin-top:2px;}
+.scope-choice .check-inline{font-weight:500;color:var(--ink);font-size:13.5px;
+  text-transform:none;letter-spacing:normal;margin:0;}
+.scope-choice input[type=radio]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;}
+.fld-edit{
+  background:none;border:none;color:var(--slate);cursor:pointer;
+  font-size:12px;font-weight:600;padding:0 4px;opacity:0;transition:opacity .12s,color .12s;
+}
+.cb-field:hover .fld-edit,.fld-edit:focus{opacity:1;}
+.fld-edit:hover{color:var(--accent-dark);}
+.fld-actions{display:inline-flex;align-items:center;gap:2px;}
+.label-edited{color:var(--accent-dark);}

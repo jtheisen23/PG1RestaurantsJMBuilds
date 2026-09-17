@@ -77,19 +77,41 @@ service cloud.firestore {
     // Projects: everyone signed in can read. Editors/admins can create and
     // update. Only admins can delete.
     //
-    // `hiddenFields` lists checklist items removed from this one project --
-    // items that do not apply to this location, so they should not be on its
-    // page or count against its progress. Removing one is an admin decision,
-    // because it changes what the project is measured against, so an editor's
-    // update must leave the list exactly as it was.
+    // Two fields here describe the checklist rather than fill it in, and both
+    // are admin decisions:
+    //
+    //   hiddenFields  items removed from this one project, because they do not
+    //                 apply to this location -- off its page and out of its
+    //                 progress.
+    //   fieldLabels   items reworded for this one project.
+    //
+    // They change what the project is measured against and what it says, so an
+    // editor's update must leave both exactly as they were. Reading with a
+    // default covers documents that have neither, so omitting a field is not a
+    // way around the check.
     match /projects/{projectId} {
       allow read: if isMember();
       allow create: if isEditor();
       allow update: if isAdmin()
                     || (isEditor()
                         && request.resource.data.get('hiddenFields', [])
-                           == resource.data.get('hiddenFields', []));
+                           == resource.data.get('hiddenFields', [])
+                        && request.resource.data.get('fieldLabels', {})
+                           == resource.data.get('fieldLabels', {}));
       allow delete: if isAdmin();
+    }
+
+    // Wording changes that apply to every project of a brand. The checklists
+    // themselves ship with the app, so this is the only way to reword one
+    // without a deploy -- and rewording is exactly the kind of thing that
+    // should not need one.
+    //
+    // One document per brand, holding label overrides keyed by column letter.
+    // Admin-only to write, for the same reason as the per-project version, and
+    // more so: this one changes what everybody sees.
+    match /brandTemplates/{brandKey} {
+      allow read: if isMember();
+      allow write: if isAdmin();
     }
 
     // Contacts: same pattern as projects, but any editor can delete a
