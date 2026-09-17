@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { addCustomField } from '../lib/firestore';
+import { addBrandCustomField, addCustomField, useUsers } from '../lib/firestore';
 import { useAuth } from '../context/AuthContext';
 
 // Adding a checklist item to one phase of one project.
@@ -7,10 +7,13 @@ import { useAuth } from '../context/AuthContext';
 // Deliberately not a task. A task has an owner and a due date and lives in its
 // own list; this is just another line on the checklist, stored and ticked like
 // every other one, and counted in the phase's progress.
-export default function AddFieldDialog({ project, phase, onClose, onAdded }) {
+export default function AddFieldDialog({ project, phase, brandKey, brandName, onClose, onAdded }) {
   const { user } = useAuth();
+  const { data: users } = useUsers();
   const [label, setLabel] = useState('');
   const [type, setType] = useState('checkbox');
+  const [resp, setResp] = useState('');
+  const [scope, setScope] = useState('project');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -28,12 +31,11 @@ export default function AddFieldDialog({ project, phase, onClose, onAdded }) {
     setError('');
     setSaving(true);
     try {
-      const field = await addCustomField(
-        project.id,
-        { phase, label, type },
-        project.customFields,
-        user
-      );
+      const spec = { phase, label, type, resp: resp.trim() };
+      const field =
+        scope === 'brand'
+          ? await addBrandCustomField(brandKey, spec, project.brandFields, user)
+          : await addCustomField(project.id, spec, project.customFields, user);
       onAdded?.(field);
       onClose();
     } catch (err) {
@@ -53,8 +55,8 @@ export default function AddFieldDialog({ project, phase, onClose, onAdded }) {
           </button>
         </div>
         <p className="modal-sub">
-          Added to <strong>{phase}</strong> on {project.name || 'this project'} only. It appears
-          with the other fields, and you can drag it into place.
+          Added to <strong>{phase}</strong>. It appears with the other fields, and each project
+          can drag it into place.
         </p>
 
         <label htmlFor="nf-label">Field name</label>
@@ -65,6 +67,27 @@ export default function AddFieldDialog({ project, phase, onClose, onAdded }) {
           placeholder="e.g. Landlord Official Turnover Letter"
           autoFocus
         />
+
+        <div className="modal-row">
+          <div>
+            <label htmlFor="nf-resp">Responsible (optional)</label>
+            <select id="nf-resp" value={resp} onChange={(e) => setResp(e.target.value)}>
+              <option value="">Nobody in particular</option>
+              {users.map((u) => (
+                <option key={u.id} value={u.name || u.email}>
+                  {u.name || u.email}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="nf-scope">Apply to</label>
+            <select id="nf-scope" value={scope} onChange={(e) => setScope(e.target.value)}>
+              <option value="project">Just {project.name || 'this project'}</option>
+              <option value="brand">Every {brandName} project</option>
+            </select>
+          </div>
+        </div>
 
         <label>Type</label>
         <div className="scope-choice">
@@ -87,6 +110,13 @@ export default function AddFieldDialog({ project, phase, onClose, onAdded }) {
             Text — somewhere to write, not counted
           </label>
         </div>
+
+        {scope === 'brand' && (
+          <div className="acc-hint" style={{ marginTop: 12 }}>
+            This adds the field to every {brandName} project, including ones created later. Each
+            project keeps its own tick and its own position for it.
+          </div>
+        )}
 
         {error && <div className="login-error">{error}</div>}
 
