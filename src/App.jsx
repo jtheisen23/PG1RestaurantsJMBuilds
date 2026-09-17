@@ -12,7 +12,7 @@ import Activity from './components/Activity';
 import Tasks from './components/Tasks';
 import TaskDialog from './components/TaskDialog';
 import DataErrorBanner from './components/DataErrorBanner';
-import { useProjects, useContacts, useTimeline } from './lib/firestore';
+import { useProjects, useContacts, useTimeline, useBrandLabels } from './lib/firestore';
 import { DEFAULT_BRAND_KEY } from './lib/brands';
 
 const BRAND_KEY_STORAGE = 'pg1.brand';
@@ -50,6 +50,7 @@ export default function App() {
   const { data: projects, loading: loadingProjects } = useProjects();
   const { data: contacts } = useContacts();
   const { data: timeline } = useTimeline();
+  const { data: brandLabels } = useBrandLabels();
 
   if (loading) {
     return <div className="loading-screen">Loading…</div>;
@@ -152,6 +153,7 @@ export default function App() {
             onBack={() => handleNav('overview')}
             onAddTask={handleAddTask}
             onEditTask={handleEditTask}
+            brandLabels={brandLabels}
           />
         )}
         {view === 'detail' && !selectedProject && !loadingProjects && (

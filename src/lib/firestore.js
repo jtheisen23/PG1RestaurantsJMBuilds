@@ -7,6 +7,7 @@ import {
   updateDoc,
   deleteDoc,
   setDoc,
+  deleteField,
   serverTimestamp,
   query,
   orderBy,
@@ -107,6 +108,54 @@ export function useTimeline() {
 
 export function useUsers() {
   return useCollection('users');
+}
+
+// Label overrides that apply to every project of a brand, one document per
+// brand keyed by brand key. Returns { jerseymikes: { H: 'New wording' }, ... }.
+export function useBrandLabels() {
+  const { data, loading } = useCollection('brandTemplates');
+  const byBrand = useMemo(() => {
+    const out = {};
+    data.forEach((d) => {
+      out[d.id] = d.labels || {};
+    });
+    return out;
+  }, [data]);
+  return { data: byBrand, loading };
+}
+
+// Rewording one checklist item for every project of a brand. Admin-only, in
+// the rules as well as the interface. An empty label clears the override and
+// the item goes back to what the brand's checklist file says.
+export async function setBrandFieldLabel(brandKey, letter, label, user) {
+  const text = (label || '').trim();
+  return reportingWrite('renaming a checklist item', () =>
+    setDoc(
+      doc(db, 'brandTemplates', brandKey),
+      {
+        labels: { [letter]: text || deleteField() },
+        updatedAt: serverTimestamp(),
+        updatedBy: user?.email || 'unknown',
+      },
+      { merge: true }
+    )
+  );
+}
+
+// The same, for one project only. Kept on the project document beside
+// hiddenFields, since both describe this project's copy of the checklist.
+export async function setProjectFieldLabel(projectId, letter, label, currentLabels, user) {
+  const text = (label || '').trim();
+  const next = { ...(currentLabels || {}) };
+  if (text) next[letter] = text;
+  else delete next[letter];
+  return reportingWrite('renaming a checklist item', () =>
+    updateDoc(doc(db, 'projects', projectId), {
+      fieldLabels: next,
+      updatedAt: serverTimestamp(),
+      updatedBy: user?.email || 'unknown',
+    })
+  );
 }
 
 // The list of people allowed in. Keyed by lowercased email, because the

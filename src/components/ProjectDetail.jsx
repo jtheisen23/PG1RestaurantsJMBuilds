@@ -6,6 +6,9 @@ import {
   pct,
   templateForProject,
   hiddenFieldsOf,
+  labelFor,
+  brandKeyFor,
+  BRAND_BY_KEY,
 } from '../lib/helpers';
 import {
   updateProjectField,
@@ -15,11 +18,12 @@ import {
   useTasks,
 } from '../lib/firestore';
 import TaskList from './TaskList';
+import FieldLabelDialog from './FieldLabelDialog';
 import { useAuth } from '../context/AuthContext';
 
 const QUICK_LETTERS = ['C', 'F', 'T', 'U', 'X', 'AA', 'DF', 'GM'];
 
-export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }) {
+export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, brandLabels }) {
   const { user, canEdit, isAdmin } = useAuth();
   const { data: allTasks } = useTasks();
   const [openPhase, setOpenPhase] = useState('Real Estate');
@@ -34,6 +38,11 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }
   const tpl = templateForProject(project);
   const fields = project.fields || {};
   const hidden = hiddenFieldsOf(project);
+  const [renaming, setRenaming] = useState(null);
+
+  // Resolves the project's own wording, then the brand's, then the checklist
+  // file. Passed down so every field renders the same way.
+  const nameOf = (header) => labelFor(header, project, brandLabels);
 
   // Removing a checklist item affects only this project; the template it comes
   // from is shared by every project of the brand. The rules enforce admin-only
@@ -72,7 +81,7 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }
     await updateProjectField(project.id, letter, checked, user, {
       projectName: project.name || project.brand || '',
       brandKey: tpl.key,
-      label: header?.label || letter,
+      label: header ? nameOf(header) : letter,
       phase: header?.phase || '',
     });
   }
@@ -199,8 +208,20 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }
           isAdmin={isAdmin}
           hidden={hidden}
           onSetHidden={setHidden}
+          nameOf={nameOf}
+          onRename={setRenaming}
         />
       ))}
+
+      {renaming && (
+        <FieldLabelDialog
+          project={{ ...project, brandKeyResolved: brandKeyFor(project) }}
+          header={renaming}
+          brandName={BRAND_BY_KEY[brandKeyFor(project)]?.name || 'this brand'}
+          original={nameOf(renaming)}
+          onClose={() => setRenaming(null)}
+        />
+      )}
 
       {tpl.notesHeaders.length > 0 && (
         <NotesAccordion
@@ -209,6 +230,8 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask }
           isAdmin={isAdmin}
           hidden={hidden}
           onSetHidden={setHidden}
+          nameOf={nameOf}
+          onRename={setRenaming}
           open={openPhase === 'Notes/PSA'}
           onToggle={() => setOpenPhase(openPhase === 'Notes/PSA' ? null : 'Notes/PSA')}
           canEdit={canEdit}
@@ -248,6 +271,8 @@ function Accordion({
   isAdmin,
   hidden,
   onSetHidden,
+  nameOf,
+  onRename,
 }) {
   const all = template.headersByPhase[phase] || [];
   const hs = all.filter((h) => !hidden.has(h.letter));
@@ -346,7 +371,9 @@ function Accordion({
                 disabled={!canEdit}
                 onChange={(checked) => toggleField(h.letter, checked)}
                 isAdmin={isAdmin}
-                onRemove={() => onSetHidden(h.letter, h.label, true)}
+                label={nameOf(h)}
+                onRemove={() => onSetHidden(h.letter, nameOf(h), true)}
+                onRename={() => onRename(h)}
               />
             ) : (
               <TextField
@@ -356,14 +383,16 @@ function Accordion({
                 disabled={!canEdit}
                 onCommit={(v) => commitText(h.letter, v)}
                 isAdmin={isAdmin}
-                onRemove={() => onSetHidden(h.letter, h.label, true)}
+                label={nameOf(h)}
+                onRemove={() => onSetHidden(h.letter, nameOf(h), true)}
+                onRename={() => onRename(h)}
               />
             )
           )}
         </div>
 
         {isAdmin && removed.length > 0 && (
-          <RemovedList items={removed} onRestore={onSetHidden} />
+          <RemovedList items={removed} onRestore={onSetHidden} nameOf={nameOf} />
         )}
 
       </div>
@@ -382,6 +411,8 @@ function NotesAccordion({
   isAdmin,
   hidden,
   onSetHidden,
+  nameOf,
+  onRename,
 }) {
   const fields = project.fields || {};
   const all = template.notesHeaders;
@@ -407,7 +438,9 @@ function NotesAccordion({
                 disabled={!canEdit}
                 onChange={(checked) => toggleField(h.letter, checked)}
                 isAdmin={isAdmin}
-                onRemove={() => onSetHidden(h.letter, h.label, true)}
+                label={nameOf(h)}
+                onRemove={() => onSetHidden(h.letter, nameOf(h), true)}
+                onRename={() => onRename(h)}
               />
             ) : (
               <TextField
@@ -417,21 +450,24 @@ function NotesAccordion({
                 disabled={!canEdit}
                 onCommit={(v) => commitText(h.letter, v)}
                 isAdmin={isAdmin}
-                onRemove={() => onSetHidden(h.letter, h.label, true)}
+                label={nameOf(h)}
+                onRemove={() => onSetHidden(h.letter, nameOf(h), true)}
+                onRename={() => onRename(h)}
               />
             )
           )}
         </div>
 
         {isAdmin && removed.length > 0 && (
-          <RemovedList items={removed} onRestore={onSetHidden} />
+          <RemovedList items={removed} onRestore={onSetHidden} nameOf={nameOf} />
         )}
       </div>
     </div>
   );
 }
 
-function CheckField({ h, checked, disabled, onChange, isAdmin, onRemove }) {
+function CheckField({ h, checked, disabled, onChange, isAdmin, label, onRemove, onRename }) {
+  const reworded = label !== h.label;
   return (
     <div className="cb-field">
       <input
@@ -441,34 +477,45 @@ function CheckField({ h, checked, disabled, onChange, isAdmin, onRemove }) {
         disabled={disabled}
         onChange={(e) => onChange(e.target.checked)}
       />
-      <label htmlFor={`fld-${h.letter}`}>
-        {h.label}
+      <label htmlFor={`fld-${h.letter}`} className={reworded ? 'label-edited' : undefined}>
+        {label}
         {h.resp ? <span className="resp-tag">({h.resp})</span> : null}
       </label>
-      {isAdmin && <RemoveField label={h.label} onRemove={onRemove} />}
+      {isAdmin && <FieldActions label={label} onRemove={onRemove} onRename={onRename} />}
     </div>
   );
 }
 
-// Admin-only. Removing an item takes it off this project alone, so the wording
-// avoids "delete", which would imply the shared template is being edited.
-function RemoveField({ label, onRemove }) {
+// Admin-only. "Remove" rather than "delete", because the shared checklist is
+// not being edited -- this project's copy of it is.
+function FieldActions({ label, onRemove, onRename }) {
   return (
-    <button
-      type="button"
-      className="fld-remove"
-      title={`Remove "${label}" from this project`}
-      aria-label={`Remove ${label} from this project`}
-      onClick={onRemove}
-    >
-      &times;
-    </button>
+    <span className="fld-actions">
+      <button
+        type="button"
+        className="fld-edit"
+        title={`Reword "${label}"`}
+        aria-label={`Reword ${label}`}
+        onClick={onRename}
+      >
+        Edit
+      </button>
+      <button
+        type="button"
+        className="fld-remove"
+        title={`Remove "${label}" from this project`}
+        aria-label={`Remove ${label} from this project`}
+        onClick={onRemove}
+      >
+        &times;
+      </button>
+    </span>
   );
 }
 
 // Restoring is deliberately tucked behind a toggle: it is a short list that
 // only admins see, and it should not compete with the checklist itself.
-function RemovedList({ items, onRestore }) {
+function RemovedList({ items, onRestore, nameOf }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="removed-block">
@@ -480,11 +527,11 @@ function RemovedList({ items, onRestore }) {
         <div className="removed-list">
           {items.map((h) => (
             <div className="removed-row" key={h.letter}>
-              <span>{h.label}</span>
+              <span>{nameOf(h)}</span>
               <button
                 type="button"
                 className="link-btn"
-                onClick={() => onRestore(h.letter, h.label, false)}
+                onClick={() => onRestore(h.letter, nameOf(h), false)}
               >
                 Restore
               </button>
@@ -496,13 +543,14 @@ function RemovedList({ items, onRestore }) {
   );
 }
 
-function TextField({ h, value, disabled, onCommit, isAdmin, onRemove }) {
+function TextField({ h, value, disabled, onCommit, isAdmin, label, onRemove, onRename }) {
   const [val, setVal] = useState(value || '');
+  const reworded = label !== h.label;
   return (
     <div className="cb-field txt-field">
-      <label>
-        {h.label}
-        {isAdmin && <RemoveField label={h.label} onRemove={onRemove} />}
+      <label className={reworded ? 'label-edited' : undefined}>
+        {label}
+        {isAdmin && <FieldActions label={label} onRemove={onRemove} onRename={onRename} />}
       </label>
       <textarea
         rows={1}

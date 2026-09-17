@@ -42,6 +42,8 @@ const check = async (label, promise) => {
     await setDoc(doc(db, 'invites/invited@x.com'), { email: 'invited@x.com', role: 'editor' });
     await setDoc(doc(db, 'projects/p1'), { name: 'Lexington Park', fields: {}, hiddenFields: [] });
     await setDoc(doc(db, 'projects/p2'), { name: 'Bristol', fields: {}, hiddenFields: ['E'] });
+    await setDoc(doc(db, 'brandTemplates/jerseymikes'), { labels: { H: 'Bank nearby?' } });
+    await setDoc(doc(db, 'projects/p3'), { name: 'Has labels', fields: {}, fieldLabels: { H: 'Kept' } });
     await setDoc(doc(db, 'tasks/t1'), { title: 'Chase landlord', projectId: 'p1' });
     await setDoc(doc(db, 'tasks/t_mine'),  { title: 'Typo I made',  createdBy: 'editor@x.com' });
     await setDoc(doc(db, 'tasks/t_yours'), { title: 'Someone else\'s', createdBy: 'admin@x.com' });
@@ -119,6 +121,26 @@ const check = async (label, promise) => {
     assertSucceeds(setDoc(doc(admin, 'projects/p1'), { name: 'Lexington Park', fields: {}, hiddenFields: ['G'] })));
   await check('admin CAN restore one',
     assertSucceeds(setDoc(doc(admin, 'projects/p1'), { name: 'Lexington Park', fields: {}, hiddenFields: [] })));
+
+  console.log('\n--- REWORDING A CHECKLIST ITEM ---');
+  // Wording is an admin decision too: per project, and brand-wide, where it
+  // changes what every project of that brand says.
+  await check('everyone can read the brand wording overrides',
+    assertSucceeds(getDoc(doc(editor, 'brandTemplates/jerseymikes'))));
+  await check('stranger cannot read them',
+    assertFails(getDoc(doc(stranger, 'brandTemplates/jerseymikes'))));
+  await check('editor cannot reword for the whole brand',
+    assertFails(setDoc(doc(editor, 'brandTemplates/jerseymikes'), { labels: { H: 'Mine now' } })));
+  await check('admin CAN reword for the whole brand',
+    assertSucceeds(setDoc(doc(admin, 'brandTemplates/jerseymikes'), { labels: { H: 'Bank within 2 miles?' } })));
+  await check('editor cannot reword for one project',
+    assertFails(setDoc(doc(editor, 'projects/p1'), { name: 'Lexington Park', fields: {}, hiddenFields: [], fieldLabels: { H: 'Mine' } })));
+  await check('editor cannot dodge it by omitting fieldLabels',
+    assertFails(setDoc(doc(editor, 'projects/p3'), { name: 'Has labels', fields: {} })));
+  await check('admin CAN reword for one project',
+    assertSucceeds(setDoc(doc(admin, 'projects/p1'), { name: 'Lexington Park', fields: {}, hiddenFields: [], fieldLabels: { H: 'Bank nearby?' } })));
+  await check('editor can still edit a project that has wording overrides',
+    assertSucceeds(setDoc(doc(editor, 'projects/p3'), { name: 'Has labels', fields: { E: true }, fieldLabels: { H: 'Kept' } })));
 
   console.log('\n--- DELETING A TASK ---');
   // Deleting someone else's task stays admin-only; removing your own typo

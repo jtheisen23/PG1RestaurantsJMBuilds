@@ -68,6 +68,19 @@ export function hiddenFieldsOf(project) {
   return new Set(Array.isArray(list) ? list : []);
 }
 
+// What a checklist item is called here. The brand's file ships with the app,
+// so rewording has to live in the database: an admin can reword an item for
+// one project, or for every project of the brand. Most specific wins, and an
+// override is only ever a label -- the column letter, type and phase still
+// come from the file, so progress is unaffected by what anything is called.
+export function labelFor(header, project, brandLabels) {
+  const perProject = project?.fieldLabels?.[header.letter];
+  if (perProject) return perProject;
+  const perBrand = brandLabels?.[brandKeyFor(project)]?.[header.letter];
+  if (perBrand) return perBrand;
+  return header.label;
+}
+
 // The headers of one phase that this project actually has, removals excluded.
 export function visibleHeaders(project, phase) {
   const tpl = templateForProject(project);
