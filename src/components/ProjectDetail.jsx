@@ -47,11 +47,13 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
   const [renaming, setRenaming] = useState(null);
   const [addingTo, setAddingTo] = useState(null);
 
-  // An added field belongs to this project alone, so removing it really
-  // removes it -- unlike a spreadsheet item, which is only ever hidden.
+  // What removing means depends on who owns the field. One added to this
+  // project exists nowhere else, so it is really deleted. One from the brand --
+  // or from the spreadsheet -- is on every project of that brand, so here it
+  // can only be hidden.
   async function removeField(header) {
     if (!isAdmin) return;
-    if (header.custom) {
+    if (header.custom && header.owner === 'project') {
       if (
         !confirm(
           `Delete "${nameOf(header)}" from this project?\n\n` +
@@ -252,6 +254,8 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
         <AddFieldDialog
           project={project}
           phase={addingTo}
+          brandKey={brandKeyFor(project)}
+          brandName={BRAND_BY_KEY[brandKeyFor(project)]?.name || 'this brand'}
           onClose={() => setAddingTo(null)}
         />
       )}
@@ -708,6 +712,7 @@ function TextField({ h, value, disabled, onCommit, isAdmin, label, onRemove, onR
       <label className={reworded ? 'label-edited' : undefined}>
         {isAdmin && <span className="fld-grip" aria-hidden="true">⠿</span>}
         {label}
+        {h.resp ? <span className="resp-tag">({h.resp})</span> : null}
         {h.custom && <span className="custom-tag">added</span>}
         {isAdmin && (
         <FieldActions label={label} onRemove={onRemove} onRename={onRename} custom={h.custom} />

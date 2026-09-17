@@ -95,9 +95,17 @@ export function labelFor(header, project, brandLabels) {
 // field can never collide with a real column.
 export const CUSTOM_PREFIX = 'cf_';
 
+// `owner` decides what removing one means. A field belonging to the brand is
+// on every project of that brand, so a single project can only hide it -- the
+// same deal as an item from the spreadsheet. A field added to this project
+// exists nowhere else, so its removal is a real delete.
 export function customFieldsOf(project, phase) {
-  const list = Array.isArray(project?.customFields) ? project.customFields : [];
-  return list
+  const own = Array.isArray(project?.customFields) ? project.customFields : [];
+  const brand = Array.isArray(project?.brandFields) ? project.brandFields : [];
+  return [
+    ...brand.map((f) => ({ ...f, owner: 'brand' })),
+    ...own.map((f) => ({ ...f, owner: 'project' })),
+  ]
     .filter((f) => f && f.id && (phase === undefined || f.phase === phase))
     .map((f) => ({
       letter: f.id,
@@ -107,6 +115,7 @@ export function customFieldsOf(project, phase) {
       resp: f.resp || null,
       hint: null,
       custom: true,
+      owner: f.owner,
     }));
 }
 

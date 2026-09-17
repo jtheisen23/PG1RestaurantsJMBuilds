@@ -14,6 +14,7 @@ import {
   limit,
 } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+import { brandKeyFor } from './brands';
 import { auth, db } from '../firebase';
 import { reportDataError, clearDataError } from './dataErrors';
 
@@ -71,12 +72,20 @@ function useCollection(name, orderField) {
 // Anything without an order sorts to the end, then alphabetically by name.
 export function useProjects() {
   const { data, loading } = useCollection('projects');
+  const { data: brandTemplates } = useBrandTemplates();
+
+  // A brand's extra fields are attached here rather than threaded through the
+  // app. Progress, ordering, hiding and rendering all read the project, so
+  // merging at the source means none of them need to know these fields came
+  // from somewhere else -- and none of them can be missed and quietly report a
+  // wrong percentage. Kept separate from the project's own `customFields` so a
+  // write never persists a brand's fields into a project document.
   const sorted = useMemo(() => {
     const rank = (p) => (typeof p.order === 'number' ? p.order : Number.MAX_SAFE_INTEGER);
-    return [...data].sort(
-      (a, b) => rank(a) - rank(b) || (a.name || '').localeCompare(b.name || '')
-    );
-  }, [data]);
+    return [...data]
+      .map((p) => ({ ...p, brandFields: brandTemplates[brandKeyFor(p)]?.customFields || [] }))
+      .sort((a, b) => rank(a) - rank(b) || (a.name || '').localeCompare(b.name || ''));
+  }, [data, brandTemplates]);
   return { data: sorted, loading };
 }
 
@@ -110,18 +119,66 @@ export function useUsers() {
   return useCollection('users');
 }
 
-// Label overrides that apply to every project of a brand, one document per
-// brand keyed by brand key. Returns { jerseymikes: { H: 'New wording' }, ... }.
-export function useBrandLabels() {
+// Everything a brand overlays on its shipped checklist: reworded labels, and
+// extra fields every project of that brand should have. One document per
+// brand, keyed by brand key.
+function useBrandTemplates() {
   const { data, loading } = useCollection('brandTemplates');
   const byBrand = useMemo(() => {
     const out = {};
     data.forEach((d) => {
-      out[d.id] = d.labels || {};
+      out[d.id] = { labels: d.labels || {}, customFields: d.customFields || [] };
     });
     return out;
   }, [data]);
   return { data: byBrand, loading };
+}
+
+export function useBrandLabels() {
+  const { data, loading } = useBrandTemplates();
+  const byBrand = useMemo(() => {
+    const out = {};
+    Object.entries(data).forEach(([key, v]) => {
+      out[key] = v.labels;
+    });
+    return out;
+  }, [data]);
+  return { data: byBrand, loading };
+}
+
+// Adding a field to every project of a brand. One document is written, not
+// forty: the field belongs to the brand, so projects created later get it too,
+// and rewording or removing it later is still one decision rather than forty.
+export async function addBrandCustomField(brandKey, { phase, label, type }, current, user) {
+  const field = {
+    id: `cf_${Math.random().toString(16).slice(2, 10)}`,
+    phase,
+    label: (label || '').trim() || 'Untitled',
+    type: type === 'text' ? 'text' : 'checkbox',
+  };
+  await reportingWrite('adding a field', () =>
+    setDoc(
+      doc(db, 'brandTemplates', brandKey),
+      {
+        customFields: [...(Array.isArray(current) ? current : []), field],
+        updatedAt: serverTimestamp(),
+        updatedBy: user?.email || 'unknown',
+      },
+      { merge: true }
+    )
+  );
+  return field;
+}
+
+export async function deleteBrandCustomField(brandKey, fieldId, current, user) {
+  const next = (Array.isArray(current) ? current : []).filter((f) => f?.id !== fieldId);
+  return reportingWrite('deleting a field', () =>
+    setDoc(
+      doc(db, 'brandTemplates', brandKey),
+      { customFields: next, updatedAt: serverTimestamp(), updatedBy: user?.email || 'unknown' },
+      { merge: true }
+    )
+  );
 }
 
 // Rewording one checklist item for every project of a brand. Admin-only, in
