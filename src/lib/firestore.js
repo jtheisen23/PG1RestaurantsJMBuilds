@@ -149,13 +149,21 @@ export function useBrandLabels() {
 // Adding a field to every project of a brand. One document is written, not
 // forty: the field belongs to the brand, so projects created later get it too,
 // and rewording or removing it later is still one decision rather than forty.
-export async function addBrandCustomField(brandKey, { phase, label, type }, current, user) {
-  const field = {
+// The shape of an added field, in one place. Both entry points below build it
+// through this: when they each did their own destructuring, both quietly
+// dropped `resp` and the responsible name never reached the page.
+export function buildCustomField({ phase, label, type, resp }) {
+  return {
     id: `cf_${Math.random().toString(16).slice(2, 10)}`,
     phase,
     label: (label || '').trim() || 'Untitled',
     type: type === 'text' ? 'text' : 'checkbox',
+    resp: (resp || '').trim(),
   };
+}
+
+export async function addBrandCustomField(brandKey, spec, current, user) {
+  const field = buildCustomField(spec);
   await reportingWrite('adding a field', () =>
     setDoc(
       doc(db, 'brandTemplates', brandKey),
@@ -168,6 +176,32 @@ export async function addBrandCustomField(brandKey, { phase, label, type }, curr
     )
   );
   return field;
+}
+
+// Changing an added field in place -- its wording, or who is responsible for
+// it. Routed by where the field lives: one added to a project is edited on the
+// project, one added to a brand on the brand, so it stays a single definition
+// either way rather than forking per project.
+export async function updateCustomField(target, fieldId, patch, current, user) {
+  const list = (Array.isArray(current) ? current : []).map((f) =>
+    f?.id === fieldId ? { ...f, ...patch } : f
+  );
+  if (target.brandKey) {
+    return reportingWrite('saving a field', () =>
+      setDoc(
+        doc(db, 'brandTemplates', target.brandKey),
+        { customFields: list, updatedAt: serverTimestamp(), updatedBy: user?.email || 'unknown' },
+        { merge: true }
+      )
+    );
+  }
+  return reportingWrite('saving a field', () =>
+    updateDoc(doc(db, 'projects', target.projectId), {
+      customFields: list,
+      updatedAt: serverTimestamp(),
+      updatedBy: user?.email || 'unknown',
+    })
+  );
 }
 
 export async function deleteBrandCustomField(brandKey, fieldId, current, user) {
@@ -430,13 +464,8 @@ export async function setFieldHidden(projectId, letter, hidden, currentHidden, u
 // The id is generated and prefixed so it can never collide with a spreadsheet
 // column letter, and the value lives in `fields` beside everything else, so
 // ticking and progress need no special case.
-export async function addCustomField(projectId, { phase, label, type }, current, user) {
-  const field = {
-    id: `cf_${Math.random().toString(16).slice(2, 10)}`,
-    phase,
-    label: (label || '').trim() || 'Untitled',
-    type: type === 'text' ? 'text' : 'checkbox',
-  };
+export async function addCustomField(projectId, spec, current, user) {
+  const field = buildCustomField(spec);
   const next = [...(Array.isArray(current) ? current : []), field];
   await reportingWrite('adding a field', () =>
     updateDoc(doc(db, 'projects', projectId), {
