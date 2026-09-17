@@ -142,6 +142,22 @@ const check = async (label, promise) => {
   await check('editor can still edit a project that has wording overrides',
     assertSucceeds(setDoc(doc(editor, 'projects/p3'), { name: 'Has labels', fields: { E: true }, fieldLabels: { H: 'Kept' } })));
 
+  console.log('\n--- ADDING AND REORDERING FIELDS ---');
+  // An added tick-box is one more thing between a project and 100%, and the
+  // order the page reads in is a layout decision. Both are admin-only.
+  await check('editor cannot add a field',
+    assertFails(setDoc(doc(editor, 'projects/p1'), { name: 'Lexington Park', fields: {}, hiddenFields: [], fieldLabels: { H: 'Bank nearby?' }, customFields: [{ id: 'cf_1', phase: 'Real Estate', label: 'Sneaky', type: 'checkbox' }] })));
+  await check('editor cannot reorder fields',
+    assertFails(setDoc(doc(editor, 'projects/p1'), { name: 'Lexington Park', fields: {}, hiddenFields: [], fieldLabels: { H: 'Bank nearby?' }, fieldOrder: { 'Real Estate': ['G', 'E'] } })));
+  await check('admin CAN add a field',
+    assertSucceeds(setDoc(doc(admin, 'projects/p1'), { name: 'Lexington Park', fields: {}, hiddenFields: [], fieldLabels: { H: 'Bank nearby?' }, customFields: [{ id: 'cf_1', phase: 'Real Estate', label: 'Turnover letter', type: 'checkbox' }] })));
+  await check('admin CAN reorder fields',
+    assertSucceeds(setDoc(doc(admin, 'projects/p1'), { name: 'Lexington Park', fields: {}, hiddenFields: [], fieldLabels: { H: 'Bank nearby?' }, customFields: [{ id: 'cf_1', phase: 'Real Estate', label: 'Turnover letter', type: 'checkbox' }], fieldOrder: { 'Real Estate': ['cf_1', 'E'] } })));
+  await check('editor CAN still tick an added field',
+    assertSucceeds(setDoc(doc(editor, 'projects/p1'), { name: 'Lexington Park', fields: { cf_1: true }, hiddenFields: [], fieldLabels: { H: 'Bank nearby?' }, customFields: [{ id: 'cf_1', phase: 'Real Estate', label: 'Turnover letter', type: 'checkbox' }], fieldOrder: { 'Real Estate': ['cf_1', 'E'] } })));
+  await check('editor cannot delete an added field',
+    assertFails(setDoc(doc(editor, 'projects/p1'), { name: 'Lexington Park', fields: { cf_1: true }, hiddenFields: [], fieldLabels: { H: 'Bank nearby?' }, customFields: [], fieldOrder: { 'Real Estate': ['cf_1', 'E'] } })));
+
   console.log('\n--- DELETING A TASK ---');
   // Deleting someone else's task stays admin-only; removing your own typo
   // should not need one.

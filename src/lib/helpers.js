@@ -1,6 +1,9 @@
 import { BRANDS, BRAND_BY_KEY, DEFAULT_PHASES, brandKeyFor } from './brands';
 
 export const PHASES = DEFAULT_PHASES;
+// Not a phase of the flow -- a trailing section for PSA details and free
+// notes, with no progress of its own.
+export const NOTES_PHASE = 'Notes/PSA';
 // Short keys and colours for the phases PG1 has always used. A brand whose
 // flow has different stages gets keys and colours by position instead, so the
 // dots, chips and stage badges still work without hardcoding its stage names.
@@ -32,6 +35,9 @@ function buildTemplate(brand) {
     byPhase[p] = headers.filter((h) => h.phase === p);
     checkboxCount[p] = byPhase[p].filter((h) => h.type === 'checkbox').length;
   });
+  // Indexed alongside the phases so the PSA / Notes section can be built the
+  // same way -- it takes added and removed items too, it just has no progress.
+  byPhase[NOTES_PHASE] = headers.filter((h) => h.phase === NOTES_PHASE);
   return {
     key: brand.key,
     name: brand.name,
@@ -81,11 +87,63 @@ export function labelFor(header, project, brandLabels) {
   return header.label;
 }
 
-// The headers of one phase that this project actually has, removals excluded.
+// Extra checklist items added to this project that its brand's spreadsheet
+// does not have. They behave exactly like items from the file -- same storage,
+// same tick-box or text box, and they count towards progress -- so the rest of
+// the app needs no idea they came from somewhere else. `letter` is a generated
+// id rather than a spreadsheet column, which is why ids are prefixed: a custom
+// field can never collide with a real column.
+export const CUSTOM_PREFIX = 'cf_';
+
+export function customFieldsOf(project, phase) {
+  const list = Array.isArray(project?.customFields) ? project.customFields : [];
+  return list
+    .filter((f) => f && f.id && (phase === undefined || f.phase === phase))
+    .map((f) => ({
+      letter: f.id,
+      label: f.label || 'Untitled',
+      phase: f.phase,
+      type: f.type === 'text' ? 'text' : 'checkbox',
+      resp: f.resp || null,
+      hint: null,
+      custom: true,
+    }));
+}
+
+// Everything on one phase of this project, in the order it should appear:
+// the brand's items plus any added here, minus any removed, arranged by the
+// project's own ordering where it has one.
+//
+// An explicit order lists keys; anything it does not mention keeps its place
+// from the file and follows. That way a saved order never loses an item, which
+// matters because the file gains items whenever a brand's checklist is
+// re-imported.
 export function visibleHeaders(project, phase) {
   const tpl = templateForProject(project);
   const hidden = hiddenFieldsOf(project);
-  return (tpl.headersByPhase[phase] || []).filter((h) => !hidden.has(h.letter));
+  const all = [...(tpl.headersByPhase[phase] || []), ...customFieldsOf(project, phase)].filter(
+    (h) => !hidden.has(h.letter)
+  );
+
+  const order = project?.fieldOrder?.[phase];
+  if (!Array.isArray(order) || !order.length) return all;
+
+  const rank = new Map(order.map((key, i) => [key, i]));
+  return [...all].sort((a, b) => {
+    const ra = rank.has(a.letter) ? rank.get(a.letter) : Number.MAX_SAFE_INTEGER;
+    const rb = rank.has(b.letter) ? rank.get(b.letter) : Number.MAX_SAFE_INTEGER;
+    if (ra !== rb) return ra - rb;
+    return all.indexOf(a) - all.indexOf(b);
+  });
+}
+
+// The items removed from one phase, for the admin list that puts them back.
+export function removedHeaders(project, phase) {
+  const tpl = templateForProject(project);
+  const hidden = hiddenFieldsOf(project);
+  return [...(tpl.headersByPhase[phase] || []), ...customFieldsOf(project, phase)].filter((h) =>
+    hidden.has(h.letter)
+  );
 }
 
 export function phaseProgress(project, phase) {

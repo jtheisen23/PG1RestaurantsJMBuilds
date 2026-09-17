@@ -84,11 +84,15 @@ service cloud.firestore {
     //                 apply to this location -- off its page and out of its
     //                 progress.
     //   fieldLabels   items reworded for this one project.
+    //   customFields  extra items this location needs that the brand's
+    //                 spreadsheet does not have. A new tick-box is one more
+    //                 thing standing between here and 100%.
+    //   fieldOrder    the order the items appear in, per phase.
     //
-    // They change what the project is measured against and what it says, so an
-    // editor's update must leave both exactly as they were. Reading with a
-    // default covers documents that have neither, so omitting a field is not a
-    // way around the check.
+    // They change what the project is measured against, what it says and how
+    // it reads, so an editor's update must leave all four exactly as they
+    // were. Reading with a default covers documents that have none of them, so
+    // omitting a field is not a way around the check.
     match /projects/{projectId} {
       allow read: if isMember();
       allow create: if isEditor();
@@ -97,7 +101,11 @@ service cloud.firestore {
                         && request.resource.data.get('hiddenFields', [])
                            == resource.data.get('hiddenFields', [])
                         && request.resource.data.get('fieldLabels', {})
-                           == resource.data.get('fieldLabels', {}));
+                           == resource.data.get('fieldLabels', {})
+                        && request.resource.data.get('customFields', [])
+                           == resource.data.get('customFields', [])
+                        && request.resource.data.get('fieldOrder', {})
+                           == resource.data.get('fieldOrder', {}));
       allow delete: if isAdmin();
     }
 
