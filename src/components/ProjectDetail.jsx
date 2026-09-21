@@ -461,7 +461,7 @@ function Accordion({
           />
         </div>
         <div className="pct">
-          {checkboxTotal ? `${doneCount}/${checkboxTotal} done` : 'nothing to tick yet'}
+          {checkboxTotal ? `${doneCount}/${checkboxTotal} done` : '—'}
         </div>
         {open && doneCount > 0 && (
           <label className="check-inline acc-filter" onClick={(e) => e.stopPropagation()}>

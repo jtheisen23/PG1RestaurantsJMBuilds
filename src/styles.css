@@ -186,6 +186,8 @@
   .acc-head .dot.re{background:var(--accent);}
   .acc-head .dot.pc{background:var(--amber);}
   .acc-head .dot.co{background:var(--brick);}
+  .acc-head .dot.op{background:var(--slate);}
+  .acc-head .dot.po{background:var(--plum);}
   .acc-head .dot.notes{background:var(--slate);}
   .acc-head h3{margin:0;font-size:20px;flex-shrink:0;}
   .acc-head .track{flex:1;height:7px;background:var(--line);border-radius:5px;overflow:hidden;}
@@ -443,6 +445,7 @@
 .acc-head .dot.ph1{background:var(--amber);}
 .acc-head .dot.ph2{background:var(--brick);}
 .acc-head .dot.ph3{background:var(--slate);}
+.acc-head .dot.ph4{background:var(--plum);}
 .stage-badge.ph0{background:var(--accent-light);color:var(--accent-dark);}
 .stage-badge.ph1{background:var(--amber-light);color:#8a5c14;}
 .stage-badge.ph2{background:var(--brick-light);color:var(--brick);}
