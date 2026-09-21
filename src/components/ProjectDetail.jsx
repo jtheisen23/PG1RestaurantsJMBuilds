@@ -449,9 +449,20 @@ function Accordion({
         <span className={`dot ${key}`} />
         <h3>{phase}</h3>
         <div className="track">
-          <div className="fill" style={{ width: `${pct(prog)}%`, background: phaseColor(phase, index) }} />
+          {/* A stage with no checkboxes counts as complete -- nothing is
+              outstanding -- but filling the bar makes Operations and Post
+              Opening look finished before anyone has touched them. */}
+          <div
+            className="fill"
+            style={{
+              width: checkboxTotal ? `${pct(prog)}%` : '0%',
+              background: phaseColor(phase, index),
+            }}
+          />
         </div>
-        <div className="pct">{doneCount}/{checkboxTotal} done</div>
+        <div className="pct">
+          {checkboxTotal ? `${doneCount}/${checkboxTotal} done` : 'nothing to tick yet'}
+        </div>
         {open && doneCount > 0 && (
           <label className="check-inline acc-filter" onClick={(e) => e.stopPropagation()}>
             <input type="checkbox" checked={hideDone} onChange={onHideDoneChange} />
