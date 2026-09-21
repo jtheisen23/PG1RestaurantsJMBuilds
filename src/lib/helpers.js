@@ -136,7 +136,9 @@ export function customFieldsOf(project, phase) {
     ...brand.map((f) => ({ ...f, owner: 'brand' })),
     ...own.map((f) => ({ ...f, owner: 'project' })),
   ]
-    .filter((f) => f && f.id && (phase === undefined || f.phase === phase))
+    .filter(
+      (f) => f && f.id && (phase === undefined || normalizePhase(f.phase) === phase),
+    )
     .map((f) => ({
       letter: f.id,
       label: f.label || 'Untitled',
@@ -164,7 +166,12 @@ export function visibleHeaders(project, phase) {
     (h) => !hidden.has(h.letter)
   );
 
-  const order = project?.fieldOrder?.[phase];
+  // Ordering saved before the rename is filed under the old phase name.
+  const saved = project?.fieldOrder || {};
+  const legacyKey = Object.keys(LEGACY_PHASE_ALIAS).find(
+    (old) => LEGACY_PHASE_ALIAS[old] === phase,
+  );
+  const order = saved[phase] || (legacyKey ? saved[legacyKey] : undefined);
   if (!Array.isArray(order) || !order.length) return all;
 
   const rank = new Map(order.map((key, i) => [key, i]));
