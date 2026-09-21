@@ -12,6 +12,7 @@ import {
   visibleHeaders,
   removedHeaders,
   NOTES_PHASE,
+  normalizePhase,
 } from '../lib/helpers';
 import {
   updateProjectField,
@@ -236,7 +237,9 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
           canEdit={canEdit}
           toggleField={toggleField}
           commitText={commitText}
-          tasks={allTasks.filter((t) => t.projectId === project.id && t.phase === phase)}
+          tasks={allTasks.filter(
+            (t) => t.projectId === project.id && normalizePhase(t.phase) === phase,
+          )}
           onAddTask={onAddTask}
           onEditTask={onEditTask}
           isAdmin={isAdmin}

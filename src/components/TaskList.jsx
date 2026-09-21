@@ -1,4 +1,5 @@
 import { setTaskDone, deleteTask } from '../lib/firestore';
+import { normalizePhase } from '../lib/helpers';
 import { useAuth } from '../context/AuthContext';
 
 function dueLabel(due) {
@@ -56,7 +57,9 @@ export default function TaskList({
               <div className="task-title">{t.title}</div>
               <div className="task-meta">
                 {showProject && <span className="task-project">{t.projectName || 'Unknown project'}</span>}
-                {showPhase && t.phase && <span className="task-phase">{t.phase}</span>}
+                {showPhase && t.phase && (
+                  <span className="task-phase">{normalizePhase(t.phase)}</span>
+                )}
                 {t.assigneeEmail ? (
                   <span className={`task-who ${mine ? 'mine' : ''}`}>
                     {t.assigneeName || t.assigneeEmail}

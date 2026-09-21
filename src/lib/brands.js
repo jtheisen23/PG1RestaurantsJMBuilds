@@ -1,10 +1,26 @@
 import jerseyMikes from '../data/brands/jersey-mikes.json';
 import davesHotChicken from '../data/brands/daves-hot-chicken.json';
 
-// The three phases every brand's checklist is grouped into. A brand may
-// override this, but nothing does yet: the phases are how PG1 runs a
-// development project, not something Jersey Mike's imposes.
-export const DEFAULT_PHASES = ['Real Estate', 'Pre-Construction', 'Construction/Ops'];
+// The phases every brand's checklist is grouped into. A brand may override
+// this, but nothing does yet: the phases are how PG1 runs a development
+// project, not something Jersey Mike's imposes.
+//
+// Operations and Post Opening were split out of what used to be one
+// 'Construction/Ops' phase, which had grown to over a hundred items covering
+// three different kinds of work: putting the building up, fitting the store
+// out, and what happens once it is open.
+export const DEFAULT_PHASES = [
+  'Real Estate',
+  'Pre-Construction',
+  'Construction',
+  'Operations',
+  'Post Opening',
+];
+
+// What 'Construction/Ops' became. Tasks and activity-log rows written before
+// the split still name the old phase, and rather than rewrite stored history
+// the app reads it as the phase it turned into.
+export const LEGACY_PHASE_ALIAS = { 'Construction/Ops': 'Construction' };
 
 // One entry per brand PG1 develops. `headers` is that brand's checklist,
 // exported from its spreadsheet -- the column definitions that decide what

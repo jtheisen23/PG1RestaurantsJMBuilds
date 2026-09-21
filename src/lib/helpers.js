@@ -1,4 +1,10 @@
-import { BRANDS, BRAND_BY_KEY, DEFAULT_PHASES, brandKeyFor } from './brands';
+import {
+  BRANDS,
+  BRAND_BY_KEY,
+  DEFAULT_PHASES,
+  LEGACY_PHASE_ALIAS,
+  brandKeyFor,
+} from './brands';
 
 export const PHASES = DEFAULT_PHASES;
 // Not a phase of the flow -- a trailing section for PSA details and free
@@ -7,13 +13,37 @@ export const NOTES_PHASE = 'Notes/PSA';
 // Short keys and colours for the phases PG1 has always used. A brand whose
 // flow has different stages gets keys and colours by position instead, so the
 // dots, chips and stage badges still work without hardcoding its stage names.
-const KNOWN_PHASE_KEY = { 'Real Estate': 're', 'Pre-Construction': 'pc', 'Construction/Ops': 'co' };
+const KNOWN_PHASE_KEY = {
+  'Real Estate': 're',
+  'Pre-Construction': 'pc',
+  Construction: 'co',
+  Operations: 'op',
+  'Post Opening': 'po',
+  // Kept so a task stored under the old name still gets the right colour and
+  // badge rather than falling through to a positional key.
+  'Construction/Ops': 'co',
+};
 const KNOWN_PHASE_COLOR = {
   'Real Estate': 'var(--accent)',
   'Pre-Construction': 'var(--amber)',
+  Construction: 'var(--brick)',
+  Operations: 'var(--slate)',
+  'Post Opening': 'var(--plum)',
   'Construction/Ops': 'var(--brick)',
 };
-const PHASE_COLOR_CYCLE = ['var(--accent)', 'var(--amber)', 'var(--brick)', 'var(--slate)'];
+const PHASE_COLOR_CYCLE = [
+  'var(--accent)',
+  'var(--amber)',
+  'var(--brick)',
+  'var(--slate)',
+  'var(--plum)',
+];
+
+// A phase name as stored on a task or a log row, resolved to the phase it is
+// now. Anything already current passes through untouched.
+export function normalizePhase(phase) {
+  return LEGACY_PHASE_ALIAS[phase] || phase;
+}
 
 export function phaseKey(phase, index = 0) {
   return KNOWN_PHASE_KEY[phase] || `ph${index}`;
@@ -155,9 +185,20 @@ export function removedHeaders(project, phase) {
   );
 }
 
+// Whether a phase has anything to tick at all. The rail and the stage badge
+// need this because `phaseProgress` reports a phase with no checkboxes as
+// complete -- true, but "100%" against a stage nobody has touched reads as a
+// lie. Post Opening is dates and notes today, so this is not hypothetical.
+export function phaseHasChecks(project, phase) {
+  return visibleHeaders(project, phase).some((h) => h.type === 'checkbox');
+}
+
 export function phaseProgress(project, phase) {
   const hs = visibleHeaders(project, phase).filter((h) => h.type === 'checkbox');
-  if (!hs.length) return 0;
+  // A phase with nothing to tick has nothing outstanding. Reporting 0 instead
+  // would strand `currentStage` on it forever -- Post Opening is dates and
+  // notes, so a project that has actually opened would never read as complete.
+  if (!hs.length) return 1;
   const fields = project.fields || {};
   let checked = 0;
   hs.forEach((h) => {

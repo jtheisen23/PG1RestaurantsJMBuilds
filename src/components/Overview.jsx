@@ -5,8 +5,11 @@ import {
   currentStage,
   pct,
   phaseKey,
+  phaseColor,
+  phaseHasChecks,
   brandKeyFor,
   templateFor,
+  templateForProject,
   BRAND_BY_KEY,
 } from '../lib/helpers';
 import { createProject } from '../lib/firestore';
@@ -184,13 +187,27 @@ export default function Overview({ projects: allProjects, brandKey, onSelect, on
   );
 }
 
+// Abbreviations for the rail, which has one narrow column per phase. Anything
+// not listed falls back to its full name.
+const RAIL_LABEL = {
+  'Real Estate': 'Real Est',
+  'Pre-Construction': 'Pre-Con',
+  Construction: 'Const',
+  Operations: 'Ops',
+  'Post Opening': 'Post Open',
+};
+
 function ProjectRow({ project, onClick }) {
-  const re = phaseProgress(project, 'Real Estate');
-  const pc = phaseProgress(project, 'Pre-Construction');
-  const co = phaseProgress(project, 'Construction/Ops');
+  // Driven by the project's own brand rather than a fixed three: the phases a
+  // brand runs are data, and hardcoding them here is how the rail came to
+  // disagree with the project page.
+  const phases = templateForProject(project).phases;
+  const progress = phases.map((p) => phaseProgress(project, p));
+  const tickable = phases.map((p) => phaseHasChecks(project, p));
   const stage = currentStage(project);
   const overall = overallProgress(project);
   const addr = project.fields?.C || '';
+  const width = `${100 / phases.length}%`;
 
   return (
     <div className="prow" onClick={onClick}>
@@ -199,15 +216,31 @@ function ProjectRow({ project, onClick }) {
         <div className="paddr">{addr || 'No address on file'}</div>
       </div>
       <div>
-        <div className="rail" title={`Real Estate ${pct(re)}% · Pre-Construction ${pct(pc)}% · Construction ${pct(co)}%`}>
-          <div className="seg re" style={{ width: '33.33%', opacity: 0.28 + 0.72 * re }} />
-          <div className="seg pc" style={{ width: '33.33%', opacity: 0.28 + 0.72 * pc }} />
-          <div className="seg co" style={{ width: '33.33%', opacity: 0.28 + 0.72 * co }} />
+        <div
+          className="rail"
+          title={phases
+            .map((p, i) => `${p} ${tickable[i] ? `${pct(progress[i])}%` : 'nothing to tick'}`)
+            .join(' · ')}
+        >
+          {phases.map((p, i) => (
+            <div
+              key={p}
+              className="seg"
+              style={{
+                width,
+                background: phaseColor(p, i),
+                opacity: tickable[i] ? 0.28 + 0.72 * progress[i] : 0.18,
+              }}
+            />
+          ))}
         </div>
         <div className="rail-labels">
-          <span>Real Estate <b>{pct(re)}%</b></span>
-          <span>Pre-Con <b>{pct(pc)}%</b></span>
-          <span>Construction <b>{pct(co)}%</b></span>
+          {phases.map((p, i) => (
+            <span key={p}>
+              <i>{RAIL_LABEL[p] || p}</i>
+              <b>{tickable[i] ? `${pct(progress[i])}%` : '—'}</b>
+            </span>
+          ))}
         </div>
       </div>
       <div className="pct-block">

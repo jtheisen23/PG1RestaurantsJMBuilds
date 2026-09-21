@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createTask, updateTask, useUsers } from '../lib/firestore';
 import { useAuth } from '../context/AuthContext';
-import { brandKeyFor, templateForProject } from '../lib/helpers';
+import { brandKeyFor, normalizePhase, templateForProject } from '../lib/helpers';
 
 // Modal for raising a task against a project, or editing one that exists.
 // Opened from the top bar (project not chosen yet), a project page (project
@@ -14,7 +14,7 @@ export default function TaskDialog({ projects, fixedProjectId, fixedPhase, task,
   const editing = Boolean(task);
 
   const [projectId, setProjectId] = useState(task?.projectId || fixedProjectId || '');
-  const [phase, setPhase] = useState(task?.phase ?? fixedPhase ?? '');
+  const [phase, setPhase] = useState(normalizePhase(task?.phase ?? fixedPhase ?? ''));
   const [title, setTitle] = useState(task?.title || '');
   const [assignee, setAssignee] = useState(task?.assigneeEmail || '');
   const [due, setDue] = useState(task?.due || '');

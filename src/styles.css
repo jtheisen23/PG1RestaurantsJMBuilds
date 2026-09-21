@@ -13,6 +13,9 @@
     --brick:#a8432f;
     --brick-light:#f5e2dd;
     --slate:#5c6672;
+    --slate-light:#e6e9ed;
+    --plum:#6b4a8f;
+    --plum-light:#ece5f5;
     --chrome:#101418;
     --chrome-2:#1b2027;
     shape-rendering:geometricPrecision;
@@ -109,10 +112,18 @@
   .rail .seg.re{background:var(--accent);}
   .rail .seg.pc{background:var(--amber);}
   .rail .seg.co{background:var(--brick);}
+  .rail .seg.op{background:var(--slate);}
+  .rail .seg.po{background:var(--plum);}
   .rail-track{flex:1;background:var(--line);border-radius:5px;overflow:hidden;height:8px;position:relative;}
   .rail-track .fill{height:100%;border-radius:5px;}
-  .rail-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--slate);margin-top:5px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;}
-  .rail-labels b{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink);font-weight:500;margin-left:3px;}
+  /* One label per segment, each taking the same share of the width as the
+     segment above it, so a label sits under the stage it describes. Was
+     space-between, which drifted out of alignment and wrapped unevenly once
+     there were more than three stages. */
+  .rail-labels{display:flex;gap:6px;font-size:10px;color:var(--slate);margin-top:5px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;}
+  .rail-labels span{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:1px;}
+  .rail-labels span i{font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .rail-labels b{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink);font-weight:500;}
 
   /* ---------- PROJECT LIST ---------- */
   .plist{display:flex;flex-direction:column;gap:10px;}
@@ -131,6 +142,8 @@
   .stage-badge.re{background:var(--accent-light);color:var(--accent-dark);}
   .stage-badge.pc{background:var(--amber-light);color:#8a5c14;}
   .stage-badge.co{background:var(--brick-light);color:var(--brick);}
+  .stage-badge.op{background:var(--slate-light);color:var(--slate);}
+  .stage-badge.po{background:var(--plum-light);color:var(--plum);}
   .stage-badge.done{background:#e4e8ed;color:var(--chrome);}
   .pct-block{text-align:right;}
   .pct-block .pctnum{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;}
@@ -433,7 +446,8 @@
 .stage-badge.ph0{background:var(--accent-light);color:var(--accent-dark);}
 .stage-badge.ph1{background:var(--amber-light);color:#8a5c14;}
 .stage-badge.ph2{background:var(--brick-light);color:var(--brick);}
-.stage-badge.ph3{background:#e4e8ed;color:var(--chrome);}
+.stage-badge.ph3{background:var(--slate-light);color:var(--slate);}
+.stage-badge.ph4{background:var(--plum-light);color:var(--plum);}
 .modal-sub{margin:0;font-size:12.5px;color:var(--slate);}
 
 /* Playbook rows carry the trade, duration and whether an inspection is

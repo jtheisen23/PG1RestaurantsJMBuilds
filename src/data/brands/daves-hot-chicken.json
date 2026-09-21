@@ -741,7 +741,7 @@
   "col": 85,
   "letter": "CG",
   "label": "Start Const",
-  "phase": "Construction/Ops",
+  "phase": "Construction",
   "resp": null,
   "hint": null,
   "type": "checkbox"
@@ -750,7 +750,7 @@
   "col": 86,
   "letter": "CH",
   "label": "Construction Schedule Recieved",
-  "phase": "Construction/Ops",
+  "phase": "Construction",
   "resp": null,
   "hint": null,
   "type": "checkbox"
@@ -759,7 +759,7 @@
   "col": 87,
   "letter": "CI",
   "label": "Estimated CO Date",
-  "phase": "Construction/Ops",
+  "phase": "Construction",
   "resp": null,
   "hint": null,
   "type": "text"
@@ -768,7 +768,7 @@
   "col": 88,
   "letter": "CJ",
   "label": "Estimated Opening Date",
-  "phase": "Construction/Ops",
+  "phase": "Construction",
   "resp": null,
   "hint": null,
   "type": "text"
@@ -777,7 +777,7 @@
   "col": 89,
   "letter": "CK",
   "label": "Identify GM",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Tony",
   "hint": null,
   "type": "text"
@@ -786,7 +786,7 @@
   "col": 90,
   "letter": "CL",
   "label": "Update CAP Budget",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Andrea",
   "hint": null,
   "type": "checkbox"
@@ -795,7 +795,7 @@
   "col": 91,
   "letter": "CM",
   "label": "POS ID",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": null,
   "hint": null,
   "type": "text"
@@ -804,7 +804,7 @@
   "col": 92,
   "letter": "CN",
   "label": "CO2",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": "Arc3",
   "type": "checkbox"
@@ -813,7 +813,7 @@
   "col": 93,
   "letter": "CO",
   "label": "Grand Open Kit Order Placed",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim or Tony",
   "hint": "UBest",
   "type": "checkbox"
@@ -822,7 +822,7 @@
   "col": 94,
   "letter": "CP",
   "label": "Smallwares Order Placed",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "Singer EVi",
   "type": "checkbox"
@@ -831,7 +831,7 @@
   "col": 95,
   "letter": "CQ",
   "label": "Order masterfil fryer-filter paper",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "https://www.webstaurantstore.com/oil-solutions-group-fe1820-masterfil-filter-fabric/806FE1820.html",
   "type": "checkbox"
@@ -840,7 +840,7 @@
   "col": 96,
   "letter": "CR",
   "label": "Order Wall Diamond Plate",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim & terry",
   "hint": "FASADE - 4' x 8' x .013\" Diamond Plate Brushed Aluminum Decorative Vinyl Wall Panel \nhttps://a.co/d/7sco0sC",
   "type": "checkbox"
@@ -849,7 +849,7 @@
   "col": 97,
   "letter": "CS",
   "label": "Order pagers",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "Rick Sierra\nCorporate Sales Manager \n\n470-539-6596 | 678-779-7392\n\nrsierra@jtech.com\n\nwww.jtech.com",
   "type": "checkbox"
@@ -858,7 +858,7 @@
   "col": 98,
   "letter": "CT",
   "label": "Smallwares Order Correct?",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "DO",
   "hint": "Area DO",
   "type": "checkbox"
@@ -867,7 +867,7 @@
   "col": 99,
   "letter": "CU",
   "label": "Store Opening Insurance",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Mason > COI",
   "hint": "ACO Insurance",
   "type": "checkbox"
@@ -876,7 +876,7 @@
   "col": 100,
   "letter": "CV",
   "label": "Food/ Beverage Vendor Set Up",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Andrea",
   "hint": "DHC: PFG (Diana.Mathews@pfgc.com)",
   "type": "checkbox"
@@ -885,7 +885,7 @@
   "col": 101,
   "letter": "CW",
   "label": "Cleaning/Linens Set Up",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "DHC- Unifirst",
   "type": "checkbox"
@@ -894,7 +894,7 @@
   "col": 102,
   "letter": "CX",
   "label": "Pest Control",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": null,
   "type": "text"
@@ -903,7 +903,7 @@
   "col": 103,
   "letter": "CY",
   "label": "Set up EcoLab- Chemicals",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "DHC: M 336 687 8943 E roy.erickson@ecolab.com",
   "type": "checkbox"
@@ -912,7 +912,7 @@
   "col": 104,
   "letter": "CZ",
   "label": "Order Print N Prep & PPE",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "Ecolab: michelle.harden@ecolab.com",
   "type": "text"
@@ -921,7 +921,7 @@
   "col": 105,
   "letter": "DA",
   "label": "New Keys",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": null,
   "type": "text"
@@ -930,7 +930,7 @@
   "col": 106,
   "letter": "DB",
   "label": "Approve Neon Sign",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "DHC: Once we get the ai. doc we will send for production: randy@phoenix-signs.com",
   "type": "checkbox"
@@ -939,7 +939,7 @@
   "col": 107,
   "letter": "DC",
   "label": "Reclaimed Wood for the Front Counter",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": "Creative Materials Corp. \nTamara Ramsey\ntramsey@creativematerialscorp.com\n469-796-9389 cell\nOR\nhttps://www.lowes.com/pd/Style-Selections-48-in-x-96-in-Smooth-Brown-Mdf-Wall-Panel/5015199887",
   "type": "checkbox"
@@ -948,7 +948,7 @@
   "col": 108,
   "letter": "DD",
   "label": "Order Restroom Wallpaper",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "Ubest: Ask Terry the sq footage",
   "type": "checkbox"
@@ -957,7 +957,7 @@
   "col": 109,
   "letter": "DE",
   "label": "Order Indoor Chairs",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "Websteraunt",
   "type": "checkbox"
@@ -966,7 +966,7 @@
   "col": 110,
   "letter": "DF",
   "label": "Order Outdoor Tables (chairs must be plastic)",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "https://www.webstaurantstore.com/lancaster-table-seating-alloy-red-stackable-metal-indoor-outdoor-industrial-barstool-with-drain-hole-seat/164BMBKLSRED.html\n\nhttps://www.webstaurantstore.com/lancaster-table-seating-alloy-series-red-metal-indoor-outdoor-industrial-cafe-chair-with-vertical-slat-back-and-drain-hole-seat/164CMCAFERED.html",
   "type": "checkbox"
@@ -975,7 +975,7 @@
   "col": 111,
   "letter": "DG",
   "label": "POS Equipment Ordered",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim>Andrea",
   "hint": "QuPOS we will order from. Anthony from RPOS will do install.",
   "type": "checkbox"
@@ -984,7 +984,7 @@
   "col": 112,
   "letter": "DH",
   "label": "OSHA Safety Posters",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "DHC- Safety Posters",
   "type": "checkbox"
@@ -993,7 +993,7 @@
   "col": 113,
   "letter": "DI",
   "label": "Splatterhaus contacted",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": "Valyou: https://forms.fillout.com/t/qLA3HvYdDnus, In store need to have: Scissor Lift\n4 ladders (tall enough to reach the ceiling)\nLeftover touch up paint\n2 Large fans\nArticulating Boom lift (if you are doing an exterior)",
   "type": "checkbox"
@@ -1002,7 +1002,7 @@
   "col": 114,
   "letter": "DJ",
   "label": "Safe Ordered",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "https://www.amazon.com/dp/B0BZS52YH4?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1",
   "type": "checkbox"
@@ -1011,7 +1011,7 @@
   "col": 115,
   "letter": "DK",
   "label": "Equipment Start-Ups",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": null,
   "type": "text"
@@ -1020,7 +1020,7 @@
   "col": 116,
   "letter": "DL",
   "label": "Training Requirements Met",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "DO",
   "hint": null,
   "type": "checkbox"
@@ -1029,7 +1029,7 @@
   "col": 117,
   "letter": "DM",
   "label": "Order Ipad",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "https://www.amazon.com/dp/B0D4XF3Z8K?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1\nNeed to order 3/store",
   "type": "checkbox"
@@ -1038,7 +1038,7 @@
   "col": 118,
   "letter": "DN",
   "label": "iPad Recieved",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "DO",
   "hint": "Set up with Harri",
   "type": "checkbox"
@@ -1047,7 +1047,7 @@
   "col": 119,
   "letter": "DO",
   "label": "Milkeshake Install",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": "Avanti will coordinate with Terry\nOrder product prior",
   "type": "checkbox"
@@ -1056,7 +1056,7 @@
   "col": 120,
   "letter": "DP",
   "label": "Icee",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": "Hallie with Slusher\nOrder product prior",
   "type": "checkbox"
@@ -1065,7 +1065,7 @@
   "col": 121,
   "letter": "DQ",
   "label": "Tea Set Up",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": "Coke will coordinate with terry\nOrder product prior",
   "type": "checkbox"
@@ -1074,7 +1074,7 @@
   "col": 122,
   "letter": "DR",
   "label": "Prolink Camera",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": null,
   "hint": "Will evaluate for next store\nBen and Chris",
   "type": "checkbox"
@@ -1083,7 +1083,7 @@
   "col": 123,
   "letter": "DS",
   "label": "Set up QSR (digital ready board)",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "cmanuel@qsrautomations.com, support@qsrautomations.com, Steve Ledesma",
   "type": "checkbox"
@@ -1092,7 +1092,7 @@
   "col": 124,
   "letter": "DT",
   "label": "R365- Inventory",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Andrea",
   "hint": "Ian Starkey: istarkey@restaurant365.com",
   "type": "checkbox"
@@ -1101,7 +1101,7 @@
   "col": 125,
   "letter": "DU",
   "label": "First Data/FiServ Setup",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "DHC: steven.ledesma@daveshotchicken.com, ken.keifer@fiserv.com",
   "type": "checkbox"
@@ -1110,7 +1110,7 @@
   "col": 126,
   "letter": "DV",
   "label": "Gift Card Set-up (Givex)",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "Greg.Morales@daveshotchicken.com, jessica.conner@daveshotchicken.com,and steven@daveshotchicken.com",
   "type": "checkbox"
@@ -1119,7 +1119,7 @@
   "col": 127,
   "letter": "DW",
   "label": "3rd Party (Uber, DD,  Grub Hub)",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "Set up once date is set: DHC: steven.ledesma@daveshotchicken.com",
   "type": "checkbox"
@@ -1128,7 +1128,7 @@
   "col": 128,
   "letter": "DX",
   "label": "Catering (EZCater, etc.)",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "Both: EZ & ATG (reissa.leigh@americatogo.com)",
   "type": "checkbox"
@@ -1137,7 +1137,7 @@
   "col": 129,
   "letter": "DY",
   "label": "Force for Good",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "Fundraisers",
   "type": "checkbox"
@@ -1146,7 +1146,7 @@
   "col": 130,
   "letter": "DZ",
   "label": "OLO",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": null,
   "hint": "DHC: steven.ledesma@daveshotchicken.com",
   "type": "checkbox"
@@ -1155,7 +1155,7 @@
   "col": 131,
   "letter": "EA",
   "label": "Banners Ordered",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Tony",
   "hint": null,
   "type": "checkbox"
@@ -1164,7 +1164,7 @@
   "col": 132,
   "letter": "EB",
   "label": "Vivant INternet",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "DHC Only (customersuccess@vivantcorp.com, kimberly@vivantcorp.com)",
   "type": "checkbox"
@@ -1173,7 +1173,7 @@
   "col": 133,
   "letter": "EC",
   "label": "Vivant Local Install",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": null,
   "type": "checkbox"
@@ -1182,7 +1182,7 @@
   "col": 134,
   "letter": "ED",
   "label": "Dynamic Media (Speakers & Music)",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "DHC: Jamie 586.693.1096, JWaldie@dm-us.com",
   "type": "checkbox"
@@ -1191,7 +1191,7 @@
   "col": 135,
   "letter": "EE",
   "label": "Dynamic Media Local Install",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "DHC: Jamie 586.693.1096, JWaldie@dm-us.com",
   "type": "checkbox"
@@ -1200,7 +1200,7 @@
   "col": 136,
   "letter": "EF",
   "label": "Make sure Gas is on before Equipment Delivery",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": null,
   "type": "checkbox"
@@ -1209,7 +1209,7 @@
   "col": 137,
   "letter": "EG",
   "label": "Equipment Delivered",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": null,
   "type": "checkbox"
@@ -1218,7 +1218,7 @@
   "col": 138,
   "letter": "EH",
   "label": "Place Coke Order (before coke machine is placed)",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Tony",
   "hint": "Steve Petting: Office 804-287-8150\nCell  503-329-1691\nSteve.pettingill@pfgc.com",
   "type": "checkbox"
@@ -1227,7 +1227,7 @@
   "col": 139,
   "letter": "EI",
   "label": "Coke Machine Delivered",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": null,
   "type": "checkbox"
@@ -1236,7 +1236,7 @@
   "col": 140,
   "letter": "EJ",
   "label": "Lock in Daves Influencer",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Mason",
   "hint": "DHC Only",
   "type": "checkbox"
@@ -1245,7 +1245,7 @@
   "col": 141,
   "letter": "EK",
   "label": "Update CAP Budget",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Andrea",
   "hint": null,
   "type": "text"
@@ -1254,7 +1254,7 @@
   "col": 142,
   "letter": "EL",
   "label": "Obtain Health Permits",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": null,
   "type": "checkbox"
@@ -1263,7 +1263,7 @@
   "col": 143,
   "letter": "EM",
   "label": "Fire Suppression System Installation & Inspection",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": null,
   "type": "text"
@@ -1272,7 +1272,7 @@
   "col": 144,
   "letter": "EN",
   "label": "Fire Suppression System Contact",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": null,
   "hint": null,
   "type": "text"
@@ -1281,7 +1281,7 @@
   "col": 145,
   "letter": "EO",
   "label": "Oil Setup RTI",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": "Terry & GC get Schedlued",
   "type": "checkbox"
@@ -1290,7 +1290,7 @@
   "col": 146,
   "letter": "EP",
   "label": "Obtain Fire Permits",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": null,
   "type": "checkbox"
@@ -1299,7 +1299,7 @@
   "col": 147,
   "letter": "EQ",
   "label": "Obtain Building Inspections",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": null,
   "type": "checkbox"
@@ -1308,7 +1308,7 @@
   "col": 148,
   "letter": "ER",
   "label": "Store Set Up Completed",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Tony",
   "hint": null,
   "type": "text"
@@ -1317,7 +1317,7 @@
   "col": 149,
   "letter": "ES",
   "label": "Health Inspection",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Kim",
   "hint": "Coordinate timing with Ops team",
   "type": "checkbox"
@@ -1326,7 +1326,7 @@
   "col": 150,
   "letter": "ET",
   "label": "CO",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Terry",
   "hint": null,
   "type": "text"
@@ -1335,7 +1335,7 @@
   "col": 151,
   "letter": "EU",
   "label": "Initial Order Placed",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Tony",
   "hint": null,
   "type": "text"
@@ -1344,7 +1344,7 @@
   "col": 152,
   "letter": "EV",
   "label": "Order Friends and Family and Grand Open Flyers",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Mason",
   "hint": "https://dhcportal.com/collections/stationary/products/grand-opening-flyers-editable",
   "type": "checkbox"
@@ -1353,7 +1353,7 @@
   "col": 153,
   "letter": "EW",
   "label": "Ops Approval to Open",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Tony",
   "hint": "Confirm date with Corp.",
   "type": "text"
@@ -1362,7 +1362,7 @@
   "col": 154,
   "letter": "EX",
   "label": "Hiring",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Loredana",
   "hint": "DHC: 80-100",
   "type": "text"
@@ -1371,7 +1371,7 @@
   "col": 155,
   "letter": "EY",
   "label": "# Hired",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": null,
   "hint": null,
   "type": "text"
@@ -1380,7 +1380,7 @@
   "col": 156,
   "letter": "EZ",
   "label": "Orientation/ Trianing",
-  "phase": "Construction/Ops",
+  "phase": "Operations",
   "resp": "Tony",
   "hint": null,
   "type": "text"
@@ -1389,7 +1389,7 @@
   "col": 157,
   "letter": "FA",
   "label": "Grassrooting",
-  "phase": "Construction/Ops",
+  "phase": "Post Opening",
   "resp": "Mason",
   "hint": null,
   "type": "text"
@@ -1398,7 +1398,7 @@
   "col": 158,
   "letter": "FB",
   "label": "Change Order In Store",
-  "phase": "Construction/Ops",
+  "phase": "Post Opening",
   "resp": null,
   "hint": null,
   "type": "text"
@@ -1407,7 +1407,7 @@
   "col": 159,
   "letter": "FC",
   "label": "Address correct in G-Maps?",
-  "phase": "Construction/Ops",
+  "phase": "Post Opening",
   "resp": null,
   "hint": null,
   "type": "checkbox"
@@ -1416,7 +1416,7 @@
   "col": 160,
   "letter": "FD",
   "label": "Actual Open Date",
-  "phase": "Construction/Ops",
+  "phase": "Post Opening",
   "resp": null,
   "hint": null,
   "type": "text"
