@@ -3,6 +3,7 @@ import {
   phaseColor,
   phaseKey,
   phaseProgress,
+  phaseHasChecks,
   pct,
   templateForProject,
   hiddenFieldsOf,
@@ -200,7 +201,13 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
 
         <div className="rails3">
           {tpl.phases.map((phase, i) => (
-            <Rail3Row key={phase} phase={phase} index={i} value={phaseProgress(project, phase)} />
+            <Rail3Row
+              key={phase}
+              phase={phase}
+              index={i}
+              value={phaseProgress(project, phase)}
+              tickable={phaseHasChecks(project, phase)}
+            />
           ))}
         </div>
 
@@ -296,14 +303,24 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
   );
 }
 
-function Rail3Row({ phase, index, value }) {
+// `tickable` false means the stage has no checkboxes at all. Progress reports
+// it complete -- nothing outstanding -- but painting a full bar against a
+// stage nobody has touched reads as a lie, so it shows an empty track and a
+// dash, the same as the overview rail.
+function Rail3Row({ phase, index, value, tickable = true }) {
   return (
     <div className="rail3-row">
       <div className="lbl">{phase}</div>
       <div className="rail-track">
-        <div className="fill" style={{ width: `${pct(value)}%`, background: phaseColor(phase, index) }} />
+        <div
+          className="fill"
+          style={{
+            width: tickable ? `${pct(value)}%` : '0%',
+            background: phaseColor(phase, index),
+          }}
+        />
       </div>
-      <div className="pct">{pct(value)}%</div>
+      <div className="pct">{tickable ? `${pct(value)}%` : '—'}</div>
     </div>
   );
 }
