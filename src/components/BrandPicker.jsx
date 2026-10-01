@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { BRANDS, brandKeyFor, templateFor, overallProgress, pct } from '../lib/helpers';
+import { TOP_BRANDS, brandKeyFor, rootBrandFor, templateFor, overallProgress, pct } from '../lib/helpers';
 
 // The landing view of the Projects tab. PG1 develops more than one brand and
 // each has its own checklist, so the first choice is which brand you are
@@ -7,11 +7,15 @@ import { BRANDS, brandKeyFor, templateFor, overallProgress, pct } from '../lib/h
 export default function BrandPicker({ projects, onSelectBrand }) {
   const summary = useMemo(() => {
     const byBrand = {};
-    BRANDS.forEach((b) => {
+    TOP_BRANDS.forEach((b) => {
       byBrand[b.key] = { active: 0, completed: 0, progressSum: 0 };
     });
+    // A project on one of a brand's other tracks -- an acquisition, say --
+    // counts towards that brand's card, since the card is the way in to it.
+    // Progress is a fraction of each project's own checklist, so averaging
+    // across tracks still means something.
     projects.forEach((p) => {
-      const row = byBrand[brandKeyFor(p)];
+      const row = byBrand[rootBrandFor(brandKeyFor(p)).key];
       if (!row) return;
       if (p.completed) row.completed++;
       else {
@@ -25,7 +29,7 @@ export default function BrandPicker({ projects, onSelectBrand }) {
   return (
     <>
       <div className="brand-grid">
-        {BRANDS.map((b) => {
+        {TOP_BRANDS.map((b) => {
           const s = summary[b.key];
           const tpl = templateFor(b.key);
           const avg = s.active ? s.progressSum / s.active : 0;

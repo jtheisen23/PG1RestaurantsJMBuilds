@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { updateContact, deleteContact } from '../lib/firestore';
 import { useAuth } from '../context/AuthContext';
-import { BRANDS, BRAND_BY_KEY, brandKeyFor } from '../lib/helpers';
+import { TOP_BRANDS, BRAND_BY_KEY, brandKeyFor } from '../lib/helpers';
 import ContactDialog from './ContactDialog';
 
 const FIELDS = [
@@ -35,7 +35,10 @@ export default function Contacts({ contacts: allContacts, brandKey, onSelectBran
   return (
     <>
       <div className="controls">
-        {BRANDS.map((b) => (
+        {/* Brands, not tracks. An acquisition is a Jersey Mike's store, so its
+            landlord, broker and GC belong on the Jersey Mike's list rather
+            than a second list that would duplicate half of it. */}
+        {TOP_BRANDS.map((b) => (
           <button
             key={b.key}
             className={`filter-chip ${brandKey === b.key ? 'active' : ''}`}

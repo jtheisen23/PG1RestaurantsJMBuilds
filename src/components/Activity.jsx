@@ -135,7 +135,9 @@ export default function Activity({ projects }) {
           <option value="all">All brands</option>
           {BRANDS.map((b) => (
             <option key={b.key} value={b.key}>
-              {b.name}
+              {/* A track's own name does not say whose it is; in a flat list
+                  beside the brands, it has to. */}
+              {b.fullName || b.name}
             </option>
           ))}
         </select>

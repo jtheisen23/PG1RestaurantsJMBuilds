@@ -1,9 +1,12 @@
 import {
   BRANDS,
   BRAND_BY_KEY,
+  TOP_BRANDS,
   DEFAULT_PHASES,
   LEGACY_PHASE_ALIAS,
   brandKeyFor,
+  rootBrandFor,
+  tracksFor,
 } from './brands';
 
 export const PHASES = DEFAULT_PHASES;
@@ -236,6 +239,12 @@ export function overallProgress(project) {
 export function currentStage(project) {
   const tpl = templateForProject(project);
   const phases = tpl.phases;
+  // Nothing to tick anywhere -- a brand or track whose checklist has not been
+  // imported yet. Every phase reports complete, so without this the project
+  // would be badged "Open / Complete" having had nothing done to it at all.
+  if (!phases.some((p) => phaseHasChecks(project, p))) {
+    return { key: 'none', label: 'Not started' };
+  }
   for (let i = 0; i < phases.length; i++) {
     if (phaseProgress(project, phases[i]) < 0.999) {
       return { key: phaseKey(phases[i], i), label: phases[i] };
@@ -255,4 +264,4 @@ export const headersByPhase = TEMPLATES[BRANDS[0].key].headersByPhase;
 export const notesHeaders = TEMPLATES[BRANDS[0].key].notesHeaders;
 export const checkboxCountByPhase = TEMPLATES[BRANDS[0].key].checkboxCountByPhase;
 
-export { BRANDS, BRAND_BY_KEY, brandKeyFor };
+export { BRANDS, BRAND_BY_KEY, TOP_BRANDS, brandKeyFor, rootBrandFor, tracksFor };

@@ -13,9 +13,10 @@ import Tasks from './components/Tasks';
 import TaskDialog from './components/TaskDialog';
 import DataErrorBanner from './components/DataErrorBanner';
 import { useProjects, useContacts, useTimeline, useBrandLabels } from './lib/firestore';
-import { DEFAULT_BRAND_KEY } from './lib/brands';
+import { DEFAULT_BRAND_KEY, rootBrandFor } from './lib/brands';
 
 const BRAND_KEY_STORAGE = 'pg1.brand';
+const TRACK_KEY_STORAGE = 'pg1.track';
 
 // The last brand chosen, so the Projects tab reopens where you left it.
 // localStorage can throw in a private window, so both accesses are guarded.
@@ -36,6 +37,26 @@ function writeBrand(key) {
   }
 }
 
+// Which track within that brand -- new builds or acquisitions, for Jersey
+// Mike's. Remembered for the same reason the brand is: someone who only works
+// on acquisitions should not re-choose on every visit.
+function readTrack() {
+  try {
+    return localStorage.getItem(TRACK_KEY_STORAGE) || null;
+  } catch {
+    return null;
+  }
+}
+
+function writeTrack(key) {
+  try {
+    if (key) localStorage.setItem(TRACK_KEY_STORAGE, key);
+    else localStorage.removeItem(TRACK_KEY_STORAGE);
+  } catch {
+    // As above.
+  }
+}
+
 export default function App() {
   const { user, loading, isAdmin, notInvited, authError, logout } = useAuth();
   const [view, setView] = useState('overview');
@@ -43,6 +64,7 @@ export default function App() {
   // null = show the brand picker. Remembered so someone who only works on one
   // brand is not choosing it again on every visit.
   const [brandKey, setBrandKey] = useState(readBrand);
+  const [track, setTrack] = useState(readTrack);
   // null = closed. { projectId, phase } opens a blank form with those
   // pre-filled; { task } opens the same form editing an existing task.
   const [taskDialog, setTaskDialog] = useState(null);
@@ -113,6 +135,13 @@ export default function App() {
   function chooseBrand(key) {
     setBrandKey(key);
     writeBrand(key);
+    setTrack(key);
+    writeTrack(key);
+  }
+
+  function chooseTrack(key) {
+    setTrack(key);
+    writeTrack(key);
   }
 
   function handleSelectProject(id) {
@@ -130,6 +159,12 @@ export default function App() {
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
 
+  // A remembered track only applies to the brand it belongs to. Without this,
+  // choosing Jersey Mike's acquisitions and then opening Dave's would filter
+  // Dave's list by a track it does not have, and show nothing.
+  const activeTrack =
+    brandKey && rootBrandFor(track || brandKey).key === brandKey ? track || brandKey : brandKey;
+
   return (
     <div id="app">
       <TopBar view={view} onNav={handleNav} saving={loadingProjects} onAddTask={handleAddTask} />
@@ -140,6 +175,8 @@ export default function App() {
             <Overview
               projects={projects}
               brandKey={brandKey}
+              track={activeTrack}
+              onSelectTrack={chooseTrack}
               onSelect={handleSelectProject}
               onBack={() => chooseBrand(null)}
             />
