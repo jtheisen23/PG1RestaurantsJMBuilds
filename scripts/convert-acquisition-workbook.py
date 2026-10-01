@@ -117,6 +117,10 @@ for i, row in enumerate(ws.iter_rows(min_row=4, values_only=True)):
     name, phone, addr = clean(row[2]), clean(row[3]), clean(row[4])
     if not name:
         continue
+    # Most stores are "6030- Mt Vernon, VA". The few with no store number
+    # yet are left as "-Seminole Trail", which reads as a typo and sorts
+    # ahead of everything. The separator is only meaningful after a number.
+    name = re.sub(r'^[\s\-]+', '', name)
     fields = {}
     if phone:
         fields['B'] = phone
