@@ -422,7 +422,10 @@ function Accordion({
   const key = phaseKey(phase, index);
 
   const [hideDone, setHideDone] = useState(() => readHideDone(phase));
-  const dragProps = useFieldDrag(hs, phase, isAdmin, onReorder);
+  // A phase whose items carry priorities sorts itself, so hand-ordering it
+  // would not survive the next render. Dragging stays on everywhere else.
+  const selfSorting = hs.some((h) => h.options?.length);
+  const dragProps = useFieldDrag(hs, phase, isAdmin && !selfSorting, onReorder);
 
   const openTasks = tasks.filter((t) => !t.done);
 
@@ -522,8 +525,8 @@ function Accordion({
           />
         </div>
 
-        <div className={`field-grid ${visible.some((h) => h.options?.length) ? 'rows' : ''}`}>
-          {visible.map((h) =>
+        <div className={`field-grid ${selfSorting ? 'rows' : ''}`}>
+          {renderRows(visible, selfSorting, (h) =>
             h.type === 'checkbox' ? (
               <CheckField
                 key={h.letter}
@@ -553,7 +556,7 @@ function Accordion({
                 drag={dragProps(h)}
               />
             )
-          )}
+          , project)}
         </div>
 
         {isAdmin && removed.length > 0 && (
@@ -709,6 +712,30 @@ function CheckField({
       )}
     </div>
   );
+}
+
+// A self-sorting list is labelled as it goes, so the grouping is visible
+// rather than left to be inferred from the dropdowns down the right-hand
+// side. Everything else renders as a plain list, exactly as before.
+function renderRows(visible, grouped, field, project) {
+  if (!grouped) return visible.map(field);
+  const out = [];
+  let current = null;
+  visible.forEach((h) => {
+    if (h.options?.length) {
+      const p = priorityOf(project, h) || 'No priority';
+      if (p !== current) {
+        current = p;
+        out.push(
+          <div className="pri-group" key={`grp-${h.letter}`}>
+            {p}
+          </div>
+        );
+      }
+    }
+    out.push(field(h));
+  });
+  return out;
 }
 
 function fieldClass(draggable, dragging, dropTarget, hasPriority) {

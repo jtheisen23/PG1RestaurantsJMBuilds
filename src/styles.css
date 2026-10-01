@@ -564,6 +564,10 @@
    the vendor or how to do it. So that phase renders as full-width rows
    rather than the two-up grid the brand checklists use. */
 .field-grid.rows{grid-template-columns:1fr;gap:2px;}
+/* A text field spans two columns in the brand grids. Left alone here it
+   would force an implicit second column into a grid declared with one, and
+   the rows would lay out two-up again. */
+.field-grid.rows > .txt-field{grid-column:1;}
 .fld-main{min-width:0;}
 .cb-field.has-pri{align-items:flex-start;padding:7px 8px;border-bottom:1px solid var(--line);border-radius:0;}
 .cb-field.has-pri:last-child{border-bottom:none;}
@@ -586,3 +590,12 @@
   .cb-field.has-pri{flex-wrap:wrap;}
   .pri-select{margin-left:26px;}
 }
+/* The priority a run of acquisition items shares. The list orders itself by
+   urgency, so this is a signpost rather than a control. */
+.pri-group{
+  font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.09em;
+  color:var(--slate);background:var(--paper);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding:5px 10px;margin-top:10px;
+}
+.field-grid.rows > .pri-group:first-child{margin-top:0;}
