@@ -128,6 +128,28 @@ export function labelFor(header, project, brandLabels) {
 // field can never collide with a real column.
 export const CUSTOM_PREFIX = 'cf_';
 
+// An acquisition item carries a priority as well as a tick -- "1 Week",
+// "Day of Close" and so on, from the spreadsheet's own dropdown. Both live in
+// the same `fields` map, the priority under the item's key plus this suffix.
+//
+// The suffix must not contain a dot: Firestore reads a dot in an update key
+// as a path separator, so `PRE1.priority` would write a nested object rather
+// than a field called that. It also cannot collide with a column letter,
+// which is why it is not something like 'P'.
+export const PRIORITY_SUFFIX = '__pri';
+
+export function priorityKey(letter) {
+  return `${letter}${PRIORITY_SUFFIX}`;
+}
+
+// What an item's priority is on this project: whatever someone set, falling
+// back to the priority the spreadsheet shipped it with.
+export function priorityOf(project, header) {
+  const set = project?.fields?.[priorityKey(header.letter)];
+  if (typeof set === 'string') return set;
+  return header.priority || '';
+}
+
 // `owner` decides what removing one means. A field belonging to the brand is
 // on every project of that brand, so a single project can only hide it -- the
 // same deal as an item from the spreadsheet. A field added to this project

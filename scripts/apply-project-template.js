@@ -90,7 +90,11 @@ async function main() {
   const all = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 
   const needle = FROM.trim().toLowerCase();
-  const matches = all.filter((p) => (p.name || '').toLowerCase().includes(needle));
+  // An exact name wins outright. Without this, --from "Seminole" is ambiguous
+  // the moment an acquisition called "-Seminole Trail" exists, and there is
+  // no substring of the new build's name that excludes it.
+  const exact = all.filter((p) => (p.name || '').trim().toLowerCase() === needle);
+  const matches = exact.length ? exact : all.filter((p) => (p.name || '').toLowerCase().includes(needle));
   if (!matches.length) {
     console.error(`\nNo project matches "${FROM}".\n`);
     process.exit(1);

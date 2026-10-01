@@ -1,0 +1,193 @@
+[
+ {
+  "row": 4,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "6030- Mt Vernon, VA",
+  "order": 0,
+  "completed": false,
+  "fields": {
+   "B": "571-481-4445",
+   "C": "7732-D Richmond Hwy, Alexandria, VA 22306"
+  }
+ },
+ {
+  "row": 5,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "6034- Stafford, VA",
+  "order": 1,
+  "completed": false,
+  "fields": {
+   "B": "540-288-5443",
+   "C": "1495 Stafford Marketplace Unit 119 Stafford, VA 22556"
+  }
+ },
+ {
+  "row": 6,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "6041- Kingstowne, VA",
+  "order": 2,
+  "completed": false,
+  "fields": {
+   "B": "571-257-4941",
+   "C": "5890 Kingstowne Town Center Drive Unit 150 Alexandria, VA 22315"
+  }
+ },
+ {
+  "row": 7,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "6049- Dunn Loring Vienna Metro, VA",
+  "order": 3,
+  "completed": false,
+  "fields": {
+   "B": "703-698-7827",
+   "C": "2672-C Avenir Place , Vienna, VA 22180"
+  }
+ },
+ {
+  "row": 8,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "6050- Woodbridge, VA",
+  "order": 4,
+  "completed": false,
+  "fields": {
+   "B": "703-580-0676",
+   "C": "2954 Prince William Parkway, Woodbridge, VA 22192"
+  }
+ },
+ {
+  "row": 9,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "6060- Ravensworth, VA",
+  "order": 5,
+  "completed": false,
+  "fields": {
+   "B": "703-992-7478",
+   "C": "5250-G Port Royal Rd, Springfield, VA 22151"
+  }
+ },
+ {
+  "row": 10,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "6077- Falls Church, VA",
+  "order": 6,
+  "completed": false,
+  "fields": {
+   "B": "703-534-7827",
+   "C": "1108-A West Broad St, Falls Church, VA 22046"
+  }
+ },
+ {
+  "row": 11,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "6099- Duke Street, VA",
+  "order": 7,
+  "completed": false,
+  "fields": {
+   "B": "571-257-3634",
+   "C": "3219 Duke St, Alexandria, VA 22314"
+  }
+ },
+ {
+  "row": 12,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "6107- Annandale, VA",
+  "order": 8,
+  "completed": false,
+  "fields": {
+   "B": "571-297-6554",
+   "C": "7042-H Little River Turnpike, Annandale, VA 22003"
+  }
+ },
+ {
+  "row": 13,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "6123- Falls Church, VA",
+  "order": 9,
+  "completed": false,
+  "fields": {
+   "C": "6138D Arlington Blvd, Falls Church VA 22044 (Seven Corners)"
+  }
+ },
+ {
+  "row": 14,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "3037- Salisbury, NC",
+  "order": 10,
+  "completed": false,
+  "fields": {
+   "B": "704-642-0111",
+   "C": "850 Jake Alexander Blvd.West, Ste. E, Salisbury, NC 28147"
+  }
+ },
+ {
+  "row": 15,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "-Seminole Trail",
+  "order": 11,
+  "completed": false,
+  "fields": {
+   "C": "2291 Seminole Place, Charlottesville, VA 22902"
+  }
+ },
+ {
+  "row": 16,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "6122- Barboursville, VA",
+  "order": 12,
+  "completed": false,
+  "fields": {
+   "C": "69 Prospect Street, Suite 2, Barboursville, VA 22923"
+  }
+ },
+ {
+  "row": 17,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "-Marion, NC",
+  "order": 13,
+  "completed": false,
+  "fields": {
+   "C": "500 North Main Street Suite 110 Marion, NC"
+  }
+ },
+ {
+  "row": 18,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "3055- High Point, NC",
+  "order": 14,
+  "completed": false,
+  "fields": {}
+ },
+ {
+  "row": 19,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "3057- Gastonia, NC",
+  "order": 15,
+  "completed": false,
+  "fields": {}
+ },
+ {
+  "row": 20,
+  "brand": "Jersey Mike's",
+  "brandKey": "jmacquisitions",
+  "name": "3090- High Point, NC",
+  "order": 16,
+  "completed": false,
+  "fields": {}
+ }
+]

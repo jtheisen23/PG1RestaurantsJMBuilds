@@ -2,6 +2,8 @@ import { useRef, useState } from 'react';
 import {
   phaseColor,
   phaseKey,
+  priorityKey,
+  priorityOf,
   phaseProgress,
   phaseHasChecks,
   pct,
@@ -520,7 +522,7 @@ function Accordion({
           />
         </div>
 
-        <div className="field-grid">
+        <div className={`field-grid ${visible.some((h) => h.options?.length) ? 'rows' : ''}`}>
           {visible.map((h) =>
             h.type === 'checkbox' ? (
               <CheckField
@@ -534,6 +536,8 @@ function Accordion({
                 onRemove={() => onRemoveField(h)}
                 onRename={() => onRename(h)}
                 drag={dragProps(h)}
+                priority={priorityOf(project, h)}
+                onPriority={(v) => commitText(priorityKey(h.letter), v)}
               />
             ) : (
               <TextField
@@ -600,7 +604,7 @@ function NotesAccordion({
         <span className="chev">&#9656;</span>
       </div>
       <div className="acc-body">
-        <div className="field-grid">
+        <div className={`field-grid ${visible.some((h) => h.options?.length) ? 'rows' : ''}`}>
           {visible.map((h) =>
             h.type === 'checkbox' ? (
               <CheckField
@@ -614,6 +618,8 @@ function NotesAccordion({
                 onRemove={() => onRemoveField(h)}
                 onRename={() => onRename(h)}
                 drag={dragProps(h)}
+                priority={priorityOf(project, h)}
+                onPriority={(v) => commitText(priorityKey(h.letter), v)}
               />
             ) : (
               <TextField
@@ -640,11 +646,29 @@ function NotesAccordion({
   );
 }
 
-function CheckField({ h, checked, disabled, onChange, isAdmin, label, onRemove, onRename, drag = {} }) {
+function CheckField({
+  h,
+  checked,
+  disabled,
+  onChange,
+  isAdmin,
+  label,
+  onRemove,
+  onRename,
+  drag = {},
+  // Acquisition items only: the chosen priority and a setter. Everything
+  // else passes neither, and no dropdown is rendered.
+  priority,
+  onPriority,
+}) {
   const reworded = label !== h.label;
   const { dragging, dropTarget, ...handlers } = drag;
+  const options = Array.isArray(h.options) ? h.options : [];
   return (
-    <div className={fieldClass(handlers.draggable, dragging, dropTarget)} {...handlers}>
+    <div
+      className={fieldClass(handlers.draggable, dragging, dropTarget, options.length > 0)}
+      {...handlers}
+    >
       {isAdmin && <span className="fld-grip" aria-hidden="true">⠿</span>}
       <input
         type="checkbox"
@@ -653,11 +677,33 @@ function CheckField({ h, checked, disabled, onChange, isAdmin, label, onRemove, 
         disabled={disabled}
         onChange={(e) => onChange(e.target.checked)}
       />
-      <label htmlFor={`fld-${h.letter}`} className={reworded ? 'label-edited' : undefined}>
-        {label}
-        {h.resp ? <span className="resp-tag">({h.resp})</span> : null}
-        {h.custom && <span className="custom-tag">added</span>}
-      </label>
+      <div className="fld-main">
+        <label htmlFor={`fld-${h.letter}`} className={reworded ? 'label-edited' : undefined}>
+          {label}
+          {h.resp ? <span className="resp-tag">({h.resp})</span> : null}
+          {h.custom && <span className="custom-tag">added</span>}
+        </label>
+        {/* Whatever the spreadsheet had in Vendor, Notes, How To, SLA or
+            Contact for this item -- reference, not something to fill in. */}
+        {h.hint && <div className="fld-note">{h.hint}</div>}
+      </div>
+      {options.length > 0 && (
+        <select
+          className="pri-select"
+          value={priority || ''}
+          disabled={disabled}
+          onChange={(e) => onPriority(e.target.value)}
+          aria-label={`Priority for ${label}`}
+          title="Priority"
+        >
+          <option value="">No priority</option>
+          {options.map((o) => (
+            <option key={o} value={o}>
+              {o}
+            </option>
+          ))}
+        </select>
+      )}
       {isAdmin && (
         <FieldActions label={label} onRemove={onRemove} onRename={onRename} custom={h.custom} />
       )}
@@ -665,9 +711,10 @@ function CheckField({ h, checked, disabled, onChange, isAdmin, label, onRemove, 
   );
 }
 
-function fieldClass(draggable, dragging, dropTarget) {
+function fieldClass(draggable, dragging, dropTarget, hasPriority) {
   return [
     'cb-field',
+    hasPriority ? 'has-pri' : '',
     draggable ? 'draggable' : '',
     dragging ? 'dragging' : '',
     dropTarget ? 'drop-before' : '',

@@ -1,1 +1,2888 @@
-[]
+[
+ {
+  "col": 2,
+  "letter": "B",
+  "label": "Phone Number",
+  "phase": "Pre Close",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 3,
+  "letter": "C",
+  "label": "Full Address",
+  "phase": "Pre Close",
+  "resp": null,
+  "hint": null,
+  "type": "text"
+ },
+ {
+  "col": 4,
+  "letter": "PRE1",
+  "label": "Send the AQ Business COI questionairre",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "PreCall"
+ },
+ {
+  "col": 5,
+  "letter": "PRE2",
+  "label": "Restaurant365 - set up locations",
+  "phase": "Pre Close",
+  "resp": "Michele",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "PreCall"
+ },
+ {
+  "col": 6,
+  "letter": "PRE3",
+  "label": "Harri Account Set Up",
+  "phase": "Pre Close",
+  "resp": "Shayla/Mallory",
+  "hint": "Only on new entities \u00b7 Location should be created prior to thirty days or when we know a targeted close date - LOIs signed and corporate approved",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "PreCall"
+ },
+ {
+  "col": 7,
+  "letter": "PRE4",
+  "label": "Bank Checking Account",
+  "phase": "Pre Close",
+  "resp": "TC",
+  "hint": "Only on new entities",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "PreCall"
+ },
+ {
+  "col": 8,
+  "letter": "PRE5",
+  "label": "Credit Card set up for Entity",
+  "phase": "Pre Close",
+  "resp": "TC",
+  "hint": "Only on new entities \u00b7 Needed before meetings start at 30 days before anticipated close",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "PreCall"
+ },
+ {
+  "col": 9,
+  "letter": "PRE6",
+  "label": "Ideal Close Dates",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": "On the beginning of a payroll monday",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "PreCall"
+ },
+ {
+  "col": 10,
+  "letter": "PRE7",
+  "label": "Get service and Vendors filled out and back from owner",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": "Before sending ensure there is ablank copy with store number and correct number of lines in each grouping",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "PreCall"
+ },
+ {
+  "col": 11,
+  "letter": "PRE8",
+  "label": "Let Shayla and Mallory Know proposed and target close date",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": "Let Shayla and Mallory Know proposed and target close date \u00b7 Usually this is targeted for 30 days after the LOI",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "PreCall"
+ },
+ {
+  "col": 12,
+  "letter": "PRE9",
+  "label": "Learn if there are keys to the mail boxes",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "PreCall"
+ },
+ {
+  "col": 13,
+  "letter": "PRE10",
+  "label": "Obtain all Lease information including CAM recs and any renewal letters",
+  "phase": "Pre Close",
+  "resp": "Tori/Duncan",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "PreCall"
+ },
+ {
+  "col": 14,
+  "letter": "PRE11",
+  "label": "Ask if there is a PTO policy",
+  "phase": "Pre Close",
+  "resp": "Tori/TC",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "PreCall"
+ },
+ {
+  "col": 15,
+  "letter": "PRE12",
+  "label": "Zenput",
+  "phase": "Pre Close",
+  "resp": "Ashley",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 16,
+  "letter": "PRE13",
+  "label": "Zebra Printer - Ordered",
+  "phase": "Pre Close",
+  "resp": "Ashley",
+  "hint": "Vantage ID",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 17,
+  "letter": "PRE14",
+  "label": "When can we get in and onboarding people",
+  "phase": "Pre Close",
+  "resp": "Brett",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 18,
+  "letter": "PRE15",
+  "label": "Schedule Site audit to stores to get repairs list together",
+  "phase": "Pre Close",
+  "resp": "Coby",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 19,
+  "letter": "PRE16",
+  "label": "Request store addition addendum - sysco",
+  "phase": "Pre Close",
+  "resp": "Duncan",
+  "hint": "Email Chad Seale and request a new store addendum on areas where we already have an account established by entity",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 20,
+  "letter": "PRE17",
+  "label": "General Liability Insurance",
+  "phase": "Pre Close",
+  "resp": "Duncan",
+  "hint": "brent.jones@securityplanning.com, 801-487-2285",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 21,
+  "letter": "PRE18",
+  "label": "EPLI Insurance",
+  "phase": "Pre Close",
+  "resp": "Duncan",
+  "hint": "brent.jones@securityplanning.com, 801-487-2285",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 22,
+  "letter": "PRE19",
+  "label": "Landlord information verified",
+  "phase": "Pre Close",
+  "resp": "Duncan",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 23,
+  "letter": "PRE20",
+  "label": "Property Manager contact made",
+  "phase": "Pre Close",
+  "resp": "Duncan",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 24,
+  "letter": "PRE21",
+  "label": "Get Landlord/Property Managers contact information",
+  "phase": "Pre Close",
+  "resp": "Duncan",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 25,
+  "letter": "PRE22",
+  "label": "Sales Tax information",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 26,
+  "letter": "PRE23",
+  "label": "Onboarding Plan",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 27,
+  "letter": "PRE24",
+  "label": "State Withholding Acct",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 28,
+  "letter": "PRE25",
+  "label": "Paid Family Leave",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 29,
+  "letter": "PRE26",
+  "label": "401K set up",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": "Set up separately depending on state",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 30,
+  "letter": "PRE27",
+  "label": "PTO set up",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": "Set up separately depending on state",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 31,
+  "letter": "PRE28",
+  "label": "Sick Pay set up",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": "Set up separately depending on state",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 32,
+  "letter": "PRE29",
+  "label": "Benefits set up for Day 1",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": "Set up separately depending on state",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 33,
+  "letter": "PRE30",
+  "label": "Payroll Company Codes Set Up",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 34,
+  "letter": "PRE31",
+  "label": "SUI Acct",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 35,
+  "letter": "PRE32",
+  "label": "Harri Bridge to ADP",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": "Jovan",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 36,
+  "letter": "PRE33",
+  "label": "Workers Comp",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": "brent.jones@securityplanning.com, 801-487-2285/ Amtrust",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 37,
+  "letter": "PRE34",
+  "label": "OSHA Posters - Ordered",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 38,
+  "letter": "PRE35",
+  "label": "WOTC Integration w/ Harri",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 39,
+  "letter": "PRE36",
+  "label": "Send census information to HR",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 40,
+  "letter": "PRE37",
+  "label": "Connect Bank Accts to R365",
+  "phase": "Pre Close",
+  "resp": "Michele",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 41,
+  "letter": "PRE38",
+  "label": "Sales Tax Account",
+  "phase": "Pre Close",
+  "resp": "Michele",
+  "hint": "Send everything to Mallory ASAP",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 42,
+  "letter": "PRE39",
+  "label": "Create a Fyle location",
+  "phase": "Pre Close",
+  "resp": "Michele",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 43,
+  "letter": "PRE40",
+  "label": "Produce Account - As needed by Market",
+  "phase": "Pre Close",
+  "resp": "Michele/Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 44,
+  "letter": "PRE41",
+  "label": "Weight Log Printed",
+  "phase": "Pre Close",
+  "resp": "Shayla",
+  "hint": "Office Printing",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 45,
+  "letter": "PRE42",
+  "label": "Position Chart - Ordered",
+  "phase": "Pre Close",
+  "resp": "Shayla",
+  "hint": "Minuteman Press",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 46,
+  "letter": "PRE43",
+  "label": "Harri/Jolt ipad, cases, bracket ordered",
+  "phase": "Pre Close",
+  "resp": "Shayla",
+  "hint": "Amazon",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 47,
+  "letter": "PRE44",
+  "label": "Low Voltage (Alarm/Cameras/Sound)",
+  "phase": "Pre Close",
+  "resp": "Shayla",
+  "hint": "Wise/Savvi \u00b7 Let the vendor know that we have the locations incoming and potential close date - even a site review if needed - CLEAR COMMUNICATION TO TYLER if they \"shouldn't\" know Does scheduling line up with any new store openings?",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 48,
+  "letter": "PRE45",
+  "label": "Music Player",
+  "phase": "Pre Close",
+  "resp": "Shayla",
+  "hint": "Harmony - Tony \u00b7 Purchase",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 49,
+  "letter": "PRE46",
+  "label": "Last service dates needed for Steritech",
+  "phase": "Pre Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 50,
+  "letter": "PRE47",
+  "label": "Breadforms need to be ordered",
+  "phase": "Pre Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 51,
+  "letter": "PRE48",
+  "label": "Get dates for when we can get into the stores to make repair list",
+  "phase": "Pre Close",
+  "resp": "TC",
+  "hint": "How soon can we get in to make the repairs list? Ideally 7 days ahead of close",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 52,
+  "letter": "PRE49",
+  "label": "Ensure the current owner is not in contracts that have to transfer",
+  "phase": "Pre Close",
+  "resp": "TC",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 53,
+  "letter": "PRE50",
+  "label": "When can we get in and onboarding people",
+  "phase": "Pre Close",
+  "resp": "TC",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 54,
+  "letter": "PRE51",
+  "label": "Pepsi - Reach out to Johanna and see if the location is corporate or local bottler",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 55,
+  "letter": "PRE52",
+  "label": "Health Permits change of ownership applied for",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 56,
+  "letter": "PRE53",
+  "label": "Gas Account - part of cams? Transfer if not",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 57,
+  "letter": "PRE54",
+  "label": "Water/Sewer Acct/Trash - Transfer as needed",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 58,
+  "letter": "PRE55",
+  "label": "Business License",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": "Business Licensing (Call to determine processes)",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 59,
+  "letter": "PRE56",
+  "label": "UniFirst set up",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": "Kevin/ order equipment \u00b7 Let Kevin know the date and get it on the calendar once we have a firm close date",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 60,
+  "letter": "PRE57",
+  "label": "Send Michele previous Owners Name, Address, and Phone number",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 61,
+  "letter": "PRE58",
+  "label": "Who is their CO2 Vendor",
+  "phase": "Pre Close",
+  "resp": "Tori/Duncan",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 62,
+  "letter": "PRE59",
+  "label": "Find out if they have Harri",
+  "phase": "Pre Close",
+  "resp": "Tori/TC",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "30 days"
+ },
+ {
+  "col": 63,
+  "letter": "PRE60",
+  "label": "Is Pepsi doing the ice cleanings",
+  "phase": "Pre Close",
+  "resp": "Coby",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "3 weeks"
+ },
+ {
+  "col": 64,
+  "letter": "PRE61",
+  "label": "Send employment numbers to Tori",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "3 weeks"
+ },
+ {
+  "col": 65,
+  "letter": "PRE62",
+  "label": "Check ADP Sign off",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "3 weeks"
+ },
+ {
+  "col": 66,
+  "letter": "PRE63",
+  "label": "3rd Party Delivery set up started - check in with Laurie and Milan",
+  "phase": "Pre Close",
+  "resp": "Michele",
+  "hint": "Uber has to be done 10 days before not before",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "3 weeks"
+ },
+ {
+  "col": 67,
+  "letter": "PRE64",
+  "label": "Drop Slips/Bags",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": "Costco Checks \u00b7 Ordered 3 weeks before not less",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "3 weeks"
+ },
+ {
+  "col": 68,
+  "letter": "PRE65",
+  "label": "Electric Tranferred",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "3 weeks"
+ },
+ {
+  "col": 69,
+  "letter": "PRE66",
+  "label": "set up alarm.com notifications",
+  "phase": "Pre Close",
+  "resp": "Tori/Duncan",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "3 weeks"
+ },
+ {
+  "col": 70,
+  "letter": "PRE67",
+  "label": "Zenput - Confirm Shipped",
+  "phase": "Pre Close",
+  "resp": "Ashley",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "2 weeks"
+ },
+ {
+  "col": 71,
+  "letter": "PRE68",
+  "label": "Transfer over Mystery Shopper",
+  "phase": "Pre Close",
+  "resp": "Ashley",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "2 weeks"
+ },
+ {
+  "col": 72,
+  "letter": "PRE69",
+  "label": "Transfer over SMG",
+  "phase": "Pre Close",
+  "resp": "Ashley",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "2 weeks"
+ },
+ {
+  "col": 73,
+  "letter": "PRE70",
+  "label": "CAMS confirmation of what services the Landlord covers in writing from the property manager",
+  "phase": "Pre Close",
+  "resp": "Duncan",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "2 weeks"
+ },
+ {
+  "col": 74,
+  "letter": "PRE71",
+  "label": "Start date for onboarding people",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": "Make into a headline so we have the date available",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "2 weeks"
+ },
+ {
+  "col": 75,
+  "letter": "PRE72",
+  "label": "Location and Labor Settings",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "2 weeks"
+ },
+ {
+  "col": 76,
+  "letter": "PRE73",
+  "label": "EDI Pepsi/colopack/admiral Integration",
+  "phase": "Pre Close",
+  "resp": "Michele",
+  "hint": "Need to learn if it is a local bottler or Pepsi Corporate - Need to know delivery schedule from previous owners - First order needs to be called in, Send shayla account numbers once recieved",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "2 weeks"
+ },
+ {
+  "col": 77,
+  "letter": "PRE74",
+  "label": "3rd Party - Confirm set up is complete",
+  "phase": "Pre Close",
+  "resp": "Michele",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "2 weeks"
+ },
+ {
+  "col": 78,
+  "letter": "PRE75",
+  "label": "Uniforms",
+  "phase": "Pre Close",
+  "resp": "Shayla",
+  "hint": "Unifirst - Behind the counter \u00b7 Needs to be ordered 2 weeks before aquistion close date",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "2 weeks"
+ },
+ {
+  "col": 79,
+  "letter": "PRE76",
+  "label": "Send Sign Timers",
+  "phase": "Pre Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "2 weeks"
+ },
+ {
+  "col": 80,
+  "letter": "PRE77",
+  "label": "Transfer over Soci",
+  "phase": "Pre Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "2 weeks"
+ },
+ {
+  "col": 81,
+  "letter": "PRE78",
+  "label": "Ops Office/Booklets/Life Deck - Ready to be shipped and sent",
+  "phase": "Pre Close",
+  "resp": "Shayla/Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "2 weeks"
+ },
+ {
+  "col": 82,
+  "letter": "PRE79",
+  "label": "Phone/Internet - Transfer",
+  "phase": "Pre Close",
+  "resp": "Tori/Shayla",
+  "hint": "Micheal F - Comcast \u00b7 Check to see if they already have Comcast",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "2 weeks"
+ },
+ {
+  "col": 83,
+  "letter": "PRE80",
+  "label": "Onboarding Team through Harri Completed and verified",
+  "phase": "Pre Close",
+  "resp": "Brett",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 84,
+  "letter": "PRE81",
+  "label": "Put Repairs List Together",
+  "phase": "Pre Close",
+  "resp": "Coby",
+  "hint": "Send to TC via email",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 85,
+  "letter": "PRE82",
+  "label": "Equipment List - For warranty Information",
+  "phase": "Pre Close",
+  "resp": "Coby",
+  "hint": "Have the person going for a site audit grab it and send over",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 86,
+  "letter": "PRE83",
+  "label": "Employee Handbook - Colorado",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 87,
+  "letter": "PRE84",
+  "label": "OSHA Posters - Recieved and Up",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 88,
+  "letter": "PRE85",
+  "label": "ADP - GL Mapping",
+  "phase": "Pre Close",
+  "resp": "Mallory",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 89,
+  "letter": "PRE86",
+  "label": "Cash Audit Spreadsheet - Created and ready to go",
+  "phase": "Pre Close",
+  "resp": "Mella",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 90,
+  "letter": "PRE87",
+  "label": "POS Integration with R365",
+  "phase": "Pre Close",
+  "resp": "Michele",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 91,
+  "letter": "PRE88",
+  "label": "EDI Sysco Integration with R365",
+  "phase": "Pre Close",
+  "resp": "Michele",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 92,
+  "letter": "PRE89",
+  "label": "DeliverSense/Recovery",
+  "phase": "Pre Close",
+  "resp": "Michele",
+  "hint": "We are looking at possible new vendors right now",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 93,
+  "letter": "PRE90",
+  "label": "EZ Cater",
+  "phase": "Pre Close",
+  "resp": "Michele",
+  "hint": "Do we know if they had EZCater beforehand and used dispatched services?",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 94,
+  "letter": "PRE91",
+  "label": "Asses if there are any sizeable assets that will be transferring IE truck",
+  "phase": "Pre Close",
+  "resp": "Michele",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 95,
+  "letter": "PRE92",
+  "label": "3rd party confirm everything can be seen",
+  "phase": "Pre Close",
+  "resp": "Michele",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 96,
+  "letter": "PRE93",
+  "label": "Sysco Account Confirmation/Ops",
+  "phase": "Pre Close",
+  "resp": "Shayla",
+  "hint": "Need Delivery Dates and confirmed in crunchtime",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 97,
+  "letter": "PRE94",
+  "label": "Pepsi Account Confirmation/Ops",
+  "phase": "Pre Close",
+  "resp": "Shayla",
+  "hint": "Need to learn if it is a local bottler or Pepsi Corporate - Need to know delivery schedule from previous owners - First order needs to be called in, Send shayla account numbers once recieved",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 98,
+  "letter": "PRE95",
+  "label": "Zebra Printer - Recieved",
+  "phase": "Pre Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 99,
+  "letter": "PRE96",
+  "label": "Crunchtime Account - ensure stores show up under Bretts account",
+  "phase": "Pre Close",
+  "resp": "Shayla",
+  "hint": "email support@jerseymikes.com",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 100,
+  "letter": "PRE97",
+  "label": "3rd party confirm everything can be seen",
+  "phase": "Pre Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 101,
+  "letter": "PRE98",
+  "label": "Ensure Sysco Set up",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 102,
+  "letter": "PRE99",
+  "label": "Ensure Pepsi account Set up",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 103,
+  "letter": "PRE100",
+  "label": "Request Pepsi Credit App if new entity - if not request new accounts for the stores",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": "Be prepared with the reseller documentation if needed for the entity",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 104,
+  "letter": "PRE101",
+  "label": "Look through Service and Vendors",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 105,
+  "letter": "PRE102",
+  "label": "Schedule Close day meeting",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": "Ensure we have the Bill of sale in hand",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 106,
+  "letter": "PRE103",
+  "label": "Ensure everyone has time blocked off for quick service transfer",
+  "phase": "Pre Close",
+  "resp": "Tori",
+  "hint": "Example close on a monday, plan on departments having calls to have people on site",
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 107,
+  "letter": "PRE104",
+  "label": "Add cash audit spreadsheet",
+  "phase": "Pre Close",
+  "resp": null,
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 108,
+  "letter": "PRE105",
+  "label": "Ask current cash process",
+  "phase": "Pre Close",
+  "resp": null,
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": "1 Week"
+ },
+ {
+  "col": 109,
+  "letter": "PRE106",
+  "label": "Add GM to Kruwis contacts list",
+  "phase": "Pre Close",
+  "resp": "Tori/Duncan",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "URGENT",
+   "1 Week",
+   "2 weeks",
+   "3 weeks",
+   "30 days",
+   "PreCall"
+  ],
+  "priority": null
+ },
+ {
+  "col": 110,
+  "letter": "POST1",
+  "label": "Ops Office/Booklets/Life Deck - Confirm recieved",
+  "phase": "Post Close",
+  "resp": "Shayla/Chris",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 111,
+  "letter": "POST2",
+  "label": "Equipment List - Ensure we have all the needed equipment information for warranty purposes",
+  "phase": "Post Close",
+  "resp": "Coby",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 112,
+  "letter": "POST3",
+  "label": "Window Cleaning",
+  "phase": "Post Close",
+  "resp": "Coby",
+  "hint": "Set Up and document frequency and next appointment",
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 113,
+  "letter": "POST4",
+  "label": "Menu Items/Flavors",
+  "phase": "Post Close",
+  "resp": "Shayla",
+  "hint": "Can not be completed until new accounts are in crunchtime and stores are available on behind the counter",
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 114,
+  "letter": "POST5",
+  "label": "UniFirst set up",
+  "phase": "Post Close",
+  "resp": "Tori",
+  "hint": "Kevin/ order equipment \u00b7 Ensure scheduled appointment goes to plan or reschedule as needed",
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 115,
+  "letter": "POST6",
+  "label": "Low Voltage (Alarm/Cameras/Sound) Scheduled",
+  "phase": "Post Close",
+  "resp": "Shayla",
+  "hint": "Ensure transfer of logins/alarms etc",
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 116,
+  "letter": "POST7",
+  "label": "Signage - Get pictures of night lit signs",
+  "phase": "Post Close",
+  "resp": "Tori",
+  "hint": "ashton@signcityonline.com, 801-857-7126 \u00b7 Get pictures of night lit signs",
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 117,
+  "letter": "POST8",
+  "label": "Rekey new stores",
+  "phase": "Post Close",
+  "resp": "Coby",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 118,
+  "letter": "POST9",
+  "label": "Vantage",
+  "phase": "Post Close",
+  "resp": "Ashley",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 119,
+  "letter": "POST10",
+  "label": "Uniform Needs - was anything missed?",
+  "phase": "Post Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 120,
+  "letter": "POST11",
+  "label": "Confirm Sysco Logins and first orders happened",
+  "phase": "Post Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 121,
+  "letter": "POST12",
+  "label": "HR Playbook - Confirmed recieved",
+  "phase": "Post Close",
+  "resp": "Chris",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 122,
+  "letter": "POST13",
+  "label": "Smallwares order",
+  "phase": "Post Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 123,
+  "letter": "POST14",
+  "label": "Ask for Steritech to add",
+  "phase": "Post Close",
+  "resp": "Ashley",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 124,
+  "letter": "POST15",
+  "label": "Look at pricing and ensure it is correct",
+  "phase": "Post Close",
+  "resp": "Tori/TC",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 125,
+  "letter": "POST16",
+  "label": "Ask Steritech to add eachs tore individually",
+  "phase": "Post Close",
+  "resp": "Ashley",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 126,
+  "letter": "POST17",
+  "label": "Getting Keys for the Mailboxes IF NEEDED",
+  "phase": "Post Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 127,
+  "letter": "POST18",
+  "label": "Pest Control set up",
+  "phase": "Post Close",
+  "resp": "Coby",
+  "hint": "Set Up and document frequency and next appointment",
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "2 weeks Post Close"
+ },
+ {
+  "col": 128,
+  "letter": "POST19",
+  "label": "Grease Trap Pumping",
+  "phase": "Post Close",
+  "resp": "Coby",
+  "hint": "Set Up and document frequency and next appointment",
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "2 weeks Post Close"
+ },
+ {
+  "col": 129,
+  "letter": "POST20",
+  "label": "Fire Inspections",
+  "phase": "Post Close",
+  "resp": "Coby",
+  "hint": "Set Up and document frequency and next appointment",
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "2 weeks Post Close"
+ },
+ {
+  "col": 130,
+  "letter": "POST21",
+  "label": "Hood Cleanings",
+  "phase": "Post Close",
+  "resp": "Coby",
+  "hint": "Set Up and document frequency and next appointment",
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "2 weeks Post Close"
+ },
+ {
+  "col": 131,
+  "letter": "POST22",
+  "label": "Ice Machine - servicing",
+  "phase": "Post Close",
+  "resp": "Coby",
+  "hint": "Set Up and document frequency and next appointment",
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "2 weeks Post Close"
+ },
+ {
+  "col": 132,
+  "letter": "POST23",
+  "label": "Refridgeration servicing",
+  "phase": "Post Close",
+  "resp": "Coby",
+  "hint": "Set Up and document frequency and next appointment",
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "2 weeks Post Close"
+ },
+ {
+  "col": 133,
+  "letter": "POST24",
+  "label": "Low Voltage (Alarm/Cameras/Sound) Scheduled - Ensure transfer of logins/alarms etc",
+  "phase": "Post Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "2 weeks Post Close"
+ },
+ {
+  "col": 134,
+  "letter": "POST25",
+  "label": "Music Player - Installed",
+  "phase": "Post Close",
+  "resp": "Shayla",
+  "hint": "Harmony - Tony \u00b7 Install",
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "2 weeks Post Close"
+ },
+ {
+  "col": 135,
+  "letter": "POST26",
+  "label": "Refund R&M List",
+  "phase": "Post Close",
+  "resp": "Coby",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "2 weeks Post Close"
+ },
+ {
+  "col": 136,
+  "letter": "POST27",
+  "label": "Do we need a food handlers exam set up for this aquistion",
+  "phase": "Post Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "2 weeks Post Close"
+ },
+ {
+  "col": 137,
+  "letter": "POST28",
+  "label": "Onboarding Team Through Harri - Feedback, any changes for next time?",
+  "phase": "Post Close",
+  "resp": "Brett",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "2 weeks Post Close"
+ },
+ {
+  "col": 138,
+  "letter": "POST29",
+  "label": "Repairs List - Confirmed that all items needed were done",
+  "phase": "Post Close",
+  "resp": "Coby",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "2 weeks Post Close"
+ },
+ {
+  "col": 139,
+  "letter": "POST30",
+  "label": "Send Updated Business License and Health Permit to the store",
+  "phase": "Post Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "2 weeks Post Close"
+ },
+ {
+  "col": 140,
+  "letter": "POST31",
+  "label": "Personal Property Tax account set up",
+  "phase": "Post Close",
+  "resp": "Mella",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "30 Days Post Close"
+ },
+ {
+  "col": 141,
+  "letter": "POST32",
+  "label": "Get R&M list - deadline set",
+  "phase": "Post Close",
+  "resp": "Coby",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "30 Days Post Close"
+ },
+ {
+  "col": 142,
+  "letter": "POST33",
+  "label": "Post Closing Reconciliation",
+  "phase": "Post Close",
+  "resp": "Michele",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "30 Days Post Close"
+ },
+ {
+  "col": 143,
+  "letter": "POST34",
+  "label": "Let Former Owner know to close - Music",
+  "phase": "Post Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "30 Days Post Close"
+ },
+ {
+  "col": 144,
+  "letter": "POST35",
+  "label": "Let Former Owner know to close - Alarms",
+  "phase": "Post Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "30 Days Post Close"
+ },
+ {
+  "col": 145,
+  "letter": "POST36",
+  "label": "Let Former Owner know to close - Pepsi",
+  "phase": "Post Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "30 Days Post Close"
+ },
+ {
+  "col": 146,
+  "letter": "POST37",
+  "label": "Let Former Owner know to close - Sysco",
+  "phase": "Post Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "30 Days Post Close"
+ },
+ {
+  "col": 147,
+  "letter": "POST38",
+  "label": "Let Former Owner know to close - Linens",
+  "phase": "Post Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "30 Days Post Close"
+ },
+ {
+  "col": 148,
+  "letter": "POST39",
+  "label": "Let Former Owner know to close - Pest Control",
+  "phase": "Post Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "30 Days Post Close"
+ },
+ {
+  "col": 149,
+  "letter": "POST40",
+  "label": "Let Former Owner know to close - Internet/Phones",
+  "phase": "Post Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "30 Days Post Close"
+ },
+ {
+  "col": 150,
+  "letter": "POST41",
+  "label": "Double check behind the counter to ensure that pricing is correct",
+  "phase": "Post Close",
+  "resp": "Tori",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "30 Days Post Close"
+ },
+ {
+  "col": 151,
+  "letter": "POST42",
+  "label": "Lease info to Leasecake",
+  "phase": "Post Close",
+  "resp": "Jessa",
+  "hint": "Email Megan to have a dropbox folder set up for the transfer",
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "Day of Close"
+ },
+ {
+  "col": 152,
+  "letter": "POST43",
+  "label": "Move over Gas - if unable to set up a date before close",
+  "phase": "Post Close",
+  "resp": "Jessa",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "Day of Close"
+ },
+ {
+  "col": 153,
+  "letter": "POST44",
+  "label": "Move over Electric - if unable to set up a date before close",
+  "phase": "Post Close",
+  "resp": "Jessa",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "Day of Close"
+ },
+ {
+  "col": 154,
+  "letter": "POST45",
+  "label": "Trash removal information confirmed",
+  "phase": "Post Close",
+  "resp": "Jessa",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "Day of Close"
+ },
+ {
+  "col": 155,
+  "letter": "POST46",
+  "label": "Confirm 3rd parties can be seen and orders are coming in",
+  "phase": "Post Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "Day of Close"
+ },
+ {
+  "col": 156,
+  "letter": "POST47",
+  "label": "Confirm 3rd parties orders are coming in",
+  "phase": "Post Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "Day of Close"
+ },
+ {
+  "col": 157,
+  "letter": "POST48",
+  "label": "Confirm EZ Cater is up and running",
+  "phase": "Post Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "Day of Close"
+ },
+ {
+  "col": 158,
+  "letter": "POST49",
+  "label": "Phone/Internet - Transfer Bill of sale sent day of close",
+  "phase": "Post Close",
+  "resp": "Tori/Shayla",
+  "hint": "Micheal F - Comcast \u00b7 Bill of sale sent day of close",
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "Day of Close"
+ },
+ {
+  "col": 159,
+  "letter": "POST50",
+  "label": "Set up rent on auto pay",
+  "phase": "Post Close",
+  "resp": "Michele",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "Day of Close"
+ },
+ {
+  "col": 160,
+  "letter": "POST51",
+  "label": "Ensure Sysco on AutoPay",
+  "phase": "Post Close",
+  "resp": "Michele",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "Day of Close"
+ },
+ {
+  "col": 161,
+  "letter": "POST52",
+  "label": "Add Crunchtime Inventory Schedule",
+  "phase": "Post Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "Day of Close"
+ },
+ {
+  "col": 162,
+  "letter": "POST53",
+  "label": "Discounts Update",
+  "phase": "Post Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "Day of Close"
+ },
+ {
+  "col": 163,
+  "letter": "POST54",
+  "label": "Regional needs access to stores for LMS",
+  "phase": "Post Close",
+  "resp": "Ashley",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "Day of Close"
+ },
+ {
+  "col": 164,
+  "letter": "POST55",
+  "label": "\"Move\" date moving forward sooner - Did we need anyone to move?",
+  "phase": "Post Close",
+  "resp": null,
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": null
+ },
+ {
+  "col": 165,
+  "letter": "POST56",
+  "label": "Find out if on a timer or Solar Cell",
+  "phase": "Post Close",
+  "resp": "Tori/Duncan",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 166,
+  "letter": "POST57",
+  "label": "Remove what they can not order from Sysco",
+  "phase": "Post Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 167,
+  "letter": "POST58",
+  "label": "Update Flavor Portal",
+  "phase": "Post Close",
+  "resp": "Shayla",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 168,
+  "letter": "POST59",
+  "label": "Ensure ADP logins created",
+  "phase": "Post Close",
+  "resp": "Chris",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "1 Week Post Close"
+ },
+ {
+  "col": 169,
+  "letter": "POST60",
+  "label": "Ensure all leases abstracted and missing information obtained",
+  "phase": "Post Close",
+  "resp": "Jessa",
+  "hint": null,
+  "type": "checkbox",
+  "options": [
+   "Day of Close",
+   "1 Week Post Close",
+   "2 weeks Post Close",
+   "30 Days Post Close"
+  ],
+  "priority": "30 Days Post Close"
+ }
+]
