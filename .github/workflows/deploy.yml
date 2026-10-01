@@ -1,0 +1,142 @@
+name: Deploy to Firebase Hosting
+
+# Builds the app and publishes it whenever main changes, so merging a pull
+# request is the whole job and nobody has to remember to run
+# `npm run build && firebase deploy` afterwards.
+#
+# WHY THIS NEEDS CONFIGURING AT ALL
+#
+# The Firebase web config lives in .env.local, which is gitignored and only
+# exists on a developer's own machine. Vite bakes those values into the
+# bundle at build time, so a build without them produces an app that cannot
+# reach the database -- it loads, and then nothing works. GitHub's runner has
+# no .env.local, so the same six values have to be set here.
+#
+# They are NOT secrets. They ship in the public JS bundle, and access control
+# comes from firestore.rules and Firebase Auth, not from hiding them. So they
+# are repository *variables* rather than secrets: visible, editable, and
+# obvious when one is wrong.
+#
+# Required repository variables (Settings -> Secrets and variables ->
+# Actions -> Variables tab). Copy each from your own .env.local:
+#
+#   VITE_FIREBASE_API_KEY
+#   VITE_FIREBASE_AUTH_DOMAIN
+#   VITE_FIREBASE_PROJECT_ID
+#   VITE_FIREBASE_STORAGE_BUCKET
+#   VITE_FIREBASE_MESSAGING_SENDER_ID
+#   VITE_FIREBASE_APP_ID
+#
+# Required repository secret (Secrets tab) -- already set up for the daily
+# digest, so there is probably nothing to do here:
+#
+#   FIREBASE_SERVICE_ACCOUNT  the whole service account JSON, pasted in
+#
+# That service account must be allowed to publish hosting. The key generated
+# by Firebase console -> Project settings -> Service accounts is for the
+# database and may not be, in which case the deploy step fails with a
+# permission error naming the account. Granting it is one change in Google
+# Cloud console -> IAM: find that account, add the role "Firebase Hosting
+# Admin".
+#
+# Only hosting is deployed. Firestore rules are deliberately left to a
+# deliberate `firebase deploy --only firestore:rules`, because a mistake in
+# them locks everyone out of the data rather than just looking wrong.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# A second merge while the first is still publishing would race it. Newer
+# wins -- it contains the older commit anyway.
+concurrency:
+  group: deploy-hosting
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Vite replaces a missing import.meta.env value with undefined and
+      # builds happily, so without this check a missing variable ships a
+      # dashboard that loads to a blank screen. Fail here instead, where the
+      # message says which one.
+      - name: Check the Firebase config is set
+        env:
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+        run: |
+          missing=""
+          for v in VITE_FIREBASE_API_KEY VITE_FIREBASE_AUTH_DOMAIN \
+                   VITE_FIREBASE_PROJECT_ID VITE_FIREBASE_STORAGE_BUCKET \
+                   VITE_FIREBASE_MESSAGING_SENDER_ID VITE_FIREBASE_APP_ID; do
+            if [ -z "${!v}" ]; then missing="$missing $v"; fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Not deploying. These repository variables are empty:$missing"
+            echo "Set them under Settings -> Secrets and variables -> Actions -> Variables."
+            echo "The values are the ones in your own .env.local."
+            exit 1
+          fi
+          echo "All six set. Project: $VITE_FIREBASE_PROJECT_ID"
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        env:
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+        run: npm run build
+
+      # A build can succeed and still be wrong: if the config were empty, the
+      # project id would not appear in the bundle. Cheap, and it catches the
+      # failure that is hardest to notice from the outside.
+      - name: Check the built bundle is wired up
+        env:
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+        run: |
+          if ! grep -rq "$VITE_FIREBASE_PROJECT_ID" dist/assets/*.js; then
+            echo "::error::Built bundle does not mention the Firebase project. Not deploying."
+            exit 1
+          fi
+          echo "Bundle is pointed at $VITE_FIREBASE_PROJECT_ID."
+
+      # The same CLI you run locally, authenticated with the service account
+      # rather than a browser login.
+      - name: Deploy hosting
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::error::FIREBASE_SERVICE_ACCOUNT secret is not set."
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
+          npx --yes firebase-tools@15 deploy \
+            --only hosting \
+            --project "$PROJECT_ID" \
+            --non-interactive \
+            --message "${GITHUB_SHA::7} via GitHub Actions"
+          rm -f "$RUNNER_TEMP/sa.json"
