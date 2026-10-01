@@ -11,21 +11,36 @@ import {
   templateFor,
   templateForProject,
   BRAND_BY_KEY,
+  tracksFor,
 } from '../lib/helpers';
 import { createProject } from '../lib/firestore';
 import { useAuth } from '../context/AuthContext';
 
-export default function Overview({ projects: allProjects, brandKey, onSelect, onBack }) {
+export default function Overview({
+  projects: allProjects,
+  brandKey,
+  // Which of the brand's tracks is open. Equal to brandKey for a brand that
+  // has only one, which is every brand but Jersey Mike's today.
+  track,
+  onSelectTrack,
+  onSelect,
+  onBack,
+}) {
   const { user, canEdit } = useAuth();
   const brand = BRAND_BY_KEY[brandKey];
-  const template = templateFor(brandKey);
+  // Empty unless the brand runs more than one kind of work, so no toggle
+  // appears where there is nothing to toggle between.
+  const tracks = tracksFor(brandKey);
+  const trackBrand = BRAND_BY_KEY[track] || brand;
+  const template = templateFor(track);
 
-  // Only this brand's projects, everywhere on the page -- the stat tiles
-  // included, since averaging across brands with different checklists would
-  // not mean anything.
+  // Only this track's projects, everywhere on the page -- the stat tiles
+  // included, since averaging across checklists that measure different work
+  // would not mean anything. New builds and acquisitions are as separate here
+  // as two brands are.
   const projects = useMemo(
-    () => allProjects.filter((p) => brandKeyFor(p) === brandKey),
-    [allProjects, brandKey]
+    () => allProjects.filter((p) => brandKeyFor(p) === track),
+    [allProjects, track]
   );
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
@@ -44,9 +59,14 @@ export default function Overview({ projects: allProjects, brandKey, onSelect, on
     // with different stages gets its own.
     const mean = (n) => (active.length ? Math.round((n / active.length) * 100) : 0);
     return {
+      // A phase no active project can tick has no percentage to report. The
+      // rail already shows a dash for this; the tile said 100%, because a
+      // phase with nothing outstanding counts as done. Same lie, bigger type.
       phases: template.phases.map((phase) => ({
         phase,
-        value: mean(active.reduce((sum, p) => sum + phaseProgress(p, phase), 0)),
+        value: active.some((p) => phaseHasChecks(p, phase))
+          ? mean(active.reduce((sum, p) => sum + phaseProgress(p, phase), 0))
+          : null,
       })),
       started: active.filter((p) => overallProgress(p) > 0).length,
       total: active.length,
@@ -81,10 +101,11 @@ export default function Overview({ projects: allProjects, brandKey, onSelect, on
       const ref = await createProject(
         {
           brand: brand.name,
-          // Pins the project to this brand's checklist. Without it the ticked
+          // Pins the project to this track's checklist. Without it the ticked
           // boxes would be read against whichever brand the free-text name
-          // happened to match.
-          brandKey,
+          // happened to match -- and an acquisition's would be read against
+          // the new-build checklist, which is a different list entirely.
+          brandKey: track,
           name: 'New Location',
           fields: {},
           order: nextOrder,
@@ -105,15 +126,43 @@ export default function Overview({ projects: allProjects, brandKey, onSelect, on
       <div className="brand-head">
         <h2>{brand.name}</h2>
         {template.isEmpty && (
-          <span className="brand-warn">Checklist not loaded yet</span>
+          // Named, because the heading is the brand and the empty checklist
+          // may belong to one of its tracks -- Jersey Mike's own list is
+          // loaded even when Acquisitions' is not.
+          <span className="brand-warn">
+            {tracks.length ? `${trackBrand.trackName || trackBrand.name} ` : ''}checklist not
+            loaded yet
+          </span>
         )}
       </div>
+
+      {tracks.length > 0 && (
+        <div className="track-switch" role="tablist" aria-label={`${brand.name} project types`}>
+          {tracks.map((t) => {
+            const count = allProjects.filter(
+              (p) => brandKeyFor(p) === t.key && !p.completed
+            ).length;
+            return (
+              <button
+                key={t.key}
+                role="tab"
+                aria-selected={t.key === track}
+                className={`track-tab ${t.key === track ? 'active' : ''}`}
+                onClick={() => onSelectTrack(t.key)}
+              >
+                {t.trackName || t.name}
+                <span className="track-count">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       <div className="stat-row">
         <div className="stat-card"><div className="num">{stats.total}</div><div className="lbl">Active Projects</div></div>
         {stats.phases.map((s) => (
           <div className="stat-card" key={s.phase}>
-            <div className="num">{s.value}%</div>
+            <div className="num">{s.value === null ? '—' : `${s.value}%`}</div>
             <div className="lbl">{s.phase}</div>
           </div>
         ))}

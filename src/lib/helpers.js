@@ -1,9 +1,12 @@
 import {
   BRANDS,
   BRAND_BY_KEY,
+  TOP_BRANDS,
   DEFAULT_PHASES,
   LEGACY_PHASE_ALIAS,
   brandKeyFor,
+  rootBrandFor,
+  tracksFor,
 } from './brands';
 
 export const PHASES = DEFAULT_PHASES;
@@ -125,6 +128,28 @@ export function labelFor(header, project, brandLabels) {
 // field can never collide with a real column.
 export const CUSTOM_PREFIX = 'cf_';
 
+// An acquisition item carries a priority as well as a tick -- "1 Week",
+// "Day of Close" and so on, from the spreadsheet's own dropdown. Both live in
+// the same `fields` map, the priority under the item's key plus this suffix.
+//
+// The suffix must not contain a dot: Firestore reads a dot in an update key
+// as a path separator, so `PRE1.priority` would write a nested object rather
+// than a field called that. It also cannot collide with a column letter,
+// which is why it is not something like 'P'.
+export const PRIORITY_SUFFIX = '__pri';
+
+export function priorityKey(letter) {
+  return `${letter}${PRIORITY_SUFFIX}`;
+}
+
+// What an item's priority is on this project: whatever someone set, falling
+// back to the priority the spreadsheet shipped it with.
+export function priorityOf(project, header) {
+  const set = project?.fields?.[priorityKey(header.letter)];
+  if (typeof set === 'string') return set;
+  return header.priority || '';
+}
+
 // `owner` decides what removing one means. A field belonging to the brand is
 // on every project of that brand, so a single project can only hide it -- the
 // same deal as an item from the spreadsheet. A field added to this project
@@ -172,15 +197,48 @@ export function visibleHeaders(project, phase) {
     (old) => LEGACY_PHASE_ALIAS[old] === phase,
   );
   const order = saved[phase] || (legacyKey ? saved[legacyKey] : undefined);
-  if (!Array.isArray(order) || !order.length) return all;
+  if (!Array.isArray(order) || !order.length) return byPriority(project, all);
 
   const rank = new Map(order.map((key, i) => [key, i]));
-  return [...all].sort((a, b) => {
+  const ordered = [...all].sort((a, b) => {
     const ra = rank.has(a.letter) ? rank.get(a.letter) : Number.MAX_SAFE_INTEGER;
     const rb = rank.has(b.letter) ? rank.get(b.letter) : Number.MAX_SAFE_INTEGER;
     if (ra !== rb) return ra - rb;
     return all.indexOf(a) - all.indexOf(b);
   });
+  return byPriority(project, ordered);
+}
+
+// Acquisition items are worked in order of urgency, not in the order they
+// happen to sit in the spreadsheet, and a priority is changed per store as a
+// close approaches -- so the list sorts itself rather than being arranged by
+// hand.
+//
+// The rank is the item's position in its own options list, which is the
+// spreadsheet's data validation and is already written most-urgent first:
+// URGENT, 1 Week, 2 weeks, 3 weeks, 30 days, PreCall for Pre Close, and
+// Day of Close through 30 Days Post Close for Post Close. Taking the order
+// from the data means a brand that adds or renames a bucket needs no code
+// change here.
+//
+// Anything with no dropdown at all stays at the top: on an acquisition that
+// is the address and phone number, which are reference rather than work.
+// An item whose priority has been cleared goes last.
+//
+// A no-op for every other checklist, which has no priorities to sort by.
+function byPriority(project, headers) {
+  if (!headers.some((h) => h.options?.length)) return headers;
+  const rankOf = (h) => {
+    if (!h.options?.length) return -1;
+    const i = h.options.indexOf(priorityOf(project, h));
+    return i === -1 ? h.options.length : i;
+  };
+  // Decorated so the sort is stable on whatever order came in, which is the
+  // saved one where there is a saved one and the file's otherwise.
+  return headers
+    .map((h, i) => ({ h, i, rank: rankOf(h) }))
+    .sort((a, b) => (a.rank !== b.rank ? a.rank - b.rank : a.i - b.i))
+    .map((x) => x.h);
 }
 
 // The items removed from one phase, for the admin list that puts them back.
@@ -236,6 +294,12 @@ export function overallProgress(project) {
 export function currentStage(project) {
   const tpl = templateForProject(project);
   const phases = tpl.phases;
+  // Nothing to tick anywhere -- a brand or track whose checklist has not been
+  // imported yet. Every phase reports complete, so without this the project
+  // would be badged "Open / Complete" having had nothing done to it at all.
+  if (!phases.some((p) => phaseHasChecks(project, p))) {
+    return { key: 'none', label: 'Not started' };
+  }
   for (let i = 0; i < phases.length; i++) {
     if (phaseProgress(project, phases[i]) < 0.999) {
       return { key: phaseKey(phases[i], i), label: phases[i] };
@@ -255,4 +319,4 @@ export const headersByPhase = TEMPLATES[BRANDS[0].key].headersByPhase;
 export const notesHeaders = TEMPLATES[BRANDS[0].key].notesHeaders;
 export const checkboxCountByPhase = TEMPLATES[BRANDS[0].key].checkboxCountByPhase;
 
-export { BRANDS, BRAND_BY_KEY, brandKeyFor };
+export { BRANDS, BRAND_BY_KEY, TOP_BRANDS, brandKeyFor, rootBrandFor, tracksFor };

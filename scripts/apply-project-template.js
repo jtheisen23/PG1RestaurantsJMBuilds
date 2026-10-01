@@ -52,8 +52,15 @@ if (!FROM) {
 }
 
 // Kept in step with src/lib/brands.js.
+//
+// jmacquisitions must be listed even though it is a track of Jersey Mike's
+// rather than a brand: without it, an acquisition's brandKey would not be
+// recognised, the free-text "Jersey Mike's" in its brand column would win,
+// and a rollout from a new-build template would be applied to a store whose
+// checklist is a completely different list.
 const ALIASES = {
   jerseymikes: ['jersey mikes', "jersey mike's", 'jm'],
+  jmacquisitions: ['acquisitions', 'jm acquisitions', "jersey mike's acquisitions"],
   daves: ['daves hot chicken', "dave's hot chicken", 'dhc', 'daves'],
   mogu: ['mogu'],
 };
@@ -83,7 +90,11 @@ async function main() {
   const all = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 
   const needle = FROM.trim().toLowerCase();
-  const matches = all.filter((p) => (p.name || '').toLowerCase().includes(needle));
+  // An exact name wins outright. Without this, --from "Seminole" is ambiguous
+  // the moment an acquisition called "-Seminole Trail" exists, and there is
+  // no substring of the new build's name that excludes it.
+  const exact = all.filter((p) => (p.name || '').trim().toLowerCase() === needle);
+  const matches = exact.length ? exact : all.filter((p) => (p.name || '').toLowerCase().includes(needle));
   if (!matches.length) {
     console.error(`\nNo project matches "${FROM}".\n`);
     process.exit(1);
