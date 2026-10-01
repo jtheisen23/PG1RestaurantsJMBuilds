@@ -158,6 +158,15 @@ async function main() {
     ownFields.forEach((t) => console.log(`     ${t.name}: ${t.report.keepsOwnFields.join(', ')}`));
   }
 
+  const dh = plan.brand.defaults.hiddenFields.length;
+  const dorder = Object.keys(plan.brand.defaults.fieldOrder).length;
+  console.log(
+    `\nProjects added from now on start from this setup too: ` +
+      `${plan.brand.customFields.length} added field(s), ` +
+      `${Object.keys(plan.brand.labels).length} rewording(s), ` +
+      `${dh} removal(s), order on ${dorder} phase(s).`
+  );
+
   console.log(`\nNo project's data is touched: "fields" is not written by this script.`);
 
   if (!APPLY) {
@@ -169,6 +178,7 @@ async function main() {
     {
       customFields: plan.brand.customFields,
       labels: plan.brand.labels,
+      defaults: plan.brand.defaults,
       updatedAt: new Date(),
       updatedBy: 'apply-project-template',
     },
