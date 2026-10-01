@@ -35,8 +35,9 @@ on:
           - import-brand-timeline
           - backfill-brand-key
           - backfill-order
+          - delete-projects
       argument:
-        description: 'Project name for apply-project-template, or seed file path for an import. Leave blank for the backfills.'
+        description: 'apply-project-template: a project name. imports: a seed file path. delete-projects: pipe-separated names, e.g. A|B|C. Backfills: blank.'
         required: false
         type: string
         default: ''
@@ -109,6 +110,17 @@ jobs:
                 exit 1
               fi
               set -- "$ARG"
+              ;;
+            delete-projects)
+              if [ -z "$ARG" ]; then
+                echo "::error::This script needs pipe-separated project names, e.g. 3055- High Point, NC|3057- Gastonia, NC"
+                exit 1
+              fi
+              # --brand is fixed to new builds here on purpose. The duplicate
+              # records share a name with an acquisition, so a mistyped run
+              # from a web form must not be able to reach the acquisition
+              # instead. Removing one of those is a local, deliberate job.
+              set -- --brand jerseymikes --names "$ARG"
               ;;
             backfill-brand-key|backfill-order)
               set --
