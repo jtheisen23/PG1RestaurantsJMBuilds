@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   collection,
   doc,
+  getDoc,
   onSnapshot,
   addDoc,
   updateDoc,
@@ -385,15 +386,55 @@ export function useActivity(max = 500) {
 // record last (shown in the UI as a small "last edited by" note).
 
 export async function createProject(project, user) {
+  // A new location should arrive looking like the brand's template rather
+  // than like the raw spreadsheet -- same items, same wording, same order,
+  // nothing ticked.
+  //
+  // Added fields and rewordings already reach it for free, because they
+  // belong to the brand and are merged in on read. Removals and ordering are
+  // per-project by nature, so the brand carries them as a default (written by
+  // apply-project-template) and they are copied here.
+  //
+  // `fields` is never seeded. An empty checklist is the point.
+  const defaults = await brandDefaults(project?.brandKey);
+
   return reportingWrite('creating a project', () =>
     addDoc(collection(db, 'projects'), {
-    order: Number.MAX_SAFE_INTEGER,
-    ...project,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
+      order: Number.MAX_SAFE_INTEGER,
+      // Before ...project, so anything the caller states explicitly wins.
+      ...defaults,
+      ...project,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
       updatedBy: user?.email || 'unknown',
     })
   );
+}
+
+// The setup a project of this brand should start with, or nothing if the
+// brand has no template yet. A brand only gains one by running
+// apply-project-template, so before that a new project simply starts from the
+// spreadsheet, exactly as it used to.
+async function brandDefaults(brandKey) {
+  if (!brandKey) return {};
+  try {
+    const snap = await getDoc(doc(db, 'brandTemplates', brandKey));
+    const d = snap.exists() ? snap.data()?.defaults : null;
+    if (!d) return {};
+    const out = {};
+    if (Array.isArray(d.hiddenFields) && d.hiddenFields.length) {
+      out.hiddenFields = d.hiddenFields;
+    }
+    if (d.fieldOrder && typeof d.fieldOrder === 'object' && !Array.isArray(d.fieldOrder)) {
+      out.fieldOrder = d.fieldOrder;
+    }
+    return out;
+  } catch (err) {
+    // Never block someone adding a location over this. Without the default
+    // they get the spreadsheet's own order, which is the old behaviour.
+    reportDataError('reading the brand template', err);
+    return {};
+  }
 }
 
 // `meta` ({ projectName, label, phase }) is supplied by the caller, which has

@@ -43,7 +43,17 @@ function planTemplateRollout({ source, targets, brandDoc }) {
   const brandLabels = { ...asObject(brandDoc.labels), ...srcLabels };
 
   const plan = {
-    brand: { customFields: brandCustomFields, labels: brandLabels },
+    brand: {
+      customFields: brandCustomFields,
+      labels: brandLabels,
+      // The setup a project created from now on should start with. Added
+      // fields and rewordings already reach a new project, because they
+      // belong to the brand -- these two do not, so the brand carries them
+      // as a default for createProject to copy. Without this a new location
+      // would get every field but in the spreadsheet's order rather than the
+      // one the template was arranged into.
+      defaults: { hiddenFields: srcHidden, fieldOrder: srcOrder },
+    },
     // Cleared on the source once promoted, or every added field would appear
     // twice there -- once from the brand, once from the project.
     sourceUpdate: { customFields: [], fieldLabels: {} },
