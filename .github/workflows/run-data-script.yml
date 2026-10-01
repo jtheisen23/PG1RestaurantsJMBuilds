@@ -1,0 +1,140 @@
+name: Run a data script
+
+# Runs one of the Firestore maintenance scripts on GitHub's servers, so the
+# imports and rollouts no longer need a terminal and a local copy of the
+# service account key.
+#
+# Start it from Actions -> Run a data script -> Run workflow.
+#
+# DRY RUN IS THE DEFAULT. Every script here writes nothing unless "apply" is
+# ticked; left alone, each one prints exactly what it would do and stops.
+# Run it once without apply, read the summary, then run it again with apply.
+#
+# Only the scripts in the dropdown can be run. That is the point of the
+# dropdown rather than a free-text command box: this job holds a credential
+# with full write access to the live database, and the list is the boundary.
+# Scripts that delete things are deliberately absent -- seed.js, which
+# overwrites a database, and remove-placeholder-projects.js. Those stay on a
+# human's own machine.
+#
+# Uses the FIREBASE_SERVICE_ACCOUNT secret the daily digest already needs.
+# The key is written to the path the scripts expect, which is gitignored, and
+# removed again whether the run succeeds or fails.
+
+on:
+  workflow_dispatch:
+    inputs:
+      script:
+        description: 'Which script to run'
+        required: true
+        type: choice
+        options:
+          - apply-project-template
+          - import-brand-projects
+          - import-brand-contacts
+          - import-brand-timeline
+          - backfill-brand-key
+          - backfill-order
+      argument:
+        description: 'Project name for apply-project-template, or seed file path for an import. Leave blank for the backfills.'
+        required: false
+        type: string
+        default: ''
+      apply:
+        description: 'WRITE the changes. Leave unticked for a dry run.'
+        required: false
+        type: boolean
+        default: false
+
+# One at a time. Two of these writing the same documents at once is not
+# something any of them expect.
+concurrency:
+  group: data-script
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write the service account key
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::error::FIREBASE_SERVICE_ACCOUNT secret is not set."
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > scripts/serviceAccountKey.json
+          node -e "JSON.parse(require('fs').readFileSync('scripts/serviceAccountKey.json','utf8'))" \
+            || { echo "::error::The secret is not valid JSON. Paste the whole key file, including the braces."; exit 1; }
+
+      # Inputs are read from the environment and quoted, never pasted into the
+      # script text: a value like `; rm -rf .` would otherwise be run as a
+      # command rather than treated as a project name.
+      - name: Run it
+        env:
+          SCRIPT: ${{ inputs.script }}
+          ARG: ${{ inputs.argument }}
+          APPLY: ${{ inputs.apply }}
+        run: |
+          set -o pipefail
+          FLAGS=""
+          if [ "$APPLY" = "true" ]; then FLAGS="--apply"; fi
+
+          case "$SCRIPT" in
+            apply-project-template)
+              if [ -z "$ARG" ]; then
+                echo "::error::This script needs a project name in the argument box, e.g. Seminole Trail, VA"
+                exit 1
+              fi
+              set -- --from "$ARG"
+              ;;
+            import-brand-projects|import-brand-contacts|import-brand-timeline)
+              if [ -z "$ARG" ]; then
+                echo "::error::This script needs a seed file path, e.g. scripts/seed-jm-acquisitions-projects.json"
+                exit 1
+              fi
+              if [ ! -f "$ARG" ]; then
+                echo "::error::No such file in the repository: $ARG"
+                exit 1
+              fi
+              set -- "$ARG"
+              ;;
+            backfill-brand-key|backfill-order)
+              set --
+              ;;
+            *)
+              echo "::error::Unknown script: $SCRIPT"
+              exit 1
+              ;;
+          esac
+
+          if [ "$APPLY" = "true" ]; then
+            echo "### :rotating_light: WRITING to the live database" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### Dry run — nothing was written" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "\`scripts/$SCRIPT.js\`" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+          # Output goes to the run summary as well as the log, so the result is
+          # readable without opening the job.
+          node "scripts/$SCRIPT.js" "$@" $FLAGS 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      # Whether the run passed or failed. The file is gitignored, so this is
+      # belt and braces, but the runner's disk is not a place to leave a key.
+      - name: Remove the key
+        if: always()
+        run: rm -f scripts/serviceAccountKey.json
