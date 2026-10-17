@@ -16,6 +16,7 @@ import {
 import { createProject, setProjectOrder } from '../lib/firestore';
 import { useAuth } from '../context/AuthContext';
 import { planReorder } from '../lib/reorder';
+import { logoFor } from '../lib/brandLogos';
 
 // Dragging a project up or down the list.
 //
@@ -206,6 +207,9 @@ export default function Overview({
         &larr; All Brands
       </button>
       <div className="brand-head">
+        {logoFor(brand.key) && (
+          <img className="head-logo" src={logoFor(brand.key)} alt={`${brand.name} logo`} />
+        )}
         <h2>{brand.name}</h2>
         {template.isEmpty && (
           // Named, because the heading is the brand and the empty checklist

@@ -716,3 +716,13 @@
   background:#ffffff;border:1px solid var(--line);border-radius:7px;
   padding:3px 5px;margin-bottom:8px;display:block;
 }
+/* The brand's logo beside its heading on the project list. Taller than the
+   project-page one because it has a 26px heading to sit against, and on a
+   white plate for the same reason as everywhere else: a dark wordmark on a
+   transparent background would vanish in dark mode. */
+.head-logo{
+  height:42px;width:auto;max-width:132px;object-fit:contain;
+  background:#ffffff;border:1px solid var(--line);border-radius:9px;
+  padding:4px 7px;flex-shrink:0;
+}
+@media (max-width:760px){ .head-logo{height:34px;max-width:104px;} }
