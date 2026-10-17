@@ -29,6 +29,7 @@ const BRANDS = [
   { key: 'jerseymikes', aliases: ['jersey mikes', "jersey mike's", 'jm'] },
   { key: 'daves', aliases: ['daves hot chicken', "dave's hot chicken", 'dhc', 'daves'] },
   { key: 'mogu', aliases: ['mogu'] },
+  { key: 'doghaus', aliases: ['dog haus', 'doghaus', 'dh'] },
 ];
 const DEFAULT_BRAND_KEY = 'jerseymikes';
 

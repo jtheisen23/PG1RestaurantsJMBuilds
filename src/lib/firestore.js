@@ -8,6 +8,7 @@ import {
   updateDoc,
   deleteDoc,
   setDoc,
+  writeBatch,
   deleteField,
   serverTimestamp,
   query,
@@ -463,6 +464,21 @@ export async function updateProjectField(projectId, field, value, user, meta) {
     });
   }
   return result;
+}
+
+// Dragging a project up or down the list.
+//
+// Only `order` is written. Deliberately not updatedAt or updatedBy: those
+// drive "Last edited by" on the project page, and one drag touches several
+// projects at once -- shuffling the list is not editing them, and stamping it
+// would make a whole pipeline claim it had been worked on.
+//
+// Batched so the list cannot be seen half-reordered by anyone watching it.
+export async function setProjectOrder(updates) {
+  if (!updates?.length) return undefined;
+  const batch = writeBatch(db);
+  updates.forEach(({ id, order }) => batch.update(doc(db, 'projects', id), { order }));
+  return reportingWrite('saving the new order', () => batch.commit());
 }
 
 export async function updateProjectMeta(projectId, patch, user) {

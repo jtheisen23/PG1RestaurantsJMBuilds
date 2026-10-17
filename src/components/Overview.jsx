@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   phaseProgress,
   overallProgress,
@@ -13,8 +13,75 @@ import {
   BRAND_BY_KEY,
   tracksFor,
 } from '../lib/helpers';
-import { createProject } from '../lib/firestore';
+import { createProject, setProjectOrder } from '../lib/firestore';
 import { useAuth } from '../context/AuthContext';
+import { planReorder } from '../lib/reorder';
+
+// Dragging a project up or down the list.
+//
+// Only the handle is draggable; the row stays a link into the project. The
+// row is the drop target, and a drop lands the dragged project immediately
+// above it.
+//
+// The dragged id is read back out of the drag payload rather than from
+// state, because React has no obligation to have flushed a dragstart setState
+// by the time the drop arrives -- state here is only for the styling.
+function useRowDrag({ enabled, onCommit }) {
+  const [dragId, setDragId] = useState(null);
+  const [overId, setOverId] = useState(null);
+  const dragged = useRef(null);
+  // Which list the drag started in. Open projects and completed stores are
+  // two separate lists on the page, and dragging between them would mean
+  // nothing -- a project's position comes from its order, not its section.
+  const fromGroup = useRef(null);
+
+  function reset() {
+    dragged.current = null;
+    fromGroup.current = null;
+    setDragId(null);
+    setOverId(null);
+  }
+
+  return function rowDrag(project, group) {
+    if (!enabled) return {};
+    return {
+      dragging: dragId === project.id,
+      dropTarget: overId === project.id && Boolean(dragId) && dragId !== project.id,
+      grip: {
+        draggable: true,
+        onDragStart: (e) => {
+          dragged.current = project.id;
+          fromGroup.current = group;
+          setDragId(project.id);
+          e.dataTransfer.effectAllowed = 'move';
+          try {
+            // Firefox refuses to start a drag with no payload.
+            e.dataTransfer.setData('text/plain', project.id);
+          } catch {
+            // Not fatal: the id is in the ref too.
+          }
+        },
+        onDragEnd: reset,
+      },
+      zone: {
+        onDragOver: (e) => {
+          // Not calling preventDefault is what tells the browser this is not
+          // a valid drop, so a cross-section drag shows "no entry".
+          if (fromGroup.current !== group) return;
+          e.preventDefault();
+          if (overId !== project.id) setOverId(project.id);
+        },
+        onDrop: (e) => {
+          e.preventDefault();
+          const source = e.dataTransfer.getData('text/plain') || dragged.current;
+          const sameList = fromGroup.current === group;
+          reset();
+          if (sameList) onCommit(source, project.id);
+        },
+      },
+    };
+  };
+}
 
 export default function Overview({
   projects: allProjects,
@@ -88,6 +155,21 @@ export default function Overview({
 
   const activeRows = useMemo(() => filtered.filter((p) => !p.completed), [filtered]);
   const completedRows = useMemo(() => filtered.filter((p) => p.completed), [filtered]);
+
+  // Reordering a filtered list is not a question with an answer: dropping a
+  // project above the one below it on screen says nothing about where it
+  // belongs among the rows the filter is hiding. So the handles appear only
+  // on the whole list.
+  const searching = Boolean(search.trim()) || filter !== 'all';
+  const canDrag = canEdit && !searching;
+
+  const rowDrag = useRowDrag({
+    enabled: canDrag,
+    onCommit: (sourceId, targetId) =>
+      // Planned against the track's full list rather than the rendered
+      // section, so the saved order stays coherent across both of them.
+      setProjectOrder(planReorder({ items: projects, sourceId, targetId })),
+  });
 
   async function handleAdd() {
     setAdding(true);
@@ -201,9 +283,20 @@ export default function Overview({
         )}
       </div>
 
+      {canEdit && searching && activeRows.length > 1 && (
+        <div className="plist-hint">Clear the search and filter to drag projects into a new order.</div>
+      )}
+
       <div className="plist">
         {activeRows.length ? (
-          activeRows.map((p) => <ProjectRow key={p.id} project={p} onClick={() => onSelect(p.id)} />)
+          activeRows.map((p) => (
+            <ProjectRow
+              key={p.id}
+              project={p}
+              onClick={() => onSelect(p.id)}
+              drag={rowDrag(p, 'active')}
+            />
+          ))
         ) : (
           !completedRows.length && (
             <div className="empty-state">
@@ -222,7 +315,12 @@ export default function Overview({
           </div>
           <div className="plist completed">
             {completedRows.map((p) => (
-              <ProjectRow key={p.id} project={p} onClick={() => onSelect(p.id)} />
+              <ProjectRow
+                key={p.id}
+                project={p}
+                onClick={() => onSelect(p.id)}
+                drag={rowDrag(p, 'completed')}
+              />
             ))}
           </div>
         </>
@@ -246,7 +344,8 @@ const RAIL_LABEL = {
   'Post Opening': 'Post Open',
 };
 
-function ProjectRow({ project, onClick }) {
+function ProjectRow({ project, onClick, drag = {} }) {
+  const { grip, zone, dragging, dropTarget } = drag;
   // Driven by the project's own brand rather than a fixed three: the phases a
   // brand runs are data, and hardcoding them here is how the rail came to
   // disagree with the project page.
@@ -259,7 +358,30 @@ function ProjectRow({ project, onClick }) {
   const width = `${100 / phases.length}%`;
 
   return (
-    <div className="prow" onClick={onClick}>
+    <div
+      className={[
+        'prow',
+        grip ? 'draggable' : '',
+        dragging ? 'dragging' : '',
+        dropTarget ? 'drop-before' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      onClick={onClick}
+      {...zone}
+    >
+      {grip && (
+        <span
+          className="prow-grip"
+          title="Drag to reorder"
+          aria-hidden="true"
+          // Without this the mouse-up at the end of a drag opens the project.
+          onClick={(e) => e.stopPropagation()}
+          {...grip}
+        >
+          ⠿
+        </span>
+      )}
       <div>
         <div className="pname">{project.name || 'Unnamed Location'}</div>
         <div className="paddr">{addr || 'No address on file'}</div>

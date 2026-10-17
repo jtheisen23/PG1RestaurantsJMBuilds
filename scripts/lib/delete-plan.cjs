@@ -24,6 +24,7 @@ const ALIASES = {
   jmacquisitions: ['acquisitions', 'jm acquisitions', "jersey mike's acquisitions"],
   daves: ['daves hot chicken', "dave's hot chicken", 'dhc', 'daves'],
   mogu: ['mogu'],
+  doghaus: ['dog haus', 'doghaus', 'dh'],
 };
 
 function brandKeyOf(p) {
