@@ -425,6 +425,7 @@
 .brand-mark.daves{background:var(--brick);}
 .brand-mark.mogu{background:var(--slate);}
 .brand-mark.jmacquisitions{background:var(--plum);}
+.brand-mark.doghaus{background:var(--amber);}
 .brand-body{flex:1;min-width:0;}
 .brand-name{font-size:17px;font-weight:700;color:var(--ink);}
 .brand-counts{font-size:12.5px;color:var(--slate);margin-top:3px;}
@@ -473,6 +474,7 @@
 .log-brand.jerseymikes{background:var(--accent-light);border-color:var(--accent-light);color:var(--accent-dark);}
 .log-brand.daves{background:var(--brick-light);border-color:var(--brick-light);color:var(--brick);}
 .log-brand.jmacquisitions{background:var(--plum-light);border-color:var(--plum-light);color:var(--plum);}
+.log-brand.doghaus{background:var(--amber-light);border-color:var(--amber-light);color:#8a5c14;}
 .log-brand.mogu{background:#eef1f5;border-color:#eef1f5;color:var(--slate);}
 .log-hidden{color:var(--slate);opacity:0.8;}
 
@@ -599,3 +601,20 @@
   padding:5px 10px;margin-top:10px;
 }
 .field-grid.rows > .pri-group:first-child{margin-top:0;}
+
+/* ---------- REORDERING THE PROJECT LIST ----------
+   The handle is positioned over the row rather than added to its grid, so
+   the three-column layout and the single-column mobile one are untouched.
+   Only the handle is draggable: the row itself still opens the project, and
+   a grab on the handle must not be read as a click on the row. */
+.prow.draggable{position:relative;padding-left:36px;}
+.prow-grip{
+  position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  cursor:grab;color:var(--line-strong);font-size:15px;line-height:1;
+  padding:4px 2px;user-select:none;
+}
+.prow-grip:hover{color:var(--slate);}
+.prow-grip:active{cursor:grabbing;}
+.prow.dragging{opacity:.4;}
+.prow.drop-before{box-shadow:0 -3px 0 0 var(--accent);}
+.plist-hint{font-size:12px;color:var(--slate);margin:-2px 0 8px;}
