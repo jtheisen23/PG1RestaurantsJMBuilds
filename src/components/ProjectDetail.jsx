@@ -157,6 +157,17 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
     }
   }
 
+  // The logo for this project: its own brand's, or the brand it belongs to
+  // when the track has none of its own.
+  const projectLogo = (() => {
+    const key = brandKeyFor(project);
+    const own = logoFor(key);
+    if (own) return { src: own, brand: BRAND_BY_KEY[key]?.name || '' };
+    const root = rootBrandFor(key);
+    const inherited = logoFor(root.key);
+    return inherited ? { src: inherited, brand: root.name } : null;
+  })();
+
   const quick = QUICK_LETTERS.map((letter) => {
     const h = tpl.headers.find((hh) => hh.letter === letter && hh.phase);
     if (!h || h.type === 'checkbox') return null;
@@ -182,13 +193,10 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
       <div className="detail-head">
         <div className="titles">
           {/* An acquisition has no logo of its own -- it is a Jersey Mike's
-              store, so it borrows the brand's. */}
-          {(logoFor(brandKeyFor(project)) || logoFor(rootBrandFor(brandKeyFor(project)).key)) && (
-            <img
-              className="detail-logo"
-              src={logoFor(brandKeyFor(project)) || logoFor(rootBrandFor(brandKeyFor(project)).key)}
-              alt={`${BRAND_BY_KEY[brandKeyFor(project)]?.name || ''} logo`}
-            />
+              store, so it borrows the brand's. The alt names whichever brand
+              the logo actually belongs to, not the track it is shown on. */}
+          {projectLogo && (
+            <img className="detail-logo" src={projectLogo.src} alt={`${projectLogo.brand} logo`} />
           )}
           <div className="title-inputs">
             <input
