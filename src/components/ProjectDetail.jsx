@@ -12,6 +12,7 @@ import {
   labelFor,
   brandKeyFor,
   BRAND_BY_KEY,
+  rootBrandFor,
   visibleHeaders,
   removedHeaders,
   NOTES_PHASE,
@@ -27,6 +28,7 @@ import {
   useTasks,
 } from '../lib/firestore';
 import TaskList from './TaskList';
+import { logoFor } from '../lib/brandLogos';
 import FieldLabelDialog from './FieldLabelDialog';
 import AddFieldDialog from './AddFieldDialog';
 import { useAuth } from '../context/AuthContext';
@@ -179,6 +181,15 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
 
       <div className="detail-head">
         <div className="titles">
+          {/* An acquisition has no logo of its own -- it is a Jersey Mike's
+              store, so it borrows the brand's. */}
+          {(logoFor(brandKeyFor(project)) || logoFor(rootBrandFor(brandKeyFor(project)).key)) && (
+            <img
+              className="detail-logo"
+              src={logoFor(brandKeyFor(project)) || logoFor(rootBrandFor(brandKeyFor(project)).key)}
+              alt={`${BRAND_BY_KEY[brandKeyFor(project)]?.name || ''} logo`}
+            />
+          )}
           <div className="title-inputs">
             <input
               className="brand-input"

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { TOP_BRANDS, brandKeyFor, rootBrandFor, templateFor, overallProgress, pct } from '../lib/helpers';
+import { logoFor } from '../lib/brandLogos';
 
 // The landing view of the Projects tab. PG1 develops more than one brand and
 // each has its own checklist, so the first choice is which brand you are
@@ -35,9 +36,7 @@ export default function BrandPicker({ projects, onSelectBrand }) {
           const avg = s.active ? s.progressSum / s.active : 0;
           return (
             <button key={b.key} className="brand-card" onClick={() => onSelectBrand(b.key)}>
-              <div className={`brand-mark ${b.key}`} aria-hidden="true">
-                {b.initials}
-              </div>
+              <BrandMark brand={b} />
               <div className="brand-body">
                 <div className="brand-name">{b.name}</div>
                 <div className="brand-counts">
@@ -68,5 +67,25 @@ export default function BrandPicker({ projects, onSelectBrand }) {
         for its brand. Projects imported before brands existed are Jersey Mike's.
       </div>
     </>
+  );
+}
+
+// A brand's logo if one has been added to src/assets/brands, otherwise its
+// initials. The logo sits on a white plate in both themes: several of these
+// marks are dark artwork on a transparent background, and on a dark card
+// they would simply disappear.
+export function BrandMark({ brand, className = '' }) {
+  const logo = logoFor(brand.key);
+  if (!logo) {
+    return (
+      <div className={`brand-mark ${brand.key} ${className}`.trim()} aria-hidden="true">
+        {brand.initials}
+      </div>
+    );
+  }
+  return (
+    <div className={`brand-mark has-logo ${className}`.trim()}>
+      <img src={logo} alt={`${brand.name} logo`} />
+    </div>
   );
 }

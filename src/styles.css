@@ -696,3 +696,23 @@
   font-size:11px;font-weight:700;border-radius:10px;padding:2px 9px;white-space:nowrap;
   background:var(--accent-light);color:var(--accent-dark);
 }
+
+/* ---------- BRAND LOGOS ----------
+   Wider than tall, because the marks are a mix: Dog Haus and Dave's are
+   circular, Mogu is roughly 3:1 and Jersey Mike's is an oval. `contain`
+   fits each without cropping, and the box is sized so a wide wordmark does
+   not shrink to nothing next to a circle.
+
+   The plate stays white in both themes on purpose: several of these are
+   dark artwork on a transparent background and would vanish on a dark
+   card. A white chip reads as the logo's own background rather than a bug. */
+.brand-mark.has-logo{
+  width:68px;height:52px;background:#ffffff;border:1px solid var(--line);
+  padding:5px;border-radius:11px;
+}
+.brand-mark.has-logo img{width:100%;height:100%;object-fit:contain;display:block;}
+.detail-logo{
+  height:34px;width:auto;max-width:120px;object-fit:contain;
+  background:#ffffff;border:1px solid var(--line);border-radius:7px;
+  padding:3px 5px;margin-bottom:8px;display:block;
+}
