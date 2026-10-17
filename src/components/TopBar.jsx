@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Logo from './Logo';
+import { effectiveTheme, watchSystemTheme, writeTheme } from '../lib/theme';
 
 const TABS = [
   ['overview', 'Projects'],
@@ -13,6 +14,11 @@ const TABS = [
 export default function TopBar({ view, onNav, saving, onAddTask }) {
   const { profile, logout, isAdmin, canEdit } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [theme, setTheme] = useState(effectiveTheme);
+
+  // Until someone picks a side, follow the operating system -- including
+  // when it changes while the tab is open.
+  useEffect(() => watchSystemTheme(setTheme), []);
 
   const tabs = isAdmin ? [...TABS, ['admin', 'Team']] : TABS;
   const initials = (profile?.name || profile?.email || '?').slice(0, 2).toUpperCase();
@@ -45,6 +51,14 @@ export default function TopBar({ view, onNav, saving, onAddTask }) {
       <div className="save-indicator" style={{ color: saving ? 'var(--amber)' : undefined }}>
         {saving ? 'Saving…' : 'Synced'}
       </div>
+      <button
+        className="theme-toggle"
+        onClick={() => setTheme(writeTheme(theme === 'dark' ? 'light' : 'dark'))}
+        title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      >
+        {theme === 'dark' ? '☀' : '☾'}
+      </button>
       <div className="user-menu">
         <button className="user-chip" onClick={() => setMenuOpen((v) => !v)}>
           <span className="avatar">{initials}</span>

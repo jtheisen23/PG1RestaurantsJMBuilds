@@ -48,6 +48,7 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
   const tpl = templateForProject(project);
   const fields = project.fields || {};
   const hidden = hiddenFieldsOf(project);
+  const [itemSearch, setItemSearch] = useState('');
   const [renaming, setRenaming] = useState(null);
   const [addingTo, setAddingTo] = useState(null);
 
@@ -81,6 +82,23 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
   // Resolves the project's own wording, then the brand's, then the checklist
   // file. Passed down so every field renders the same way.
   const nameOf = (header) => labelFor(header, project, brandLabels);
+
+  // What counts as a match for the checklist search. Wording, who is
+  // responsible, and the note underneath -- an acquisition item's vendor and
+  // how-to live in that note, and they are often what someone remembers.
+  const itemQuery = itemSearch.trim().toLowerCase();
+  const matchItem = (h) =>
+    !itemQuery ||
+    `${nameOf(h)} ${h.resp || ''} ${h.hint || ''}`.toLowerCase().includes(itemQuery);
+
+  // Counted across the whole project rather than per stage, so the box can
+  // say whether there is anything to find before any stage is opened.
+  const matchPhases = itemQuery
+    ? [...tpl.phases, NOTES_PHASE].filter((ph) => visibleHeaders(project, ph).some(matchItem))
+    : [];
+  const matchCount = itemQuery
+    ? matchPhases.reduce((n, ph) => n + visibleHeaders(project, ph).filter(matchItem).length, 0)
+    : 0;
 
   // Removing a checklist item affects only this project; the template it comes
   // from is shared by every project of the brand. The rules enforce admin-only
@@ -219,13 +237,48 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
         )}
       </div>
 
-      <ProjectTasks
-        projectId={project.id}
-        tasks={allTasks}
-        canEdit={canEdit}
-        onAddTask={onAddTask}
-        onEditTask={onEditTask}
-      />
+      {/* Searching the checklist itself. A Jersey Mike's project is 200-odd
+          items across five stages, and finding one by eye means opening each
+          stage and scrolling. Matching covers the item's wording, who is
+          responsible for it, and the note underneath. */}
+      <div className="item-search">
+        <div className="search-wrap">
+          <input
+            type="text"
+            value={itemSearch}
+            onChange={(e) => setItemSearch(e.target.value)}
+            placeholder="Search this project's checklist…"
+            aria-label="Search checklist items"
+          />
+        </div>
+        {itemQuery && (
+          <>
+            <span className="item-search-count">
+              {matchCount === 0
+                ? 'Nothing matches'
+                : `${matchCount} item${matchCount === 1 ? '' : 's'} in ${matchPhases.length} stage${
+                    matchPhases.length === 1 ? '' : 's'
+                  }`}
+            </span>
+            <button className="btn ghost small" onClick={() => setItemSearch('')}>
+              Clear
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* The search is about checklist items, so the project's own task
+          list steps aside while one is running -- otherwise a search
+          that matches nothing still leaves a block on screen. */}
+      {!itemQuery && (
+        <ProjectTasks
+          projectId={project.id}
+          tasks={allTasks}
+          canEdit={canEdit}
+          onAddTask={onAddTask}
+          onEditTask={onEditTask}
+        />
+      )}
 
       {tpl.isEmpty && (
         <div className="acc-hint brand-empty">
@@ -259,6 +312,8 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
           onRemoveField={removeField}
           onAddField={() => setAddingTo(phase)}
           onReorder={reorder}
+          search={itemQuery}
+          matchItem={matchItem}
         />
       ))}
 
@@ -296,6 +351,8 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
           onReorder={reorder}
           open={openPhase === 'Notes/PSA'}
           onToggle={() => setOpenPhase(openPhase === 'Notes/PSA' ? null : 'Notes/PSA')}
+          search={itemQuery}
+          matchItem={matchItem}
           canEdit={canEdit}
           toggleField={toggleField}
           commitText={commitText}
@@ -394,7 +451,7 @@ function Accordion({
   index,
   project,
   template,
-  open,
+  open: openProp,
   onToggle,
   canEdit,
   toggleField,
@@ -410,10 +467,17 @@ function Accordion({
   onRemoveField,
   onAddField,
   onReorder,
+  search,
+  matchItem,
 }) {
   // Both lists come from the project rather than the template, so added
   // fields appear inline with the brand's and the saved order applies.
   const hs = visibleHeaders(project, phase);
+  // While searching, the stage shows only what matches. `open` is shadowed
+  // rather than renamed so every other use of it below keeps working: a
+  // result you have to go and click open is not a result.
+  const found = search ? hs.filter(matchItem) : hs;
+  const open = search ? true : openProp;
   const removed = removedHeaders(project, phase);
   const prog = phaseProgress(project, phase);
   const fields = project.fields || {};
@@ -433,8 +497,8 @@ function Accordion({
   // rather than progress -- there is no "completed" state to hide them by, and
   // dropping them would take the address and lease terms off the page.
   const visible = hideDone
-    ? hs.filter((h) => !(h.type === 'checkbox' && fields[h.letter] === true))
-    : hs;
+    ? found.filter((h) => !(h.type === 'checkbox' && fields[h.letter] === true))
+    : found;
 
   // The handler belongs on the input, not on the surrounding label. A label
   // forwards its click to the input, which bubbles back up, so a handler on the
@@ -448,11 +512,20 @@ function Accordion({
     writeHideDone(phase, next);
   }
 
+  // A stage with nothing matching is out of the way entirely rather than
+  // sitting there empty, so what is left is only what was asked for.
+  if (search && !found.length) return null;
+
   return (
     <div className={`accordion ${open ? 'open' : ''}`}>
-      <div className="acc-head" onClick={onToggle}>
+      <div className="acc-head" onClick={search ? undefined : onToggle}>
         <span className={`dot ${key}`} />
         <h3>{phase}</h3>
+        {search && (
+          <span className="match-count">
+            {found.length} match{found.length === 1 ? '' : 'es'}
+          </span>
+        )}
         <div className="track">
           {/* A stage with no checkboxes counts as complete -- nothing is
               outstanding -- but filling the bar makes Operations and Post
@@ -570,7 +643,7 @@ function Accordion({
 
 function NotesAccordion({
   project,
-  open,
+  open: openProp,
   onToggle,
   canEdit,
   toggleField,
@@ -581,16 +654,28 @@ function NotesAccordion({
   onRemoveField,
   onAddField,
   onReorder,
+  search,
+  matchItem,
 }) {
   const fields = project.fields || {};
-  const visible = visibleHeaders(project, NOTES_PHASE);
+  const all = visibleHeaders(project, NOTES_PHASE);
+  const visible = search ? all.filter(matchItem) : all;
   const removed = removedHeaders(project, NOTES_PHASE);
-  const dragProps = useFieldDrag(visible, NOTES_PHASE, isAdmin, onReorder);
+  // Ordering is over the full list, never the searched one, so dragging
+  // while filtered could not drop the hidden items out of the saved order.
+  const dragProps = useFieldDrag(all, NOTES_PHASE, isAdmin && !search, onReorder);
+  const open = search ? true : openProp;
+  if (search && !visible.length) return null;
   return (
     <div className={`accordion ${open ? 'open' : ''}`}>
-      <div className="acc-head" onClick={onToggle}>
+      <div className="acc-head" onClick={search ? undefined : onToggle}>
         <span className="dot notes" />
         <h3>PSA / Notes</h3>
+        {search && (
+          <span className="match-count">
+            {visible.length} match{visible.length === 1 ? '' : 'es'}
+          </span>
+        )}
         <div className="track" />
         <div className="pct" />
         {open && isAdmin && (
