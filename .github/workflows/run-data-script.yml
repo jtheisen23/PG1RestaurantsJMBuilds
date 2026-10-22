@@ -36,8 +36,9 @@ on:
           - backfill-brand-key
           - backfill-order
           - delete-projects
+          - reset-acquisition-checklists
       argument:
-        description: 'apply-project-template: a project name. imports: a seed file path. delete-projects: pipe-separated names, e.g. A|B|C. Backfills: blank.'
+        description: 'apply-project-template: a project name. imports: a seed file path. delete-projects: pipe-separated names, e.g. A|B|C. Backfills and the acquisitions reset: blank.'
         required: false
         type: string
         default: ''
@@ -121,6 +122,14 @@ jobs:
               # from a web form must not be able to reach the acquisition
               # instead. Removing one of those is a local, deliberate job.
               set -- --brand jerseymikes --names "$ARG"
+              ;;
+            reset-acquisition-checklists)
+              # The track is hardcoded, not taken from the box. This one
+              # discards ticked boxes, and a mistyped brand would empty a
+              # whole pipeline rather than the one being replaced. Clearing
+              # any other track stays a local, deliberate job.
+              set -- --brand jmacquisitions
+              SCRIPT=reset-track-data
               ;;
             backfill-brand-key|backfill-order)
               set --
