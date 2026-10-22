@@ -134,7 +134,18 @@ jobs:
           fi
           printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
           export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
-          npx --yes firebase-tools@15 deploy \
+          # Pinned exactly, not to a major. 15.34.1, published the day
+          # before this broke, added a pre-flight check that asks
+          # serviceusage.googleapis.com whether Firebase Hosting is enabled
+          # on the project -- a call this service account is not permitted to
+          # make, so the deploy fails 403 before it uploads anything. Ten
+          # deploys had passed on 15.34.0.
+          #
+          # The durable fix is to grant the deploy service account the
+          # "Service Usage Consumer" role in Google Cloud console -> IAM,
+          # after which this can float again. Until then, pinning keeps the
+          # pipeline working without widening the credential's permissions.
+          npx --yes firebase-tools@15.34.0 deploy \
             --only hosting \
             --project "$PROJECT_ID" \
             --non-interactive \
