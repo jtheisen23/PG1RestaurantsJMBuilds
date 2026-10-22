@@ -405,7 +405,12 @@ function Rail3Row({ phase, index, value, tickable = true }) {
 
 // Drag-to-reorder for a phase's fields. Shared by the phase sections and the
 // notes section, which differ in everything except this.
-function useFieldDrag(hs, phase, isAdmin, onReorder) {
+// `groupOf` limits where a row may be dropped. A phase that sorts itself by
+// priority passes one: an item can be moved within its own priority, which
+// sticks, but not into another, which the sort would undo on the next render.
+// Refusing that drop is the honest version -- a drag that silently springs
+// back is worse than one the cursor says is not allowed.
+function useFieldDrag(hs, phase, isAdmin, onReorder, groupOf) {
   const [dragKey, setDragKey] = useState(null);
   const [overKey, setOverKey] = useState(null);
   // The drop handler must not depend on the state set by dragstart. React has
@@ -413,6 +418,7 @@ function useFieldDrag(hs, phase, isAdmin, onReorder) {
   // browser is already carrying the answer: the key went into the drag payload
   // when the drag began. State is kept only for the styling.
   const dragged = useRef(null);
+  const fromGroup = useRef(null);
 
   // Dropping puts the dragged field immediately before the one under the
   // cursor. The new order is written over the phase's full list, not the
@@ -424,10 +430,23 @@ function useFieldDrag(hs, phase, isAdmin, onReorder) {
     setDragKey(null);
     setOverKey(null);
     if (from < 0 || to < 0 || from === to) return;
+    // Both groups are read from the two items rather than from what was
+    // recorded at dragstart. A ref can be cleared by a dragend that arrives
+    // first, and the browser does not always withhold the drop just because
+    // dragover declined it -- so the rule is enforced where the write
+    // happens, not where the cursor was.
+    if (groupOf && groupOf(hs[from]) !== groupOf(hs[to])) return;
     const keys = hs.map((h) => h.letter);
-    keys.splice(to, 0, keys.splice(from, 1)[0]);
+    const [moved] = keys.splice(from, 1);
+    // Removing the dragged item first shifts everything after it left by
+    // one, so a downward move inserts one place earlier than the target's
+    // original index. Without this it lands AFTER the row it was dropped
+    // on, while the indicator drawn above that row promised before it.
+    keys.splice(to > from ? to - 1 : to, 0, moved);
     onReorder(phase, keys);
   }
+
+  const sameGroup = (h) => !groupOf || fromGroup.current === groupOf(h);
 
   return function dragProps(h) {
     if (!isAdmin) return {};
@@ -435,6 +454,7 @@ function useFieldDrag(hs, phase, isAdmin, onReorder) {
       draggable: true,
       onDragStart: (e) => {
         dragged.current = h.letter;
+        fromGroup.current = groupOf ? groupOf(h) : null;
         setDragKey(h.letter);
         e.dataTransfer.effectAllowed = 'move';
         // Firefox refuses to start a drag with no payload.
@@ -446,18 +466,28 @@ function useFieldDrag(hs, phase, isAdmin, onReorder) {
       },
       onDragEnd: () => {
         dragged.current = null;
+        fromGroup.current = null;
         setDragKey(null);
         setOverKey(null);
       },
       onDragOver: (e) => {
+        // Not calling preventDefault is what tells the browser this is not a
+        // valid drop, so the cursor shows "no entry" across priorities.
+        if (!sameGroup(h)) return;
         e.preventDefault();
         if (overKey !== h.letter) setOverKey(h.letter);
       },
       onDrop: (e) => {
         e.preventDefault();
         const source = e.dataTransfer.getData('text/plain') || dragged.current;
+        const allowed = sameGroup(h);
         dragged.current = null;
-        commitDrop(source, h.letter);
+        fromGroup.current = null;
+        if (allowed) commitDrop(source, h.letter);
+        else {
+          setDragKey(null);
+          setOverKey(null);
+        }
       },
       dragging: dragKey === h.letter,
       dropTarget: overKey === h.letter && Boolean(dragKey) && dragKey !== h.letter,
@@ -505,10 +535,21 @@ function Accordion({
   const key = phaseKey(phase, index);
 
   const [hideDone, setHideDone] = useState(() => readHideDone(phase));
-  // A phase whose items carry priorities sorts itself, so hand-ordering it
-  // would not survive the next render. Dragging stays on everywhere else.
   const selfSorting = hs.some((h) => h.options?.length);
-  const dragProps = useFieldDrag(hs, phase, isAdmin && !selfSorting, onReorder);
+  // Rows can be dragged on every phase. Where the phase sorts itself, a drag
+  // is confined to its own priority -- the saved order is what breaks ties
+  // inside a group, so a move there survives, while a move between groups
+  // would be undone by the sort. The reference fields at the top are their
+  // own group for the same reason.
+  const groupOf = (h) =>
+    h.options?.length ? priorityOf(project, h) || '(none)' : '(reference)';
+  const dragProps = useFieldDrag(
+    hs,
+    phase,
+    isAdmin,
+    onReorder,
+    selfSorting ? groupOf : undefined
+  );
 
   const openTasks = tasks.filter((t) => !t.done);
 
@@ -776,7 +817,11 @@ function CheckField({
       className={fieldClass(handlers.draggable, dragging, dropTarget, options.length > 0)}
       {...handlers}
     >
-      {isAdmin && <span className="fld-grip" aria-hidden="true">⠿</span>}
+      {/* Tied to whether the row actually drags, not to being an admin:
+          a handle that does nothing is worse than no handle. */}
+      {isAdmin && handlers.draggable && (
+        <span className="fld-grip" aria-hidden="true">⠿</span>
+      )}
       <input
         type="checkbox"
         id={`fld-${h.letter}`}
@@ -919,7 +964,9 @@ function TextField({ h, value, disabled, onCommit, isAdmin, label, onRemove, onR
   return (
     <div className={`${fieldClass(handlers.draggable, dragging, dropTarget)} txt-field`} {...handlers}>
       <label className={reworded ? 'label-edited' : undefined}>
-        {isAdmin && <span className="fld-grip" aria-hidden="true">⠿</span>}
+        {isAdmin && handlers.draggable && (
+          <span className="fld-grip" aria-hidden="true">⠿</span>
+        )}
         {label}
         {h.resp ? <span className="resp-tag">({h.resp})</span> : null}
         {h.custom && <span className="custom-tag">added</span>}
