@@ -19,14 +19,62 @@ item, and the per-row columns become the item's metadata:
   How To / SLA /
   Contact / Progress    -> a note under the item
 
+Re-importing a revised workbook is the dangerous case, and the reason this
+script reads its own previous output before writing. A ticked item is stored
+against its key -- PRE7, POST12 -- so if a new sheet inserts a row near the
+top and the keys are handed out by row order again, every key below it slides
+onto a different item and every tick with it. Nothing errors; the ticks just
+quietly start claiming the wrong things.
+
+So keys are matched to the previous import by phase and item wording and
+reused where they match. Genuinely new rows are given fresh keys numbered
+past the highest already in use, never a gap left by something deleted.
+Items that have gone from the sheet are reported: their stored values stay
+in the database, harmless and uncounted, and come back if the item returns.
+
 Usage:  python3 scripts/convert-acquisition-workbook.py <workbook.xlsx>
+        python3 scripts/convert-acquisition-workbook.py <workbook.xlsx> --fresh
+
+--fresh ignores the previous import and numbers from one. Only correct for
+a first import into an empty database.
 """
 import json
 import re
 import sys
 from openpyxl import load_workbook
 
-SRC = sys.argv[1] if len(sys.argv) > 1 else sys.exit('pass the .xlsx path')
+args = [a for a in sys.argv[1:] if not a.startswith('--')]
+FRESH = '--fresh' in sys.argv
+SRC = args[0] if args else sys.exit('pass the .xlsx path')
+OUT = 'src/data/brands/jm-acquisitions.json'
+
+# Wording is matched after collapsing case and punctuation, so a tidied-up
+# apostrophe or a trailing space in the sheet does not read as a new item.
+def ident(phase, label):
+    return (phase, re.sub(r'[^a-z0-9]', '', (label or '').lower()))
+
+previous = []
+if not FRESH:
+    try:
+        with open(OUT) as f:
+            previous = json.load(f)
+    except FileNotFoundError:
+        previous = []
+
+# A queue of keys per wording, not a single key: the Pre Close sheet has two
+# items whose text appears twice, and mapping wording to one key would hand
+# the first copy the stored key and invent one for the second -- moving a key
+# even when the sheet had not changed at all.
+known = {}
+used = set()
+highest = {}
+for h in previous:
+    letter = h.get('letter', '')
+    m = re.match(r'^(PRE|POST)(\d+)$', letter)
+    if not m:
+        continue
+    known.setdefault(ident(h.get('phase'), h.get('label')), []).append(letter)
+    highest[m.group(1)] = max(highest.get(m.group(1), 0), int(m.group(2)))
 
 # The note columns differ between the two sheets; both are "things worth
 # knowing while doing this item", so they are joined into one note.
@@ -80,6 +128,8 @@ for sheet in ['Pre Close', 'Post Close']:
     opts = options_for(ws, 'B')
     n = 0
     dues = 0
+    reused = 0
+    fresh_keys = []
     for row in wsv.iter_rows(min_row=3, values_only=True):
         get = lambda k: clean(row[idx[k]]) if k in idx and idx[k] < len(row) else ''
         item = get('Item')
@@ -88,11 +138,26 @@ for sheet in ['Pre Close', 'Post Close']:
         n += 1
         if get('Due Date'):
             dues += 1
+
+        pfx = PREFIX[sheet]
+        key = ident(sheet, item)
+        queue = known.get(key) or []
+        letter = queue.pop(0) if queue else None
+        if letter:
+            reused += 1
+        else:
+            # Past the highest ever issued, so a key freed by a deleted item
+            # is never handed to a different one -- values stored against it
+            # would reappear on the newcomer.
+            highest[pfx] = highest.get(pfx, 0) + 1
+            letter = f'{pfx}{highest[pfx]}'
+            fresh_keys.append(item)
+        used.add(letter)
         note = ' · '.join(x for x in (get(c) for c in NOTE_COLS[sheet]) if x)
         priority = get('Priority')
         headers.append({
             'col': col,
-            'letter': f'{PREFIX[sheet]}{n}',
+            'letter': letter,
             'label': item,
             'phase': sheet,
             'resp': get('In-Charge') or None,
@@ -104,7 +169,14 @@ for sheet in ['Pre Close', 'Post Close']:
             'priority': priority if priority in opts else None,
         })
         col += 1
-    report[sheet] = {'items': n, 'options': opts, 'rows_with_due_date': dues}
+    gone = [h['label'] for h in previous
+            if h.get('phase') == sheet and h.get('letter', '') not in used
+            and re.match(r'^(PRE|POST)\d+$', h.get('letter', ''))]
+    report[sheet] = {
+        'items': n, 'options': opts, 'rows_with_due_date': dues,
+        'keys_reused': reused, 'new_items': fresh_keys,
+        'items_no_longer_in_the_sheet': gone,
+    }
 
 with open('src/data/brands/jm-acquisitions.json', 'w') as f:
     json.dump(headers, f, indent=1)
