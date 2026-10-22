@@ -76,9 +76,9 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
     await setHidden(header.letter, nameOf(header), true);
   }
 
-  async function reorder(phase, keys) {
+  async function reorder(phase, keys, fieldPatch) {
     if (!isAdmin) return;
-    await setFieldOrder(project.id, phase, keys, user);
+    await setFieldOrder(project.id, phase, keys, user, fieldPatch);
   }
 
   // Resolves the project's own wording, then the brand's, then the checklist
@@ -405,12 +405,13 @@ function Rail3Row({ phase, index, value, tickable = true }) {
 
 // Drag-to-reorder for a phase's fields. Shared by the phase sections and the
 // notes section, which differ in everything except this.
-// `groupOf` limits where a row may be dropped. A phase that sorts itself by
-// priority passes one: an item can be moved within its own priority, which
-// sticks, but not into another, which the sort would undo on the next render.
-// Refusing that drop is the honest version -- a drag that silently springs
-// back is worse than one the cursor says is not allowed.
-function useFieldDrag(hs, phase, isAdmin, onReorder, groupOf) {
+// `regroup(source, target)` is for a phase that sorts itself, where the order
+// alone cannot hold a row anywhere the sort disagrees with. It says what else
+// has to change for `source` to stay where it was dropped: `{}` for nothing,
+// fields to write alongside the order, or null where it cannot go at all.
+// Refusing is the honest version of null -- a drag that silently springs back
+// is worse than one the cursor says is not allowed.
+function useFieldDrag(hs, phase, isAdmin, onReorder, regroup) {
   const [dragKey, setDragKey] = useState(null);
   const [overKey, setOverKey] = useState(null);
   // The drop handler must not depend on the state set by dragstart. React has
@@ -418,7 +419,7 @@ function useFieldDrag(hs, phase, isAdmin, onReorder, groupOf) {
   // browser is already carrying the answer: the key went into the drag payload
   // when the drag began. State is kept only for the styling.
   const dragged = useRef(null);
-  const fromGroup = useRef(null);
+  const draggedItem = useRef(null);
 
   // Dropping puts the dragged field immediately before the one under the
   // cursor. The new order is written over the phase's full list, not the
@@ -430,12 +431,13 @@ function useFieldDrag(hs, phase, isAdmin, onReorder, groupOf) {
     setDragKey(null);
     setOverKey(null);
     if (from < 0 || to < 0 || from === to) return;
-    // Both groups are read from the two items rather than from what was
-    // recorded at dragstart. A ref can be cleared by a dragend that arrives
-    // first, and the browser does not always withhold the drop just because
-    // dragover declined it -- so the rule is enforced where the write
-    // happens, not where the cursor was.
-    if (groupOf && groupOf(hs[from]) !== groupOf(hs[to])) return;
+    // Read from the two items rather than from what was recorded at
+    // dragstart. A ref can be cleared by a dragend that arrives first, and
+    // the browser does not always withhold the drop just because dragover
+    // declined it -- so the rule is enforced where the write happens, not
+    // where the cursor was.
+    const fieldPatch = regroup ? regroup(hs[from], hs[to]) : {};
+    if (!fieldPatch) return;
     const keys = hs.map((h) => h.letter);
     const [moved] = keys.splice(from, 1);
     // Removing the dragged item first shifts everything after it left by
@@ -443,10 +445,11 @@ function useFieldDrag(hs, phase, isAdmin, onReorder, groupOf) {
     // original index. Without this it lands AFTER the row it was dropped
     // on, while the indicator drawn above that row promised before it.
     keys.splice(to > from ? to - 1 : to, 0, moved);
-    onReorder(phase, keys);
+    onReorder(phase, keys, fieldPatch);
   }
 
-  const sameGroup = (h) => !groupOf || fromGroup.current === groupOf(h);
+  const canDropOn = (h) =>
+    !regroup || (draggedItem.current !== null && regroup(draggedItem.current, h) !== null);
 
   return function dragProps(h) {
     if (!isAdmin) return {};
@@ -454,7 +457,7 @@ function useFieldDrag(hs, phase, isAdmin, onReorder, groupOf) {
       draggable: true,
       onDragStart: (e) => {
         dragged.current = h.letter;
-        fromGroup.current = groupOf ? groupOf(h) : null;
+        draggedItem.current = h;
         setDragKey(h.letter);
         e.dataTransfer.effectAllowed = 'move';
         // Firefox refuses to start a drag with no payload.
@@ -466,28 +469,24 @@ function useFieldDrag(hs, phase, isAdmin, onReorder, groupOf) {
       },
       onDragEnd: () => {
         dragged.current = null;
-        fromGroup.current = null;
+        draggedItem.current = null;
         setDragKey(null);
         setOverKey(null);
       },
       onDragOver: (e) => {
         // Not calling preventDefault is what tells the browser this is not a
-        // valid drop, so the cursor shows "no entry" across priorities.
-        if (!sameGroup(h)) return;
+        // valid drop, so the cursor shows "no entry" where it cannot land.
+        if (!canDropOn(h)) return;
         e.preventDefault();
         if (overKey !== h.letter) setOverKey(h.letter);
       },
       onDrop: (e) => {
         e.preventDefault();
         const source = e.dataTransfer.getData('text/plain') || dragged.current;
-        const allowed = sameGroup(h);
         dragged.current = null;
-        fromGroup.current = null;
-        if (allowed) commitDrop(source, h.letter);
-        else {
-          setDragKey(null);
-          setOverKey(null);
-        }
+        draggedItem.current = null;
+        // commitDrop decides whether this is allowed, from the items.
+        commitDrop(source, h.letter);
       },
       dragging: dragKey === h.letter,
       dropTarget: overKey === h.letter && Boolean(dragKey) && dragKey !== h.letter,
@@ -536,19 +535,28 @@ function Accordion({
 
   const [hideDone, setHideDone] = useState(() => readHideDone(phase));
   const selfSorting = hs.some((h) => h.options?.length);
-  // Rows can be dragged on every phase. Where the phase sorts itself, a drag
-  // is confined to its own priority -- the saved order is what breaks ties
-  // inside a group, so a move there survives, while a move between groups
-  // would be undone by the sort. The reference fields at the top are their
-  // own group for the same reason.
-  const groupOf = (h) =>
-    h.options?.length ? priorityOf(project, h) || '(none)' : '(reference)';
+  // Rows can be dragged on every phase. Where the phase sorts itself, the
+  // saved order only breaks ties inside a priority, so a move there sticks
+  // as it is. A row dropped among another priority's items takes that
+  // priority -- otherwise the sort would put it straight back, and dragging
+  // an item up the list, the obvious thing to try, would do nothing. The
+  // reference fields at the top have no priority to give or take, so they
+  // stay among themselves.
+  const regroup = (src, dst) => {
+    const from = src.options?.length ? priorityOf(project, src) : null;
+    const to = dst.options?.length ? priorityOf(project, dst) : null;
+    if (from === to) return {};
+    if (from === null || to === null) return null;
+    // '' is "No priority", which every item can take.
+    if (to && !src.options.includes(to)) return null;
+    return { [priorityKey(src.letter)]: to };
+  };
   const dragProps = useFieldDrag(
     hs,
     phase,
     isAdmin,
     onReorder,
-    selfSorting ? groupOf : undefined
+    selfSorting ? regroup : undefined
   );
 
   const openTasks = tasks.filter((t) => !t.done);

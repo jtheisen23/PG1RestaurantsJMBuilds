@@ -552,10 +552,18 @@ export async function deleteCustomField(projectId, fieldId, current, user) {
 // The order fields appear in, for one phase of one project. Layout is a local
 // preference -- how this location's page reads -- so it is not shared with the
 // brand the way wording is.
-export async function setFieldOrder(projectId, phase, keys, user) {
+// `fields` is anything that has to change along with the order for a move to
+// stick -- on an acquisition, the priority of an item dragged into another
+// priority's run. One write, so nobody watching sees the new order with the
+// old priority, which the sort would put somewhere else entirely.
+export async function setFieldOrder(projectId, phase, keys, user, fields = {}) {
+  const fieldWrites = Object.fromEntries(
+    Object.entries(fields).map(([key, value]) => [`fields.${key}`, value])
+  );
   return reportingWrite('reordering fields', () =>
     updateDoc(doc(db, 'projects', projectId), {
       [`fieldOrder.${phase}`]: keys,
+      ...fieldWrites,
       updatedAt: serverTimestamp(),
       updatedBy: user?.email || 'unknown',
     })

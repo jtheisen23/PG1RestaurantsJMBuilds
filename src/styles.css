@@ -589,6 +589,10 @@
 .cb-field.has-pri{align-items:flex-start;padding:7px 8px;border-bottom:1px solid var(--line);border-radius:0;}
 .cb-field.has-pri:last-child{border-bottom:none;}
 .cb-field.has-pri .fld-main{flex:1;}
+/* One item to a row, so where a dragged item will land is a line across the
+   top of the row it is over -- the bar down the left that the two-up grid
+   uses is easy to miss on a row this wide. */
+.field-grid.rows > .cb-field.drop-before{box-shadow:0 -3px 0 0 var(--accent);}
 .fld-note{
   font-size:11.5px;color:var(--slate);line-height:1.45;margin-top:2px;
   max-width:70ch;
