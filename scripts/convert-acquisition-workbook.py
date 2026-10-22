@@ -84,6 +84,30 @@ NOTE_COLS = {
 }
 PREFIX = {'Pre Close': 'PRE', 'Post Close': 'POST'}
 
+# The order the work actually happens in, which is what the checklist is
+# read in: furthest out first before the close, soonest first after it.
+#
+# It is written here rather than taken from the sheet because the sheet's
+# dropdown is not in that order -- Pre Close lists "Day of" first, which is
+# the last thing to happen. Anything a sheet offers that is not named here
+# keeps its position from the sheet and follows, so a new bucket appears
+# rather than disappearing.
+CHRONOLOGICAL = {
+    'Pre Close': ['PreCall', '30 days', '3 weeks', '2 weeks', '1 Week', 'Day of'],
+    'Post Close': ['Day of Close', '1 Week Post Close', '2 weeks Post Close',
+                   '30 Days Post Close'],
+}
+
+
+def in_time_order(sheet, options):
+    want = [re.sub(r'[^a-z0-9]', '', o.lower()) for o in CHRONOLOGICAL.get(sheet, [])]
+
+    def rank(o):
+        k = re.sub(r'[^a-z0-9]', '', o.lower())
+        return want.index(k) if k in want else len(want) + options.index(o)
+
+    return sorted(options, key=rank)
+
 
 def clean(v):
     if v is None:
@@ -125,7 +149,7 @@ for sheet in ['Pre Close', 'Post Close']:
     ws, wsv = wb[sheet], wbv[sheet]
     hdr = [clean(c) for c in next(wsv.iter_rows(min_row=2, max_row=2, values_only=True))]
     idx = {h: i for i, h in enumerate(hdr) if h}
-    opts = options_for(ws, 'B')
+    opts = in_time_order(sheet, options_for(ws, 'B'))
     n = 0
     dues = 0
     reused = 0
@@ -183,6 +207,16 @@ with open('src/data/brands/jm-acquisitions.json', 'w') as f:
     f.write('\n')
 
 # --- the stores -------------------------------------------------------
+# A revision of the checklist alone has no Stores tab, and that is not a
+# problem: the stores already exist, and their names and addresses are not
+# the checklist's to restate.
+if 'Stores' not in wbv.sheetnames:
+    print(json.dumps(report, indent=2))
+    print(f'\n{len(headers)} checklist items written')
+    print('No Stores tab in this workbook, so no store list was written.')
+    print('Existing project names and addresses are untouched.')
+    raise SystemExit(0)
+
 ws = wbv['Stores']
 stores = []
 for i, row in enumerate(ws.iter_rows(min_row=4, values_only=True)):
