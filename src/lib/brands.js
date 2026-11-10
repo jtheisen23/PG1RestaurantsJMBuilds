@@ -2,6 +2,7 @@ import jerseyMikes from '../data/brands/jersey-mikes.json';
 import davesHotChicken from '../data/brands/daves-hot-chicken.json';
 import jmAcquisitions from '../data/brands/jm-acquisitions.json';
 import dogHaus from '../data/brands/dog-haus.json';
+import mogu from '../data/brands/mogu.json';
 
 // The phases every brand's checklist is grouped into. A brand may override
 // this, but nothing does yet: the phases are how PG1 runs a development
@@ -80,7 +81,12 @@ export const BRANDS = [
     name: 'Mogu',
     initials: 'MO',
     aliases: ['mogu'],
-    headers: [],
+    // A copy of the Jersey Mike's new-build checklist, not a reference to it:
+    // Mogu starts from the same list, but it is Mogu's to reword and reorder
+    // from here without moving Jersey Mike's. Being identical letter for
+    // letter is also what lets copy-brand-checklist carry Jersey Mike's
+    // brand-wide setup across, since that setup is keyed by letter.
+    headers: mogu,
   },
   {
     key: 'doghaus',

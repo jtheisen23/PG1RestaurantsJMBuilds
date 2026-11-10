@@ -33,12 +33,13 @@ on:
           - import-brand-projects
           - import-brand-contacts
           - import-brand-timeline
+          - copy-brand-checklist
           - backfill-brand-key
           - backfill-order
           - delete-projects
           - reset-acquisition-checklists
       argument:
-        description: 'apply-project-template: a project name. imports: a seed file path. delete-projects: pipe-separated names, e.g. A|B|C. Backfills and the acquisitions reset: blank.'
+        description: 'apply-project-template: a project name. imports: a seed file path. copy-brand-checklist: from and to brands, e.g. jerseymikes mogu. delete-projects: pipe-separated names, e.g. A|B|C. Backfills and the acquisitions reset: blank.'
         required: false
         type: string
         default: ''
@@ -111,6 +112,18 @@ jobs:
                 exit 1
               fi
               set -- "$ARG"
+              ;;
+            copy-brand-checklist)
+              # Two brand keys, source first. Anything else is refused by the
+              # script itself, which also refuses unless both brands ship the
+              # same checklist file -- so a slip here cannot carry one brand's
+              # setup onto a different list.
+              read -r FROM TO EXTRA <<< "$(printf '%s' "$ARG" | tr '>,' '  ' | sed 's/ to / /')"
+              if [ -z "$FROM" ] || [ -z "$TO" ] || [ -n "$EXTRA" ]; then
+                echo "::error::This script needs the source and target brand in the argument box, e.g. jerseymikes mogu"
+                exit 1
+              fi
+              set -- --from "$FROM" --to "$TO"
               ;;
             delete-projects)
               if [ -z "$ARG" ]; then
