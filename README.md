@@ -154,6 +154,9 @@ src/
 firestore.rules            Server-enforced role permissions
 scripts/seed.js            One-time data import script
 scripts/backfill-order.js  Syncs project order + completed flags from JSON
+scripts/copy-brand-checklist.js
+                           Gives one brand another's checklist setup and
+                           construction playbook (e.g. Jersey Mike's -> Mogu)
 scripts/daily-digest.js    Emails the daily activity summary
 scripts/rules-test.cjs     Security-rules tests (Firestore emulator)
 scripts/remove-placeholder-projects.js
