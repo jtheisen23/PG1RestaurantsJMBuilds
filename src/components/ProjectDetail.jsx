@@ -301,8 +301,9 @@ export default function ProjectDetail({ project, onBack, onAddTask, onEditTask, 
 
       {tpl.isEmpty && (
         <div className="acc-hint brand-empty">
-          The {tpl.name} checklist has not been imported yet, so the phases below are empty. You
-          can still raise tasks against a stage, and they will stay put once the checklist lands.
+          The {tpl.name} checklist has not been imported yet, so the phases below hold only the
+          items every brand shares. You can still raise tasks against a stage, and they will stay
+          put once the checklist lands.
         </div>
       )}
 
