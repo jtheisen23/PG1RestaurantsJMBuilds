@@ -30,6 +30,29 @@ export const LEGACY_PHASE_ALIAS = { 'Construction/Ops': 'Construction' };
 // closing date rather than around building anything.
 export const ACQUISITION_PHASES = ['Pre Close', 'Post Close'];
 
+// Checklist items every brand carries on top of its own checklist file. Kept
+// here rather than copied into each file so that "add this for all brands" is
+// one entry, and so a brand whose checklist has not been imported yet still
+// gets them.
+//
+// An item is only added to a brand that has its stage: the acquisitions track
+// has no Pre-Construction, so it gets none of these.
+//
+// The key is a word rather than a column letter. A column letter names a
+// different item in each brand's file, whereas this names the same item in
+// all of them, and a real column is at most three letters, so the two can
+// never collide. Changing a key orphans whatever was entered under it.
+export const ALL_BRANDS_ITEMS = [
+  {
+    letter: 'DUMPSTER',
+    label: 'Dumpster Services',
+    phase: 'Pre-Construction',
+    resp: 'Kim',
+    hint: null,
+    type: 'text',
+  },
+];
+
 // One entry per brand PG1 develops. `headers` is that brand's checklist,
 // exported from its spreadsheet -- the column definitions that decide what
 // appears on a project page and what the progress bars count.

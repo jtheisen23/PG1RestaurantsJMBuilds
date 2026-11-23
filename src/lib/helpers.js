@@ -4,6 +4,7 @@ import {
   TOP_BRANDS,
   DEFAULT_PHASES,
   LEGACY_PHASE_ALIAS,
+  ALL_BRANDS_ITEMS,
   brandKeyFor,
   rootBrandFor,
   tracksFor,
@@ -60,8 +61,9 @@ export function phaseColor(phase, index = 0) {
 // Built once per brand at module load rather than on every render: the
 // Jersey Mike's list is 200 columns and every progress bar re-reads it.
 function buildTemplate(brand) {
-  const headers = brand.headers || [];
   const phases = brand.phases || DEFAULT_PHASES;
+  const own = brand.headers || [];
+  const headers = [...own, ...ALL_BRANDS_ITEMS.filter((h) => phases.includes(h.phase))];
   const byPhase = {};
   const checkboxCount = {};
   phases.forEach((p) => {
@@ -80,8 +82,9 @@ function buildTemplate(brand) {
     notesHeaders: headers.filter((h) => h.phase === 'Notes/PSA'),
     checkboxCountByPhase: checkboxCount,
     // A brand whose checklist has not been imported yet. The project page
-    // says so instead of rendering as though the project has no data.
-    isEmpty: headers.length === 0,
+    // says so instead of rendering as though the project has no data. The
+    // all-brands items do not count: they are not that brand's checklist.
+    isEmpty: own.length === 0,
   };
 }
 
